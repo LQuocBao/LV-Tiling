@@ -1,0 +1,122 @@
+[
+  {
+    "id": "gal-1",
+    "title": "Master Ensuite with Freestanding Bathtub",
+    "category": "bathroom",
+    "image": "/media/9935903f-3f4e-4182-8197-19e2a50fa065.jpg",
+    "location": "Morley, WA",
+    "tileType": "Freestanding Oval Bath, Fluted Screen & Porcelain Suite"
+  },
+  {
+    "id": "gal-2",
+    "title": "Walk-in Showers with Recessed Niches & Strip Drains",
+    "category": "bathroom",
+    "image": "/media/3dc6ea8d-6e0b-4b8b-a3a6-a3c01bd0cf61.jpg",
+    "location": "Perth, WA",
+    "tileType": "ARDEX SE Sanitary Silicone & ARDEX FG 8 Grout Detailing"
+  },
+  {
+    "id": "gal-3",
+    "title": "Where Design Meets Precision - Tile Levelling System",
+    "category": "craftsmanship",
+    "image": "/media/b2c368ec-a5fa-4bc3-80d3-dd10d8880563.jpg",
+    "location": "Dianella, WA",
+    "tileType": "Precision Tile Clips for Symmetrical Zero-Lippage Finish"
+  },
+  {
+    "id": "gal-4",
+    "title": "Refined Edge Trims & Clean Straight Lines",
+    "category": "craftsmanship",
+    "image": "/media/bfb0c196-58dc-4d1a-bb98-bff12d0915b0.jpg",
+    "location": "Bayswater, WA",
+    "tileType": "Architectural Tile Trims for Exposed Edges & Corner Durability"
+  },
+  {
+    "id": "gal-5",
+    "title": "Tenax Surface Treatment & Natural Stone Sealing",
+    "category": "craftsmanship",
+    "image": "/media/bec463cc-8470-4967-a0ff-f2d23ad49bf4.jpg",
+    "location": "Mount Lawley, WA",
+    "tileType": "Tenax Enhancer & Stain Sealer for Niches, Windowsills & Stone"
+  },
+  {
+    "id": "gal-6",
+    "title": "Step 1: Flexible Polyurethane Movement Joint Sealing",
+    "category": "waterproofing",
+    "image": "/media/4fb93e8c-0742-47e4-80f2-4088788b18de.jpg",
+    "location": "Morley, WA",
+    "tileType": "Bostik Seal'n'Flex 1 Movement Joint & Corner Sealing (AS 3740)"
+  },
+  {
+    "id": "gal-7",
+    "title": "Step 2: Hydro Ban Waterproofing System Application",
+    "category": "waterproofing",
+    "image": "/media/6e383397-b70c-4113-841d-944e65dc8341.jpg",
+    "location": "Inglewood, WA",
+    "tileType": "Seamless Flexible Membrane on Screeded Floors & Gyprock"
+  },
+  {
+    "id": "gal-8",
+    "title": "Step 3: Two-Coat System for Maximum Coverage",
+    "category": "waterproofing",
+    "image": "/media/49c4380f-b1a6-4335-8e6c-ec22a3d47da0.jpg",
+    "location": "Bedford, WA",
+    "tileType": "Multi-Coat Wet Area Waterproofing to Australian Standard AS 3740"
+  },
+  {
+    "id": "gal-9",
+    "title": "The Base That Defines The Result: Engineered Screeding",
+    "category": "screeding",
+    "image": "/media/9cdbf6fa-1c42-4cd0-8841-e812ade2af6f.jpg",
+    "location": "Perth, WA",
+    "tileType": "Laser Screeding for Optimal Levelness & Falls to Waste (AS 3958.1)"
+  },
+  {
+    "id": "gal-10",
+    "title": "Bonding Slurry Application Prior to Floor Screeding",
+    "category": "screeding",
+    "image": "/media/a9f91438-b2d3-4a0d-895d-744cd1fd8569.jpg",
+    "location": "Maylands, WA",
+    "tileType": "Polymer-Modified Adhesive Slurry for Maximum Slab Adhesion"
+  },
+  {
+    "id": "gal-11",
+    "title": "Shower Wall Preparation & Substrate Remediation",
+    "category": "screeding",
+    "image": "/media/34bdf219-c1c5-410a-a1a1-a140f08a4f87.jpg",
+    "location": "Morley, WA",
+    "tileType": "Surface Scraping & Priming for Flat Base Adhesive Performance"
+  },
+  {
+    "id": "gal-12",
+    "title": "Eco Prim Grip Mechanical Bonding for Non-Porous Surfaces",
+    "category": "screeding",
+    "image": "/media/9c19a153-828a-4937-abf2-b1a56ca85e56.jpg",
+    "location": "North Perth, WA",
+    "tileType": "Rough Mechanical Key Bonding Layer for Tiles, Metal & Paint"
+  },
+  {
+    "id": "gal-13",
+    "title": "Ardex Multiprimer Sealing for Porous Render Walls",
+    "category": "screeding",
+    "image": "/media/b20b1850-4d2c-45bd-a9e9-02f4ab943916.jpg",
+    "location": "Osborne Park, WA",
+    "tileType": "Deep Penetration Sealer for Dusty & Absorbent Masonry Walls"
+  },
+  {
+    "id": "gal-14",
+    "title": "More Than Just Tiling: Company Standards & Values",
+    "category": "standards",
+    "image": "/media/e9d95888-ee09-466c-884e-f2c1a8519b64.jpg",
+    "location": "Perth & Morley, WA",
+    "tileType": "Transparent Process, Respect for Space & Durable Craftsmanship"
+  },
+  {
+    "id": "gal-15",
+    "title": "4-Year Comprehensive Workmanship Warranty Certificate",
+    "category": "standards",
+    "image": "/media/fc906945-b180-444b-b818-7f0a709dc091.jpg",
+    "location": "Morley Workshop, WA",
+    "tileType": "Guaranteed Workmanship & Multi-Stage Video/Photo Documentation"
+  }
+]

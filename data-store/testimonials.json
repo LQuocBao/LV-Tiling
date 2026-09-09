@@ -1,0 +1,38 @@
+[
+  {
+    "id": "t-1",
+    "name": "Lachlan Campbell",
+    "suburb": "Morley, WA",
+    "rating": 5,
+    "date": "February 2026",
+    "comment": "LV Tiling transformed our 1980s brick home with 130sqm of 600x1200 porcelain tiles. Absolute perfection — perfectly flat, laser-level, clean lines, and no mess left behind. Best trade team in Perth.",
+    "service": "Full Home Floor Tiling"
+  },
+  {
+    "id": "t-2",
+    "name": "Sarah & David O'Connor",
+    "suburb": "Dianella, WA",
+    "rating": 5,
+    "date": "January 2026",
+    "comment": "We had a severe shower leak from an old builder's work. LV Tiling stripped it back, re-waterproofed to AS 3740 standard, and tiled a gorgeous master ensuite. 10-year warranty gave us total peace of mind.",
+    "service": "Bathroom Waterproofing & Renovation"
+  },
+  {
+    "id": "t-3",
+    "name": "Mark Henderson (Apex Builders)",
+    "suburb": "Bayswater, WA",
+    "rating": 5,
+    "date": "December 2025",
+    "comment": "As a builder, I need trade specialists who understand Australian Standards and don't take shortcuts. LV Tiling Pty Ltd are our #1 tiling partners. On-time, accurate screeding, and impeccable finish.",
+    "service": "Commercial & Residential Subcontracting"
+  },
+  {
+    "id": "t-4",
+    "name": "Elena Rossi",
+    "suburb": "Mount Lawley, WA",
+    "rating": 5,
+    "date": "November 2025",
+    "comment": "Our herringbone kitchen splashback turned out like a masterpiece. The cuts around power points and benchtops are millimeter-exact. Friendly, punctual, and highly professional.",
+    "service": "Kitchen Splashback Tiling"
+  }
+]

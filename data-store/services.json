@@ -1,0 +1,92 @@
+[
+  {
+    "id": "bathroom-renovations",
+    "title": "Luxury Bathroom & Shower Tiling",
+    "shortDesc": "Complete wet-area tiling with dual-layer waterproofing to AS 3740, recessed niches, and engineered falls to strip drains.",
+    "fullDesc": "From custom walk-in showers and mitred tile niches to freestanding bath backdrops, we handle critical workshop preparation, precision screeding, and certified waterproofing to guarantee 100% leak-proof durability.",
+    "features": [
+      "Custom walk-in showers & recessed niches",
+      "AS 3740 certified dual waterproof membrane",
+      "45-degree hand-mitred external corners",
+      "Mould-resistant ARDEX epoxy grout & silicone"
+    ],
+    "icon": "Droplets",
+    "image": "/media/3dc6ea8d-6e0b-4b8b-a3a6-a3c01bd0cf61.jpg",
+    "badge": "Most Popular"
+  },
+  {
+    "id": "floor-tiling",
+    "title": "Precision Floor Tiling & Lippage Tuning",
+    "shortDesc": "Specialist installation of large-format porcelain, marble, and terrazzo with mechanical tile leveling clips for zero-lippage.",
+    "fullDesc": "Our master tilers utilize advanced laser leveling clips and mechanical vibration systems to ensure completely flat, mirror-grade floor surfaces conforming to Australian Standard AS 3958.1.",
+    "features": [
+      "Large-format tiles up to 1200x2400mm",
+      "Laser-guided sub-millimeter leveling clips",
+      "Acoustic underlayment & movement joints",
+      "Rectified edge & symmetrical alignment"
+    ],
+    "icon": "Grid",
+    "image": "/media/b2c368ec-a5fa-4bc3-80d3-dd10d8880563.jpg",
+    "badge": "Zero-Lippage Guarantee"
+  },
+  {
+    "id": "master-ensuites",
+    "title": "Master Ensuite & Freestanding Bath Suites",
+    "shortDesc": "Architectural bathroom renovations featuring freestanding bathtubs, fluted glass screens, timber vanities, and feature walls.",
+    "fullDesc": "We bring your luxury vision for your living space to life. Turnkey bathroom transformations executed with direct trade craftsmanship in Perth and Morley.",
+    "features": [
+      "Freestanding bath surrounds & plumbing drops",
+      "Full-height porcelain slab feature walls",
+      "Fluted glass and custom timber vanity integration",
+      "Direct trade execution with full warranty"
+    ],
+    "icon": "Sparkles",
+    "image": "/media/9935903f-3f4e-4182-8197-19e2a50fa065.jpg",
+    "badge": "Architectural Finish"
+  },
+  {
+    "id": "waterproofing-systems",
+    "title": "Certified AS 3740 Wet Area Waterproofing",
+    "shortDesc": "Multi-stage wet-area protection with flexible polyurethane movement joints and Laticrete Hydro Ban seamless membrane.",
+    "fullDesc": "Waterproofing is the foundation of a watertight space. We seal all corners, floor-wall junctions, and internal expansion joints to ensure 100% structural leak prevention.",
+    "features": [
+      "Step 1: Bostik polyurethane movement joint sealing",
+      "Step 2 & 3: Laticrete Hydro Ban dual-coat membrane",
+      "Reinforced internal corners & screeded floors",
+      "Strict AS 3740 quality control & compliance"
+    ],
+    "icon": "Shield",
+    "image": "/media/6e383397-b70c-4113-841d-944e65dc8341.jpg",
+    "badge": "AS 3740 Certified"
+  },
+  {
+    "id": "screeding-prep",
+    "title": "Floor Screeding & Substrate Engineering",
+    "shortDesc": "Laser-engineered sand & cement screeds, polymer bonding slurries, and precision 1:60 falls to strip drains to AS 3958.1.",
+    "fullDesc": "The base that defines the result. We establish strong, stable foundations with precise engineered screeding to prevent water pooling and ensure a flawless floor finish.",
+    "features": [
+      "Engineered 1:60 falls to strip drains & waste",
+      "Polymer bonding slurry prior to screeding",
+      "Substrate leveling meeting AS 3958.1",
+      "High compression strength & fast-cure formulas"
+    ],
+    "icon": "Layers",
+    "image": "/media/9cdbf6fa-1c42-4cd0-8841-e812ade2af6f.jpg",
+    "badge": "Engineered Falls"
+  },
+  {
+    "id": "edge-detailing",
+    "title": "Architectural Trims & Natural Stone Sealing",
+    "shortDesc": "Refined metal tile trims, seamless hand-mitred joints, and Tenax surface treatment for long-term stone protection.",
+    "fullDesc": "Tile trims protect exposed edges and create clean, straight lines, while Tenax sealers enhance natural stone colour and protect against moisture and staining.",
+    "features": [
+      "Hand-crafted 45-degree mitred tile edges",
+      "Tenax protective sealing for marble & travertine",
+      "ARDEX sanitary silicone expansion seals",
+      "Niches, windowsills & architectural features"
+    ],
+    "icon": "Wrench",
+    "image": "/media/bec463cc-8470-4967-a0ff-f2d23ad49bf4.jpg",
+    "badge": "Master Detailing"
+  }
+]
