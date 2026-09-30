@@ -12,7 +12,6 @@ import {
   ShieldCheck,
   Loader2,
   Check,
-  RotateCcw,
 } from "lucide-react";
 import FacebookIcon from "@/components/FacebookIcon";
 
@@ -44,24 +43,18 @@ export default function QuoteSection({
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [hasRestoredDraft, setHasRestoredDraft] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [responseMsg, setResponseMsg] = useState("");
   const isInitialMount = useRef(true);
 
-  // 1. Restore draft from localStorage on initial load
+  // 1. Restore draft from localStorage silently on initial load
   useEffect(() => {
     try {
       const savedDraft = localStorage.getItem(DRAFT_STORAGE_KEY);
       if (savedDraft) {
         const parsed = JSON.parse(savedDraft);
         if (parsed && typeof parsed === "object") {
-          // Check if draft has any actual content
-          const hasContent = Object.values(parsed).some((val) => typeof val === "string" && val.trim().length > 0 && val !== INITIAL_FORM_DATA.serviceType && val !== INITIAL_FORM_DATA.approxArea);
-          if (hasContent) {
-            setFormData((prev) => ({ ...prev, ...parsed }));
-            setHasRestoredDraft(true);
-          }
+          setFormData((prev) => ({ ...prev, ...parsed }));
         }
       }
     } catch (err) {
@@ -182,18 +175,6 @@ export default function QuoteSection({
     }
   };
 
-  const handleClearDraft = () => {
-    try {
-      localStorage.removeItem(DRAFT_STORAGE_KEY);
-    } catch (e) {
-      console.warn(e);
-    }
-    setFormData(INITIAL_FORM_DATA);
-    setErrors({});
-    setTouched({});
-    setHasRestoredDraft(false);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("idle");
@@ -228,7 +209,6 @@ export default function QuoteSection({
         setFormData(INITIAL_FORM_DATA);
         setTouched({});
         setErrors({});
-        setHasRestoredDraft(false);
       } else {
         setStatus("error");
         setResponseMsg(data.message || "Failed to submit quote request. Please try again or phone us directly.");
@@ -383,23 +363,6 @@ export default function QuoteSection({
                   <span>4-Yr Warranty</span>
                 </div>
               </div>
-
-              {/* Draft Restored Notice */}
-              {hasRestoredDraft && (
-                <div className="p-3 rounded-[6px] bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <RotateCcw className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                    <span>Restored your unsaved quote draft</span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleClearDraft}
-                    className="underline text-amber-900 hover:text-amber-950 font-semibold cursor-pointer ml-2"
-                  >
-                    Clear Draft
-                  </button>
-                </div>
-              )}
 
               {/* Form Status Messages */}
               {status === "success" && (
