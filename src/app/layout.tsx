@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
+import CustomCursor from "@/components/CustomCursor";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://lvtiling.com.au"),
@@ -128,6 +129,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased bg-white text-slate-900 min-h-screen">
+        <CustomCursor />
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
       </body>
     </html>
