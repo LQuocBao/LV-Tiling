@@ -8,7 +8,6 @@ import {
   Mail,
   X,
   ArrowUp,
-  MessageCircle,
 } from "lucide-react";
 import FacebookIcon from "@/components/FacebookIcon";
 
@@ -46,7 +45,7 @@ export default function FloatingContactWidget({
   return (
     <aside aria-label="Quick contact and navigation" className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 pointer-events-auto select-none">
       
-      {/* 1. Synchronized Luxury Scroll To Top Button */}
+      {/* 1. Scroll To Top Button */}
       <AnimatePresence>
         {showScrollTop && (
           <motion.button
@@ -55,7 +54,7 @@ export default function FloatingContactWidget({
             exit={{ opacity: 0, scale: 0.6, y: 20 }}
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
             onClick={scrollToTop}
-            className="w-12 h-12 rounded-2xl bg-slate-900/95 hover:bg-[#dc2626] text-white border border-slate-700 hover:border-red-500 shadow-xl shadow-slate-950/30 backdrop-blur-md flex flex-col items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group hover:shadow-red-600/35 hover:-translate-y-1"
+            className="w-12 h-12 rounded-2xl bg-slate-900/95 hover:bg-[#dc2626] text-white border border-slate-700 hover:border-red-500 shadow-xl shadow-slate-950/30 backdrop-blur-md flex flex-col items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group hover:shadow-red-600/35 hover:-translate-y-1 cursor-pointer"
             aria-label="Scroll smoothly to top"
             title="Back to top"
           >
@@ -82,7 +81,7 @@ export default function FloatingContactWidget({
             }}
             className="w-72 sm:w-80 rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-white mb-2 relative z-50 origin-top"
           >
-            {/* Header with Red Brand Gradient */}
+            {/* Header */}
             <div className="bg-gradient-to-r from-[#dc2626] to-[#b91c1c] text-white p-4">
               <h4 className="font-bold text-base tracking-tight leading-snug">
                 How would you like to contact us?
@@ -115,9 +114,9 @@ export default function FloatingContactWidget({
                 href={facebookUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3.5 p-3 rounded-xl hover:bg-blue-50/60 transition-colors group"
+                className="flex items-center gap-3.5 p-3 rounded-xl hover:bg-red-50/60 transition-colors group"
               >
-                <div className="w-11 h-11 rounded-xl bg-blue-50 text-[#1877f2] flex items-center justify-center flex-shrink-0 group-hover:bg-[#1877f2] group-hover:text-white group-hover:scale-105 transition-all shadow-sm">
+                <div className="w-11 h-11 rounded-xl bg-red-50 text-[#1877f2] flex items-center justify-center flex-shrink-0 group-hover:bg-[#1877f2] group-hover:text-white group-hover:scale-105 transition-all shadow-sm">
                   <FacebookIcon className="w-5 h-5" />
                 </div>
                 <div className="flex flex-col text-left">
@@ -130,25 +129,7 @@ export default function FloatingContactWidget({
                 </div>
               </a>
 
-              {/* 3. SMS Message */}
-              <a
-                href={`sms:${cleanPhone}`}
-                className="flex items-center gap-3.5 p-3 rounded-xl hover:bg-emerald-50/60 transition-colors group"
-              >
-                <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0 group-hover:bg-emerald-600 group-hover:text-white group-hover:scale-105 transition-all shadow-sm">
-                  <MessageCircle className="w-5 h-5" />
-                </div>
-                <div className="flex flex-col text-left">
-                  <span className="text-sm font-bold text-slate-900 group-hover:text-emerald-600 transition-colors leading-tight">
-                    Direct SMS
-                  </span>
-                  <span className="text-xs text-slate-500">
-                    Text for quick photo quote
-                  </span>
-                </div>
-              </a>
-
-              {/* 4. Email us */}
+              {/* 3. Email us */}
               <a
                 href={`mailto:${email}`}
                 className="flex items-center gap-3.5 p-3 rounded-xl hover:bg-amber-50/60 transition-colors group"
@@ -188,7 +169,7 @@ export default function FloatingContactWidget({
         {/* The Main Round Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`relative z-10 w-16 h-16 rounded-full bg-gradient-to-tr from-[#dc2626] to-[#b91c1c] hover:from-[#b91c1c] hover:to-[#991b1b] text-white shadow-xl shadow-red-600/30 flex flex-col items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 ${
+          className={`relative z-10 w-16 h-16 rounded-full bg-gradient-to-tr from-[#dc2626] to-[#b91c1c] hover:from-[#b91c1c] hover:to-[#991b1b] text-white shadow-xl shadow-red-600/30 flex flex-col items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${
             isOpen ? "bg-[#991b1b]" : ""
           }`}
           aria-label={isOpen ? "Close contact options" : "Contact us"}
