@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Phone,
   Mail,
@@ -11,6 +11,8 @@ import {
   AlertCircle,
   ShieldCheck,
   Loader2,
+  Check,
+  RotateCcw,
 } from "lucide-react";
 import FacebookIcon from "@/components/FacebookIcon";
 
@@ -21,37 +23,190 @@ interface QuoteSectionProps {
   facebookUrl?: string;
 }
 
+const DRAFT_STORAGE_KEY = "lvtiling_quote_draft_v1";
+
+const INITIAL_FORM_DATA = {
+  name: "",
+  phone: "",
+  email: "",
+  suburb: "",
+  serviceType: "Completed Jobs photo",
+  approxArea: "20-40 m²",
+  message: "",
+};
+
 export default function QuoteSection({
   phone = "0452 612 336",
   email = "lvotiling@gmail.com",
   address = "130A Crimea street Morley 6062 WA",
   facebookUrl = "https://www.facebook.com/share/lvtiling",
 }: QuoteSectionProps) {
-  const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    suburb: "",
-    serviceType: "Completed Jobs photo",
-    approxArea: "20-40 m²",
-    message: "",
-  });
-
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [hasRestoredDraft, setHasRestoredDraft] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [responseMsg, setResponseMsg] = useState("");
+  const isInitialMount = useRef(true);
+
+  // 1. Restore draft from localStorage on initial load
+  useEffect(() => {
+    try {
+      const savedDraft = localStorage.getItem(DRAFT_STORAGE_KEY);
+      if (savedDraft) {
+        const parsed = JSON.parse(savedDraft);
+        if (parsed && typeof parsed === "object") {
+          // Check if draft has any actual content
+          const hasContent = Object.values(parsed).some((val) => typeof val === "string" && val.trim().length > 0 && val !== INITIAL_FORM_DATA.serviceType && val !== INITIAL_FORM_DATA.approxArea);
+          if (hasContent) {
+            setFormData((prev) => ({ ...prev, ...parsed }));
+            setHasRestoredDraft(true);
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("Could not retrieve quote form draft from localStorage", err);
+    }
+  }, []);
+
+  // 2. Autosave draft to localStorage on form changes
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    try {
+      const hasContent = Object.values(formData).some((val) => typeof val === "string" && val.trim().length > 0);
+      if (hasContent) {
+        localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(formData));
+      }
+    } catch (err) {
+      console.warn("Could not save quote form draft to localStorage", err);
+    }
+  }, [formData]);
+
+  // 3. Validation Logic
+  const validateField = (name: string, value: string): string => {
+    switch (name) {
+      case "name": {
+        const trimmed = value.trim();
+        if (!trimmed) return "Please enter your full name.";
+        if (trimmed.length < 2) return "Name must be at least 2 characters long.";
+        if (!/[a-zA-Z\u00C0-\u024F\u1E00-\u1EFF]/.test(trimmed)) return "Name must contain letters.";
+        return "";
+      }
+      case "phone": {
+        const trimmed = value.trim();
+        if (!trimmed) return "Please enter your mobile or phone number.";
+        // Clean digits
+        const digitsOnly = trimmed.replace(/\D/g, "");
+        if (digitsOnly.length < 8 || digitsOnly.length > 12) {
+          return "Please enter a valid phone number (8 to 12 digits).";
+        }
+        // Australian format: 04xx xxx xxx, 08 xxxx xxxx, +61 4xx, etc.
+        const isAuPhone = /^(?:\+?61|0)[2-478](?:[ -]?[0-9]){7,9}$/.test(trimmed) || digitsOnly.startsWith("04") || digitsOnly.startsWith("614") || digitsOnly.startsWith("08") || digitsOnly.startsWith("618");
+        if (!isAuPhone) {
+          return "Please enter a valid Australian phone number (e.g. 0452 612 336).";
+        }
+        return "";
+      }
+      case "email": {
+        const trimmed = value.trim();
+        if (!trimmed) return ""; // Email is optional, but if provided must be valid
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        if (!emailRegex.test(trimmed)) {
+          return "Please enter a valid email address (e.g. name@example.com).";
+        }
+        return "";
+      }
+      case "suburb": {
+        const trimmed = value.trim();
+        if (!trimmed) return "Please enter your job location or suburb in Perth.";
+        if (trimmed.length < 2) return "Suburb must be at least 2 characters.";
+        return "";
+      }
+      case "serviceType": {
+        if (!value) return "Please select the service required.";
+        return "";
+      }
+      default:
+        return "";
+    }
+  };
+
+  const validateAll = (): boolean => {
+    const newErrors: Record<string, string> = {
+      name: validateField("name", formData.name),
+      phone: validateField("phone", formData.phone),
+      email: validateField("email", formData.email),
+      suburb: validateField("suburb", formData.suburb),
+      serviceType: validateField("serviceType", formData.serviceType),
+    };
+
+    // Filter out empty strings
+    const activeErrors: Record<string, string> = {};
+    let isValid = true;
+    for (const [key, err] of Object.entries(newErrors)) {
+      if (err) {
+        activeErrors[key] = err;
+        isValid = false;
+      }
+    }
+
+    setErrors(activeErrors);
+    setTouched({
+      name: true,
+      phone: true,
+      email: true,
+      suburb: true,
+      serviceType: true,
+      approxArea: true,
+      message: true,
+    });
+
+    return isValid;
+  };
+
+  const handleBlur = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    const error = validateField(field, formData[field as keyof typeof formData]);
+    setErrors((prev) => ({ ...prev, [field]: error }));
+  };
+
+  const handleChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (touched[field]) {
+      const error = validateField(field, value);
+      setErrors((prev) => ({ ...prev, [field]: error }));
+    }
+  };
+
+  const handleClearDraft = () => {
+    try {
+      localStorage.removeItem(DRAFT_STORAGE_KEY);
+    } catch (e) {
+      console.warn(e);
+    }
+    setFormData(INITIAL_FORM_DATA);
+    setErrors({});
+    setTouched({});
+    setHasRestoredDraft(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus("loading");
+    setStatus("idle");
     setResponseMsg("");
 
-    // Australian Phone Validation Check
-    const cleanDigits = formData.phone.replace(/\D/g, "");
-    if (cleanDigits.length < 8 || cleanDigits.length > 12) {
+    const isValid = validateAll();
+    if (!isValid) {
       setStatus("error");
-      setResponseMsg("Please enter a valid phone number (e.g. 0412 345 678).");
+      setResponseMsg("Please resolve the highlighted validation errors before submitting.");
       return;
     }
+
+    setStatus("loading");
 
     try {
       const res = await fetch("/api/quote", {
@@ -64,23 +219,24 @@ export default function QuoteSection({
       if (data.success) {
         setStatus("success");
         setResponseMsg(data.message || "Your quote request has been received! Our Morley trade team will contact you shortly.");
-        setFormData({
-          name: "",
-          phone: "",
-          email: "",
-          suburb: "",
-          serviceType: "Completed Jobs photo",
-          approxArea: "20-40 m²",
-          message: "",
-        });
+        // Clear saved draft from localStorage
+        try {
+          localStorage.removeItem(DRAFT_STORAGE_KEY);
+        } catch (e) {
+          console.warn(e);
+        }
+        setFormData(INITIAL_FORM_DATA);
+        setTouched({});
+        setErrors({});
+        setHasRestoredDraft(false);
       } else {
         setStatus("error");
-        setResponseMsg(data.message || "Failed to submit quote request.");
+        setResponseMsg(data.message || "Failed to submit quote request. Please try again or phone us directly.");
       }
     } catch (err) {
       console.error(err);
       setStatus("error");
-      setResponseMsg("Network error. Please call our direct line at 0452 612 336.");
+      setResponseMsg("Network connection issue. Please phone our direct trade line at 0452 612 336.");
     }
   };
 
@@ -228,6 +384,23 @@ export default function QuoteSection({
                 </div>
               </div>
 
+              {/* Draft Restored Notice */}
+              {hasRestoredDraft && (
+                <div className="p-3 rounded-[6px] bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <RotateCcw className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                    <span>Restored your unsaved quote draft</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleClearDraft}
+                    className="underline text-amber-900 hover:text-amber-950 font-semibold cursor-pointer ml-2"
+                  >
+                    Clear Draft
+                  </button>
+                </div>
+              )}
+
               {/* Form Status Messages */}
               {status === "success" && (
                 <div className="p-3.5 rounded-[6px] bg-emerald-50 border border-emerald-300 text-emerald-900 text-sm flex items-start gap-2.5" role="alert">
@@ -249,75 +422,155 @@ export default function QuoteSection({
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-3.5">
+              <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   {/* Name */}
                   <div className="space-y-1">
-                    <label htmlFor="quote-name" className="text-xs font-semibold text-slate-800 block">
-                      Your Full Name <span className="text-[#dc2626]">*</span>
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label htmlFor="quote-name" className="text-xs font-semibold text-slate-800 block">
+                        Your Full Name <span className="text-[#dc2626]">*</span>
+                      </label>
+                      {touched.name && !errors.name && formData.name.trim() && (
+                        <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-0.5">
+                          <Check className="w-3 h-3" /> Valid
+                        </span>
+                      )}
+                    </div>
                     <input
                       id="quote-name"
                       name="name"
                       type="text"
                       required
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onBlur={() => handleBlur("name")}
+                      onChange={(e) => handleChange("name", e.target.value)}
                       placeholder="e.g. David Morrison"
-                      className="w-full min-h-[44px] px-3.5 py-2.5 rounded-[6px] bg-white border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-[#dc2626] transition-colors"
+                      className={`w-full min-h-[44px] px-3.5 py-2.5 rounded-[6px] bg-white border text-slate-900 text-sm focus:outline-none transition-colors ${
+                        touched.name && errors.name
+                          ? "border-red-500 bg-red-50/20 focus:border-red-600"
+                          : touched.name && formData.name.trim()
+                          ? "border-emerald-500 focus:border-emerald-600"
+                          : "border-slate-300 focus:border-[#dc2626]"
+                      }`}
                     />
+                    {touched.name && errors.name && (
+                      <p className="text-xs text-red-600 flex items-center gap-1 mt-1 font-medium">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{errors.name}</span>
+                      </p>
+                    )}
                   </div>
 
                   {/* Phone */}
                   <div className="space-y-1">
-                    <label htmlFor="quote-phone" className="text-xs font-semibold text-slate-800 block">
-                      Mobile Number <span className="text-[#dc2626]">*</span>
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label htmlFor="quote-phone" className="text-xs font-semibold text-slate-800 block">
+                        Mobile Number <span className="text-[#dc2626]">*</span>
+                      </label>
+                      {touched.phone && !errors.phone && formData.phone.trim() && (
+                        <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-0.5">
+                          <Check className="w-3 h-3" /> Valid
+                        </span>
+                      )}
+                    </div>
                     <input
                       id="quote-phone"
                       name="phone"
                       type="tel"
                       required
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      placeholder="e.g. 0412 345 678"
-                      className="w-full min-h-[44px] px-3.5 py-2.5 rounded-[6px] bg-white border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-[#dc2626] transition-colors"
+                      onBlur={() => handleBlur("phone")}
+                      onChange={(e) => handleChange("phone", e.target.value)}
+                      placeholder="e.g. 0452 612 336"
+                      className={`w-full min-h-[44px] px-3.5 py-2.5 rounded-[6px] bg-white border text-slate-900 text-sm focus:outline-none transition-colors ${
+                        touched.phone && errors.phone
+                          ? "border-red-500 bg-red-50/20 focus:border-red-600"
+                          : touched.phone && formData.phone.trim()
+                          ? "border-emerald-500 focus:border-emerald-600"
+                          : "border-slate-300 focus:border-[#dc2626]"
+                      }`}
                     />
+                    {touched.phone && errors.phone && (
+                      <p className="text-xs text-red-600 flex items-center gap-1 mt-1 font-medium">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{errors.phone}</span>
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   {/* Email */}
                   <div className="space-y-1">
-                    <label htmlFor="quote-email" className="text-xs font-semibold text-slate-800 block">
-                      Email Address
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label htmlFor="quote-email" className="text-xs font-semibold text-slate-800 block">
+                        Email Address <span className="text-slate-400 font-normal">(Optional)</span>
+                      </label>
+                      {touched.email && !errors.email && formData.email.trim() && (
+                        <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-0.5">
+                          <Check className="w-3 h-3" /> Valid
+                        </span>
+                      )}
+                    </div>
                     <input
                       id="quote-email"
                       name="email"
                       type="email"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onBlur={() => handleBlur("email")}
+                      onChange={(e) => handleChange("email", e.target.value)}
                       placeholder="e.g. david@gmail.com"
-                      className="w-full min-h-[44px] px-3.5 py-2.5 rounded-[6px] bg-white border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-[#dc2626] transition-colors"
+                      className={`w-full min-h-[44px] px-3.5 py-2.5 rounded-[6px] bg-white border text-slate-900 text-sm focus:outline-none transition-colors ${
+                        touched.email && errors.email
+                          ? "border-red-500 bg-red-50/20 focus:border-red-600"
+                          : touched.email && formData.email.trim()
+                          ? "border-emerald-500 focus:border-emerald-600"
+                          : "border-slate-300 focus:border-[#dc2626]"
+                      }`}
                     />
+                    {touched.email && errors.email && (
+                      <p className="text-xs text-red-600 flex items-center gap-1 mt-1 font-medium">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{errors.email}</span>
+                      </p>
+                    )}
                   </div>
 
                   {/* Suburb */}
                   <div className="space-y-1">
-                    <label htmlFor="quote-suburb" className="text-xs font-semibold text-slate-800 block">
-                      Job Location / Suburb <span className="text-[#dc2626]">*</span>
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label htmlFor="quote-suburb" className="text-xs font-semibold text-slate-800 block">
+                        Job Location / Suburb <span className="text-[#dc2626]">*</span>
+                      </label>
+                      {touched.suburb && !errors.suburb && formData.suburb.trim() && (
+                        <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-0.5">
+                          <Check className="w-3 h-3" /> Valid
+                        </span>
+                      )}
+                    </div>
                     <input
                       id="quote-suburb"
                       name="suburb"
                       type="text"
                       required
                       value={formData.suburb}
-                      onChange={(e) => setFormData({ ...formData, suburb: e.target.value })}
+                      onBlur={() => handleBlur("suburb")}
+                      onChange={(e) => handleChange("suburb", e.target.value)}
                       placeholder="e.g. Morley, WA 6062"
-                      className="w-full min-h-[44px] px-3.5 py-2.5 rounded-[6px] bg-white border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-[#dc2626] transition-colors"
+                      className={`w-full min-h-[44px] px-3.5 py-2.5 rounded-[6px] bg-white border text-slate-900 text-sm focus:outline-none transition-colors ${
+                        touched.suburb && errors.suburb
+                          ? "border-red-500 bg-red-50/20 focus:border-red-600"
+                          : touched.suburb && formData.suburb.trim()
+                          ? "border-emerald-500 focus:border-emerald-600"
+                          : "border-slate-300 focus:border-[#dc2626]"
+                      }`}
                     />
+                    {touched.suburb && errors.suburb && (
+                      <p className="text-xs text-red-600 flex items-center gap-1 mt-1 font-medium">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{errors.suburb}</span>
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -325,13 +578,14 @@ export default function QuoteSection({
                   {/* Service Type with explicit associated Label */}
                   <div className="space-y-1">
                     <label htmlFor="quote-service-type" className="text-xs font-semibold text-slate-800 block">
-                      Primary Service Required
+                      Primary Service Required <span className="text-[#dc2626]">*</span>
                     </label>
                     <select
                       id="quote-service-type"
                       name="serviceType"
                       value={formData.serviceType}
-                      onChange={(e) => setFormData({ ...formData, serviceType: e.target.value })}
+                      onBlur={() => handleBlur("serviceType")}
+                      onChange={(e) => handleChange("serviceType", e.target.value)}
                       className="w-full min-h-[44px] px-3.5 py-2.5 rounded-[6px] bg-white border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-[#dc2626] transition-colors cursor-pointer"
                     >
                       <option value="Completed Jobs photo">Completed Jobs photo</option>
@@ -353,7 +607,7 @@ export default function QuoteSection({
                       id="quote-approx-area"
                       name="approxArea"
                       value={formData.approxArea}
-                      onChange={(e) => setFormData({ ...formData, approxArea: e.target.value })}
+                      onChange={(e) => handleChange("approxArea", e.target.value)}
                       className="w-full min-h-[44px] px-3.5 py-2.5 rounded-[6px] bg-white border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-[#dc2626] transition-colors cursor-pointer"
                     >
                       <option value="Under 15 m² (Small Ensuite)">Under 15 m² (Small Ensuite)</option>
@@ -375,7 +629,7 @@ export default function QuoteSection({
                     name="message"
                     rows={3}
                     value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    onChange={(e) => handleChange("message", e.target.value)}
                     placeholder="e.g. 600x1200 porcelain tiles, need screeding to fall for walk-in shower, ready to start next month..."
                     className="w-full px-3.5 py-2.5 rounded-[6px] bg-white border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-[#dc2626] transition-colors resize-none"
                   />
