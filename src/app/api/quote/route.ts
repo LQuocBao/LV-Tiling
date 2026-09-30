@@ -45,8 +45,22 @@ export async function POST(request: Request) {
           }),
         }).catch((err) => console.warn("Google Sheet webhook dispatch error:", err));
       }
+
+      // Send Two-Way Email Notifications (Admin alert + Customer confirmation)
+      if (settings.emailNotificationsEnabled !== false) {
+        import("@/lib/email").then(async ({ sendAdminLeadNotification, sendCustomerConfirmationEmail }) => {
+          try {
+            await sendAdminLeadNotification(newLead, settings);
+            if (newLead.email) {
+              await sendCustomerConfirmationEmail(newLead, settings);
+            }
+          } catch (e) {
+            console.error("Email notification dispatch error:", e);
+          }
+        });
+      }
     } catch (sheetErr) {
-      console.warn("Failed to check Google Sheet settings:", sheetErr);
+      console.warn("Failed to check notification settings:", sheetErr);
     }
 
     return NextResponse.json({

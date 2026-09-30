@@ -11,6 +11,13 @@ export interface SiteSettings {
   marqueeAnnouncement: string;
   warrantyYears: number;
   googleSheetWebhookUrl?: string;
+  emailNotificationsEnabled?: boolean;
+  smtpHost?: string;
+  smtpPort?: number;
+  smtpUser?: string;
+  smtpPass?: string;
+  adminNotificationEmail?: string;
+  emailFromName?: string;
 }
 
 export interface ServiceItem {
@@ -71,6 +78,13 @@ export const defaultSettings: SiteSettings = {
   marqueeAnnouncement: "4-Year Comprehensive Workmanship Warranty · AS 3958.1 & AS 3740 Compliant · Laser Leveling Guarantee · Perth & Morley WA · Call Now: 0452 612 336",
   warrantyYears: 4,
   googleSheetWebhookUrl: "",
+  emailNotificationsEnabled: true,
+  smtpHost: "smtp.gmail.com",
+  smtpPort: 465,
+  smtpUser: "",
+  smtpPass: "",
+  adminNotificationEmail: "lvotiling@gmail.com",
+  emailFromName: "LV Tiling Pty Ltd",
 };
 
 export const defaultServices: ServiceItem[] = [
