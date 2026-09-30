@@ -31,6 +31,7 @@ export interface GalleryItem {
   location: string;
   tileType: string;
   aspect?: string;
+  description?: string;
 }
 
 export interface TestimonialItem {
@@ -72,189 +73,722 @@ export const defaultSettings: SiteSettings = {
 
 export const defaultServices: ServiceItem[] = [
   {
-    id: "bathroom-renovations",
-    title: "Luxury Bathroom & Shower Tiling",
-    shortDesc: "Complete wet-area tiling with dual-layer waterproofing to AS 3740, recessed niches, and engineered falls to strip drains.",
-    fullDesc: "From custom walk-in showers and mitred tile niches to freestanding bath backdrops, we handle critical workshop preparation, precision screeding, and certified waterproofing to guarantee 100% leak-proof durability.",
-    features: ["Custom walk-in showers & recessed niches", "AS 3740 certified dual waterproof membrane", "45-degree hand-mitred external corners", "Mould-resistant ARDEX epoxy grout & silicone"],
-    icon: "Droplets",
-    image: "/media/3dc6ea8d-6e0b-4b8b-a3a6-a3c01bd0cf61.jpg",
-    badge: "Most Popular",
+    id: "completed-jobs",
+    title: "Completed Jobs photo",
+    shortDesc: "Real completed bathroom, ensuite, and floor tiling transformations delivered across Perth with meticulous finish and laser-flat alignment.",
+    fullDesc: "From residential master suites to luxury renovations, every project demonstrates our master trade capability, clean lines, and strict adherence to Australian Standards.",
+    features: [
+      "Laser-aligned zero-lippage floor & wall tiling",
+      "Consistent grout joints with mould-proof ARDEX finishes",
+      "4-year comprehensive workmanship warranty",
+      "High-grade porcelain, ceramic & natural stone",
+    ],
+    icon: "Award",
+    image: "/media/completed/completed_21.jpg",
+    badge: "Master Craft",
   },
   {
-    id: "floor-tiling",
-    title: "Precision Floor Tiling & Lippage Tuning",
-    shortDesc: "Specialist installation of large-format porcelain, marble, and terrazzo with mechanical tile leveling clips for zero-lippage.",
-    fullDesc: "Our master tilers utilize advanced laser leveling clips and mechanical vibration systems to ensure completely flat, mirror-grade floor surfaces conforming to Australian Standard AS 3958.1.",
-    features: ["Large-format tiles up to 1200x2400mm", "Laser-guided sub-millimeter leveling clips", "Acoustic underlayment & movement joints", "Rectified edge & symmetrical alignment"],
-    icon: "Grid",
-    image: "/media/b2c368ec-a5fa-4bc3-80d3-dd10d8880563.jpg",
-    badge: "Zero-Lippage Guarantee",
-  },
-  {
-    id: "master-ensuites",
-    title: "Master Ensuite & Freestanding Bath Suites",
-    shortDesc: "Architectural bathroom renovations featuring freestanding bathtubs, fluted glass screens, timber vanities, and feature walls.",
-    fullDesc: "We bring your luxury vision for your living space to life. Turnkey bathroom transformations executed with direct trade craftsmanship in Perth and Morley.",
-    features: ["Freestanding bath surrounds & plumbing drops", "Full-height porcelain slab feature walls", "Fluted glass and custom timber vanity integration", "Direct trade execution with full warranty"],
+    id: "flashbacks",
+    title: "Flashbacks",
+    shortDesc: "In-depth documentation of project milestones, critical trade stages, and architectural before-and-after progressions.",
+    fullDesc: "We capture step-by-step progress to give clients complete peace of mind, demonstrating transparency from initial substrate prep to the final sparkle.",
+    features: [
+      "Multi-stage photographic progress logs",
+      "Complete subfloor restoration & prep checks",
+      "Before-and-after structural transformation",
+      "Proven quality track record across Western Australia",
+    ],
     icon: "Sparkles",
-    image: "/media/9935903f-3f4e-4182-8197-19e2a50fa065.jpg",
-    badge: "Architectural Finish",
-  },
-  {
-    id: "waterproofing-systems",
-    title: "Certified AS 3740 Wet Area Waterproofing",
-    shortDesc: "Multi-stage wet-area protection with flexible polyurethane movement joints and Laticrete Hydro Ban seamless membrane.",
-    fullDesc: "Waterproofing is the foundation of a watertight space. We seal all corners, floor-wall junctions, and internal expansion joints to ensure 100% structural leak prevention.",
-    features: ["Step 1: Bostik polyurethane movement joint sealing", "Step 2 & 3: Laticrete Hydro Ban dual-coat membrane", "Reinforced internal corners & screeded floors", "Strict AS 3740 quality control & compliance"],
-    icon: "Shield",
-    image: "/media/6e383397-b70c-4113-841d-944e65dc8341.jpg",
-    badge: "AS 3740 Certified",
+    image: "/media/flashbacks/flashbacks_1.jpg",
+    badge: "Proven Track Record",
   },
   {
     id: "screeding-prep",
-    title: "Floor Screeding & Substrate Engineering",
-    shortDesc: "Laser-engineered sand & cement screeds, polymer bonding slurries, and precision 1:60 falls to strip drains to AS 3958.1.",
-    fullDesc: "The base that defines the result. We establish strong, stable foundations with precise engineered screeding to prevent water pooling and ensure a flawless floor finish.",
-    features: ["Engineered 1:60 falls to strip drains & waste", "Polymer bonding slurry prior to screeding", "Substrate leveling meeting AS 3958.1", "High compression strength & fast-cure formulas"],
+    title: "Screeding and prep",
+    shortDesc: "Engineered sand & cement screeding with precise 1:60 falls to strip drains, polymer slurry bonding, and laser leveling.",
+    fullDesc: "A flawless tile finish starts beneath the surface. We engineer high-strength screeds with polymer bonding slurries that prevent water pooling and substrate cracking.",
+    features: [
+      "Engineered 1:60 falls to strip drains & puddle flanges",
+      "Polymer bonding slurry prior to screeding",
+      "Laser-leveled substrate meeting AS 3958.1",
+      "High compression strength & fast-cure formulas",
+    ],
     icon: "Layers",
-    image: "/media/9cdbf6fa-1c42-4cd0-8841-e812ade2af6f.jpg",
-    badge: "Engineered Falls",
+    image: "/media/screeding/screeding_1.jpg",
+    badge: "AS 3958.1 Compliant",
   },
   {
-    id: "edge-detailing",
-    title: "Architectural Trims & Natural Stone Sealing",
-    shortDesc: "Refined metal tile trims, seamless hand-mitred joints, and Tenax surface treatment for long-term stone protection.",
-    fullDesc: "Tile trims protect exposed edges and create clean, straight lines, while Tenax sealers enhance natural stone colour and protect against moisture and staining.",
-    features: ["Hand-crafted 45-degree mitred tile edges", "Tenax protective sealing for marble & travertine", "ARDEX sanitary silicone expansion seals", "Niches, windowsills & architectural features"],
-    icon: "Wrench",
-    image: "/media/bec463cc-8470-4967-a0ff-f2d23ad49bf4.jpg",
-    badge: "Master Detailing",
+    id: "polyurethane-primer",
+    title: "Polyurethane and Primer",
+    shortDesc: "Eco Prim Grip mechanical bonding primers and heavy-duty Bostik polyurethane joint sealants for movement-proof wet areas.",
+    fullDesc: "Proper priming and elastic joint expansion sealing prevent tile debonding and cracking caused by structural deflection and temperature changes.",
+    features: [
+      "Eco Prim Grip rough mechanical key primer",
+      "Bostik polyurethane expansion joint sealing",
+      "Accommodates building movement & thermal shifts",
+      "Superior adhesion over porous & non-porous substrates",
+    ],
+    icon: "Droplets",
+    image: "/media/polyurethane/polyurethane_1.jpeg",
+    badge: "Advanced Bonding",
+  },
+  {
+    id: "shower-bandages",
+    title: "Shower Bandages",
+    shortDesc: "High-tensile elastomeric waterproof reinforcing tape and corner bandages bridging all critical joints and wall-floor intersections.",
+    fullDesc: "Crucial reinforcement installed at high-stress internal corners and transition joints to ensure the waterproof membrane remains intact under settlement.",
+    features: [
+      "Heavy-duty elastomeric waterproof bandages",
+      "Complete internal corner & joint bridging",
+      "Prevents rupture during building settlement",
+      "Dual-coat liquid membrane encapsulation",
+    ],
+    icon: "Shield",
+    image: "/media/bandages/bandages_1.jpeg",
+    badge: "Critical Joint Seal",
+  },
+  {
+    id: "waterproof",
+    title: "Waterproof",
+    shortDesc: "Certified AS 3740 wet area waterproofing with Laticrete Hydro Ban dual-coat membrane, guaranteed for 20 years lifetime protection.",
+    fullDesc: "Waterproofing is the core foundation of every bathroom. We apply certified dual-layer membranes tested to strict Australian building codes.",
+    features: [
+      "LATICRETE® Hydro Ban® seamless liquid membrane",
+      "100% Australian Standard AS 3740 compliance",
+      "Guarantee 20 years life-time waterproofing",
+      "Full photo & video compliance documentation",
+    ],
+    icon: "Droplets",
+    image: "/media/waterproof/waterproof_1.jpg",
+    badge: "AS 3740 Certified",
+  },
+  {
+    id: "tennax-seal",
+    title: "tennax seal",
+    shortDesc: "Premium Tenax surface treatments and protective penetrating sealers for marble, travertine, granite, and natural stone installations.",
+    fullDesc: "Protects delicate natural stone pores against stains, water ingress, and discoloration while enhancing the rich natural grain and color.",
+    features: [
+      "Tenax deep-penetrating stone sealer",
+      "Long-term moisture, oil & stain resistance",
+      "Enhances natural stone colour & veining depth",
+      "Preserves tile breathability & durable luster",
+    ],
+    icon: "Sun",
+    image: "/media/tennax/tennax_1.jpg",
+    badge: "Stone Protection",
   },
 ];
 
 // All 15 authentic slides and craftsmanship images provided by LV Tiling
 export const defaultGallery: GalleryItem[] = [
   {
-    id: "gal-1",
-    title: "Master Ensuite with Freestanding Bathtub",
-    category: "bathroom",
-    image: "/media/9935903f-3f4e-4182-8197-19e2a50fa065.jpg",
-    location: "Morley, WA",
-    tileType: "Freestanding Oval Bath, Fluted Screen & Porcelain Suite",
+    "id": "gal-1",
+    "title": "1200 x 600 mixed match",
+    "category": "completed",
+    "image": "/media/completed/completed_1.jpg",
+    "location": "Dianella, WA",
+    "tileType": "Completed Job - Premium Finish"
   },
   {
-    id: "gal-2",
-    title: "Walk-in Showers with Recessed Niches & Strip Drains",
-    category: "bathroom",
-    image: "/media/3dc6ea8d-6e0b-4b8b-a3a6-a3c01bd0cf61.jpg",
-    location: "Perth, WA",
-    tileType: "ARDEX SE Sanitary Silicone & ARDEX FG 8 Grout Detailing",
+    "id": "gal-2",
+    "title": "1200x600 Grey marble floor, joint matching",
+    "category": "completed",
+    "image": "/media/completed/completed_2.jpg",
+    "location": "Bayswater, WA",
+    "tileType": "Completed Job - Premium Finish"
   },
   {
-    id: "gal-3",
-    title: "Where Design Meets Precision - Tile Levelling System",
-    category: "craftsmanship",
-    image: "/media/b2c368ec-a5fa-4bc3-80d3-dd10d8880563.jpg",
-    location: "Dianella, WA",
-    tileType: "Precision Tile Clips for Symmetrical Zero-Lippage Finish",
+    "id": "gal-3",
+    "title": "1200x600 Shower seat feature",
+    "category": "completed",
+    "image": "/media/completed/completed_3.jpg",
+    "location": "Inglewood, WA",
+    "tileType": "Completed Job - Premium Finish"
   },
   {
-    id: "gal-4",
-    title: "Refined Edge Trims & Clean Straight Lines",
-    category: "craftsmanship",
-    image: "/media/bfb0c196-58dc-4d1a-bb98-bff12d0915b0.jpg",
-    location: "Bayswater, WA",
-    tileType: "Architectural Tile Trims for Exposed Edges & Corner Durability",
+    "id": "gal-4",
+    "title": "300x600 Beige marble around bathtub 1",
+    "category": "completed",
+    "image": "/media/completed/completed_4.jpg",
+    "location": "Mount Lawley, WA",
+    "tileType": "Completed Job - Premium Finish"
   },
   {
-    id: "gal-5",
-    title: "Tenax Surface Treatment & Natural Stone Sealing",
-    category: "craftsmanship",
-    image: "/media/bec463cc-8470-4967-a0ff-f2d23ad49bf4.jpg",
-    location: "Mount Lawley, WA",
-    tileType: "Tenax Enhancer & Stain Sealer for Niches, Windowsills & Stone",
+    "id": "gal-5",
+    "title": "300x600 Beige marble around bathtub 2",
+    "category": "completed",
+    "image": "/media/completed/completed_5.jpg",
+    "location": "Bedford, WA",
+    "tileType": "Completed Job - Premium Finish"
   },
   {
-    id: "gal-6",
-    title: "Step 1: Flexible Polyurethane Movement Joint Sealing",
-    category: "waterproofing",
-    image: "/media/4fb93e8c-0742-47e4-80f2-4088788b18de.jpg",
-    location: "Morley, WA",
-    tileType: "Bostik Seal'n'Flex 1 Movement Joint & Corner Sealing (AS 3740)",
+    "id": "gal-6",
+    "title": "300x600 Beige marble looks",
+    "category": "completed",
+    "image": "/media/completed/completed_6.jpg",
+    "location": "Perth, WA",
+    "tileType": "Completed Job - Premium Finish"
   },
   {
-    id: "gal-7",
-    title: "Step 2: Hydro Ban Waterproofing System Application",
-    category: "waterproofing",
-    image: "/media/6e383397-b70c-4113-841d-944e65dc8341.jpg",
-    location: "Inglewood, WA",
-    tileType: "Seamless Flexible Membrane on Screeded Floors & Gyprock",
+    "id": "gal-7",
+    "title": "300x600 Grey tiles with nib wall setup",
+    "category": "completed",
+    "image": "/media/completed/completed_7.jpg",
+    "location": "Maylands, WA",
+    "tileType": "Completed Job - Premium Finish"
   },
   {
-    id: "gal-8",
-    title: "Step 3: Two-Coat System for Maximum Coverage",
-    category: "waterproofing",
-    image: "/media/49c4380f-b1a6-4335-8e6c-ec22a3d47da0.jpg",
-    location: "Bedford, WA",
-    tileType: "Multi-Coat Wet Area Waterproofing to Australian Standard AS 3740",
+    "id": "gal-8",
+    "title": "300x600 Light brown marble, feature border 1",
+    "category": "completed",
+    "image": "/media/completed/completed_8.jpg",
+    "location": "Morley, WA",
+    "tileType": "Completed Job - Premium Finish"
   },
   {
-    id: "gal-9",
-    title: "The Base That Defines The Result: Engineered Screeding",
-    category: "screeding",
-    image: "/media/9cdbf6fa-1c42-4cd0-8841-e812ade2af6f.jpg",
-    location: "Perth, WA",
-    tileType: "Laser Screeding for Optimal Levelness & Falls to Waste (AS 3958.1)",
+    "id": "gal-9",
+    "title": "300x600 Light brown marble, feature border 2",
+    "category": "completed",
+    "image": "/media/completed/completed_9.jpg",
+    "location": "Dianella, WA",
+    "tileType": "Completed Job - Premium Finish"
   },
   {
-    id: "gal-10",
-    title: "Bonding Slurry Application Prior to Floor Screeding",
-    category: "screeding",
-    image: "/media/a9f91438-b2d3-4a0d-895d-744cd1fd8569.jpg",
-    location: "Maylands, WA",
-    tileType: "Polymer-Modified Adhesive Slurry for Maximum Slab Adhesion",
+    "id": "gal-10",
+    "title": "600x600 full height, ceiling tile borders",
+    "category": "completed",
+    "image": "/media/completed/completed_10.jpg",
+    "location": "Bayswater, WA",
+    "tileType": "Completed Job - Premium Finish"
   },
   {
-    id: "gal-11",
-    title: "Shower Wall Preparation & Substrate Remediation",
-    category: "screeding",
-    image: "/media/34bdf219-c1c5-410a-a1a1-a140f08a4f87.jpg",
-    location: "Morley, WA",
-    tileType: "Surface Scraping & Priming for Flat Base Adhesive Performance",
+    "id": "gal-11",
+    "title": "Big Platform tiles shower only 3200x1600",
+    "category": "completed",
+    "image": "/media/completed/completed_11.jpg",
+    "location": "Inglewood, WA",
+    "tileType": "Completed Job - Premium Finish"
   },
   {
-    id: "gal-12",
-    title: "Eco Prim Grip Mechanical Bonding for Non-Porous Surfaces",
-    category: "screeding",
-    image: "/media/9c19a153-828a-4937-abf2-b1a56ca85e56.jpg",
-    location: "North Perth, WA",
-    tileType: "Rough Mechanical Key Bonding Layer for Tiles, Metal & Paint",
+    "id": "gal-12",
+    "title": "Black subway tiles feature",
+    "category": "completed",
+    "image": "/media/completed/completed_12.jpg",
+    "location": "Mount Lawley, WA",
+    "tileType": "Completed Job - Premium Finish"
   },
   {
-    id: "gal-13",
-    title: "Ardex Multiprimer Sealing for Porous Render Walls",
-    category: "screeding",
-    image: "/media/b20b1850-4d2c-45bd-a9e9-02f4ab943916.jpg",
-    location: "Osborne Park, WA",
-    tileType: "Deep Penetration Sealer for Dusty & Absorbent Masonry Walls",
+    "id": "gal-13",
+    "title": "Feature shower with lighting effects",
+    "category": "completed",
+    "image": "/media/completed/completed_13.jpg",
+    "location": "Bedford, WA",
+    "tileType": "Completed Job - Premium Finish"
   },
   {
-    id: "gal-14",
-    title: "More Than Just Tiling: Company Standards & Values",
-    category: "standards",
-    image: "/media/e9d95888-ee09-466c-884e-f2c1a8519b64.jpg",
-    location: "Perth & Morley, WA",
-    tileType: "Transparent Process, Respect for Space & Durable Craftsmanship",
+    "id": "gal-14",
+    "title": "Marble 600x600 full height",
+    "category": "completed",
+    "image": "/media/completed/completed_14.jpg",
+    "location": "Perth, WA",
+    "tileType": "Completed Job - Premium Finish"
   },
   {
-    id: "gal-15",
-    title: "4-Year Comprehensive Workmanship Warranty Certificate",
-    category: "standards",
-    image: "/media/fc906945-b180-444b-b818-7f0a709dc091.jpg",
-    location: "Morley Workshop, WA",
-    tileType: "Guaranteed Workmanship & Multi-Stage Video/Photo Documentation",
+    "id": "gal-15",
+    "title": "Completed Job #15",
+    "category": "completed",
+    "image": "/media/completed/completed_15.jpg",
+    "location": "Maylands, WA",
+    "tileType": "Completed Job - Premium Finish"
   },
+  {
+    "id": "gal-16",
+    "title": "Completed Job #16",
+    "category": "completed",
+    "image": "/media/completed/completed_16.jpg",
+    "location": "Morley, WA",
+    "tileType": "Completed Job - Premium Finish"
+  },
+  {
+    "id": "gal-17",
+    "title": "Completed Job #17",
+    "category": "completed",
+    "image": "/media/completed/completed_17.jpg",
+    "location": "Dianella, WA",
+    "tileType": "Completed Job - Premium Finish"
+  },
+  {
+    "id": "gal-18",
+    "title": "Completed Job #18",
+    "category": "completed",
+    "image": "/media/completed/completed_18.jpg",
+    "location": "Bayswater, WA",
+    "tileType": "Completed Job - Premium Finish"
+  },
+  {
+    "id": "gal-19",
+    "title": "Completed Job #19",
+    "category": "completed",
+    "image": "/media/completed/completed_19.jpg",
+    "location": "Inglewood, WA",
+    "tileType": "Completed Job - Premium Finish"
+  },
+  {
+    "id": "gal-20",
+    "title": "Completed Job #20",
+    "category": "completed",
+    "image": "/media/completed/completed_20.jpg",
+    "location": "Mount Lawley, WA",
+    "tileType": "Completed Job - Premium Finish"
+  },
+  {
+    "id": "gal-21",
+    "title": "Completed Job #21",
+    "category": "completed",
+    "image": "/media/completed/completed_21.jpg",
+    "location": "Bedford, WA",
+    "tileType": "Completed Job - Premium Finish"
+  },
+  {
+    "id": "gal-22",
+    "title": "Completed Job #22",
+    "category": "completed",
+    "image": "/media/completed/completed_22.jpg",
+    "location": "Perth, WA",
+    "tileType": "Completed Job - Premium Finish"
+  },
+  {
+    "id": "gal-23",
+    "title": "Completed Job #23",
+    "category": "completed",
+    "image": "/media/completed/completed_23.jpg",
+    "location": "Maylands, WA",
+    "tileType": "Completed Job - Premium Finish"
+  },
+  {
+    "id": "gal-24",
+    "title": "Completed Job #24",
+    "category": "completed",
+    "image": "/media/completed/completed_24.jpg",
+    "location": "Morley, WA",
+    "tileType": "Completed Job - Premium Finish"
+  },
+  {
+    "id": "gal-25",
+    "title": "Timber tiles 1200x200 mixed matach",
+    "category": "completed",
+    "image": "/media/completed/completed_25.jpg",
+    "location": "Dianella, WA",
+    "tileType": "Completed Job - Premium Finish"
+  },
+  {
+    "id": "gal-26",
+    "title": "300x600 Grey marble with green subway tiles",
+    "category": "flashbacks",
+    "image": "/media/flashbacks/flashbacks_1.jpg",
+    "location": "Bayswater, WA",
+    "tileType": "Flashback Project - Premium Finish"
+  },
+  {
+    "id": "gal-27",
+    "title": "Flashback Project #2",
+    "category": "flashbacks",
+    "image": "/media/flashbacks/flashbacks_2.jpg",
+    "location": "Inglewood, WA",
+    "tileType": "Flashback Project - Premium Finish"
+  },
+  {
+    "id": "gal-28",
+    "title": "Flashback Project #3",
+    "category": "flashbacks",
+    "image": "/media/flashbacks/flashbacks_3.jpg",
+    "location": "Mount Lawley, WA",
+    "tileType": "Flashback Project - Premium Finish"
+  },
+  {
+    "id": "gal-29",
+    "title": "Flashback Project #4",
+    "category": "flashbacks",
+    "image": "/media/flashbacks/flashbacks_4.jpg",
+    "location": "Bedford, WA",
+    "tileType": "Flashback Project - Premium Finish"
+  },
+  {
+    "id": "gal-30",
+    "title": "Flashback Project #5",
+    "category": "flashbacks",
+    "image": "/media/flashbacks/flashbacks_5.jpg",
+    "location": "Perth, WA",
+    "tileType": "Flashback Project - Premium Finish"
+  },
+  {
+    "id": "gal-31",
+    "title": "Screeding & Substrate Prep #1",
+    "category": "screeding",
+    "image": "/media/screeding/screeding_1.jpg",
+    "location": "Maylands, WA",
+    "tileType": "Screeding & Substrate Prep - Premium Finish"
+  },
+  {
+    "id": "gal-32",
+    "title": "Screeding & Substrate Prep #2",
+    "category": "screeding",
+    "image": "/media/screeding/screeding_2.jpg",
+    "location": "Morley, WA",
+    "tileType": "Screeding & Substrate Prep - Premium Finish"
+  },
+  {
+    "id": "gal-33",
+    "title": "Screeding & Substrate Prep #3",
+    "category": "screeding",
+    "image": "/media/screeding/screeding_3.jpg",
+    "location": "Dianella, WA",
+    "tileType": "Screeding & Substrate Prep - Premium Finish"
+  },
+  {
+    "id": "gal-34",
+    "title": "Screeding & Substrate Prep #4",
+    "category": "screeding",
+    "image": "/media/screeding/screeding_4.jpg",
+    "location": "Bayswater, WA",
+    "tileType": "Screeding & Substrate Prep - Premium Finish"
+  },
+  {
+    "id": "gal-35",
+    "title": "Screeding & Substrate Prep #5",
+    "category": "screeding",
+    "image": "/media/screeding/screeding_5.jpg",
+    "location": "Inglewood, WA",
+    "tileType": "Screeding & Substrate Prep - Premium Finish"
+  },
+  {
+    "id": "gal-36",
+    "title": "Screeding & Substrate Prep #6",
+    "category": "screeding",
+    "image": "/media/screeding/screeding_6.jpg",
+    "location": "Mount Lawley, WA",
+    "tileType": "Screeding & Substrate Prep - Premium Finish"
+  },
+  {
+    "id": "gal-37",
+    "title": "Screeding & Substrate Prep #7",
+    "category": "screeding",
+    "image": "/media/screeding/screeding_7.jpg",
+    "location": "Bedford, WA",
+    "tileType": "Screeding & Substrate Prep - Premium Finish"
+  },
+  {
+    "id": "gal-38",
+    "title": "Screeding & Substrate Prep #8",
+    "category": "screeding",
+    "image": "/media/screeding/screeding_8.jpg",
+    "location": "Perth, WA",
+    "tileType": "Screeding & Substrate Prep - Premium Finish"
+  },
+  {
+    "id": "gal-39",
+    "title": "Screeding & Substrate Prep #9",
+    "category": "screeding",
+    "image": "/media/screeding/screeding_9.jpg",
+    "location": "Maylands, WA",
+    "tileType": "Screeding & Substrate Prep - Premium Finish"
+  },
+  {
+    "id": "gal-40",
+    "title": "Screeding & Substrate Prep #10",
+    "category": "screeding",
+    "image": "/media/screeding/screeding_10.jpg",
+    "location": "Morley, WA",
+    "tileType": "Screeding & Substrate Prep - Premium Finish"
+  },
+  {
+    "id": "gal-41",
+    "title": "Polyurethane & Primer #1",
+    "category": "polyurethane",
+    "image": "/media/polyurethane/polyurethane_1.jpeg",
+    "location": "Dianella, WA",
+    "tileType": "Polyurethane & Primer - Premium Finish"
+  },
+  {
+    "id": "gal-42",
+    "title": "Polyurethane & Primer #2",
+    "category": "polyurethane",
+    "image": "/media/polyurethane/polyurethane_2.jpeg",
+    "location": "Bayswater, WA",
+    "tileType": "Polyurethane & Primer - Premium Finish"
+  },
+  {
+    "id": "gal-43",
+    "title": "Polyurethane & Primer #3",
+    "category": "polyurethane",
+    "image": "/media/polyurethane/polyurethane_3.jpeg",
+    "location": "Inglewood, WA",
+    "tileType": "Polyurethane & Primer - Premium Finish"
+  },
+  {
+    "id": "gal-44",
+    "title": "Polyurethane & Primer #4",
+    "category": "polyurethane",
+    "image": "/media/polyurethane/polyurethane_4.jpeg",
+    "location": "Mount Lawley, WA",
+    "tileType": "Polyurethane & Primer - Premium Finish"
+  },
+  {
+    "id": "gal-45",
+    "title": "Polyurethane & Primer #5",
+    "category": "polyurethane",
+    "image": "/media/polyurethane/polyurethane_5.jpeg",
+    "location": "Bedford, WA",
+    "tileType": "Polyurethane & Primer - Premium Finish"
+  },
+  {
+    "id": "gal-46",
+    "title": "Polyurethane & Primer #6",
+    "category": "polyurethane",
+    "image": "/media/polyurethane/polyurethane_6.jpeg",
+    "location": "Perth, WA",
+    "tileType": "Polyurethane & Primer - Premium Finish"
+  },
+  {
+    "id": "gal-47",
+    "title": "Polyurethane & Primer #7",
+    "category": "polyurethane",
+    "image": "/media/polyurethane/polyurethane_7.jpeg",
+    "location": "Maylands, WA",
+    "tileType": "Polyurethane & Primer - Premium Finish"
+  },
+  {
+    "id": "gal-48",
+    "title": "Polyurethane & Primer #8",
+    "category": "polyurethane",
+    "image": "/media/polyurethane/polyurethane_8.jpeg",
+    "location": "Morley, WA",
+    "tileType": "Polyurethane & Primer - Premium Finish"
+  },
+  {
+    "id": "gal-49",
+    "title": "Polyurethane & Primer #9",
+    "category": "polyurethane",
+    "image": "/media/polyurethane/polyurethane_9.jpeg",
+    "location": "Dianella, WA",
+    "tileType": "Polyurethane & Primer - Premium Finish"
+  },
+  {
+    "id": "gal-50",
+    "title": "Polyurethane & Primer #10",
+    "category": "polyurethane",
+    "image": "/media/polyurethane/polyurethane_10.jpeg",
+    "location": "Bayswater, WA",
+    "tileType": "Polyurethane & Primer - Premium Finish"
+  },
+  {
+    "id": "gal-51",
+    "title": "Polyurethane & Primer #11",
+    "category": "polyurethane",
+    "image": "/media/polyurethane/polyurethane_11.jpeg",
+    "location": "Inglewood, WA",
+    "tileType": "Polyurethane & Primer - Premium Finish"
+  },
+  {
+    "id": "gal-52",
+    "title": "Polyurethane & Primer #12",
+    "category": "polyurethane",
+    "image": "/media/polyurethane/polyurethane_12.jpeg",
+    "location": "Mount Lawley, WA",
+    "tileType": "Polyurethane & Primer - Premium Finish"
+  },
+  {
+    "id": "gal-53",
+    "title": "Polyurethane & Primer #13",
+    "category": "polyurethane",
+    "image": "/media/polyurethane/polyurethane_13.jpeg",
+    "location": "Bedford, WA",
+    "tileType": "Polyurethane & Primer - Premium Finish"
+  },
+  {
+    "id": "gal-54",
+    "title": "Polyurethane & Primer #14",
+    "category": "polyurethane",
+    "image": "/media/polyurethane/polyurethane_14.jpeg",
+    "location": "Perth, WA",
+    "tileType": "Polyurethane & Primer - Premium Finish"
+  },
+  {
+    "id": "gal-55",
+    "title": "Polyurethane & Primer #15",
+    "category": "polyurethane",
+    "image": "/media/polyurethane/polyurethane_15.jpeg",
+    "location": "Maylands, WA",
+    "tileType": "Polyurethane & Primer - Premium Finish"
+  },
+  {
+    "id": "gal-56",
+    "title": "Polyurethane & Primer #16",
+    "category": "polyurethane",
+    "image": "/media/polyurethane/polyurethane_16.jpeg",
+    "location": "Morley, WA",
+    "tileType": "Polyurethane & Primer - Premium Finish"
+  },
+  {
+    "id": "gal-57",
+    "title": "Shower Bandage Detailing #1",
+    "category": "bandages",
+    "image": "/media/bandages/bandages_1.jpeg",
+    "location": "Dianella, WA",
+    "tileType": "Shower Bandage Detailing - Premium Finish"
+  },
+  {
+    "id": "gal-58",
+    "title": "Shower Bandage Detailing #2",
+    "category": "bandages",
+    "image": "/media/bandages/bandages_2.jpeg",
+    "location": "Bayswater, WA",
+    "tileType": "Shower Bandage Detailing - Premium Finish"
+  },
+  {
+    "id": "gal-59",
+    "title": "Shower Bandage Detailing #3",
+    "category": "bandages",
+    "image": "/media/bandages/bandages_3.jpeg",
+    "location": "Inglewood, WA",
+    "tileType": "Shower Bandage Detailing - Premium Finish"
+  },
+  {
+    "id": "gal-60",
+    "title": "Waterproofing Application #1",
+    "category": "waterproof",
+    "image": "/media/waterproof/waterproof_1.jpg",
+    "location": "Mount Lawley, WA",
+    "tileType": "Waterproofing Application - Premium Finish"
+  },
+  {
+    "id": "gal-61",
+    "title": "Waterproofing Application #2",
+    "category": "waterproof",
+    "image": "/media/waterproof/waterproof_2.jpg",
+    "location": "Bedford, WA",
+    "tileType": "Waterproofing Application - Premium Finish"
+  },
+  {
+    "id": "gal-62",
+    "title": "Waterproofing Application #3",
+    "category": "waterproof",
+    "image": "/media/waterproof/waterproof_3.jpg",
+    "location": "Perth, WA",
+    "tileType": "Waterproofing Application - Premium Finish"
+  },
+  {
+    "id": "gal-63",
+    "title": "Waterproofing Application #4",
+    "category": "waterproof",
+    "image": "/media/waterproof/waterproof_4.jpg",
+    "location": "Maylands, WA",
+    "tileType": "Waterproofing Application - Premium Finish"
+  },
+  {
+    "id": "gal-64",
+    "title": "Waterproofing Application #5",
+    "category": "waterproof",
+    "image": "/media/waterproof/waterproof_5.jpg",
+    "location": "Morley, WA",
+    "tileType": "Waterproofing Application - Premium Finish"
+  },
+  {
+    "id": "gal-65",
+    "title": "Waterproofing Application #6",
+    "category": "waterproof",
+    "image": "/media/waterproof/waterproof_6.jpg",
+    "location": "Dianella, WA",
+    "tileType": "Waterproofing Application - Premium Finish"
+  },
+  {
+    "id": "gal-66",
+    "title": "Waterproofing Application #7",
+    "category": "waterproof",
+    "image": "/media/waterproof/waterproof_7.jpg",
+    "location": "Bayswater, WA",
+    "tileType": "Waterproofing Application - Premium Finish"
+  },
+  {
+    "id": "gal-67",
+    "title": "Waterproofing Application #8",
+    "category": "waterproof",
+    "image": "/media/waterproof/waterproof_8.jpg",
+    "location": "Inglewood, WA",
+    "tileType": "Waterproofing Application - Premium Finish"
+  },
+  {
+    "id": "gal-68",
+    "title": "Waterproofing Application #9",
+    "category": "waterproof",
+    "image": "/media/waterproof/waterproof_9.jpg",
+    "location": "Mount Lawley, WA",
+    "tileType": "Waterproofing Application - Premium Finish"
+  },
+  {
+    "id": "gal-69",
+    "title": "Waterproofing Application #10",
+    "category": "waterproof",
+    "image": "/media/waterproof/waterproof_10.jpg",
+    "location": "Bedford, WA",
+    "tileType": "Waterproofing Application - Premium Finish"
+  },
+  {
+    "id": "gal-70",
+    "title": "Waterproofing Application #11",
+    "category": "waterproof",
+    "image": "/media/waterproof/waterproof_11.jpg",
+    "location": "Perth, WA",
+    "tileType": "Waterproofing Application - Premium Finish"
+  },
+  {
+    "id": "gal-71",
+    "title": "Waterproofing Application #12",
+    "category": "waterproof",
+    "image": "/media/waterproof/waterproof_12.jpg",
+    "location": "Maylands, WA",
+    "tileType": "Waterproofing Application - Premium Finish"
+  },
+  {
+    "id": "gal-72",
+    "title": "Tenax Sealing & Protection #1",
+    "category": "tennax",
+    "image": "/media/tennax/tennax_1.jpg",
+    "location": "Morley, WA",
+    "tileType": "Tenax Sealing & Protection - Premium Finish"
+  },
+  {
+    "id": "gal-73",
+    "title": "Tenax Sealing & Protection #2",
+    "category": "tennax",
+    "image": "/media/tennax/tennax_2.jpg",
+    "location": "Dianella, WA",
+    "tileType": "Tenax Sealing & Protection - Premium Finish"
+  },
+  {
+    "id": "gal-74",
+    "title": "Tenax Sealing & Protection #3",
+    "category": "tennax",
+    "image": "/media/tennax/tennax_3.jpg",
+    "location": "Bayswater, WA",
+    "tileType": "Tenax Sealing & Protection - Premium Finish"
+  },
+  {
+    "id": "gal-75",
+    "title": "Tenax Sealing & Protection #4",
+    "category": "tennax",
+    "image": "/media/tennax/tennax_4.jpg",
+    "location": "Inglewood, WA",
+    "tileType": "Tenax Sealing & Protection - Premium Finish"
+  },
+  {
+    "id": "gal-76",
+    "title": "Tenax Sealing & Protection #5",
+    "category": "tennax",
+    "image": "/media/tennax/tennax_5.jpg",
+    "location": "Mount Lawley, WA",
+    "tileType": "Tenax Sealing & Protection - Premium Finish"
+  }
 ];
 
 export const defaultTestimonials: TestimonialItem[] = [
