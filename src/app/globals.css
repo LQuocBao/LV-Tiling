@@ -100,27 +100,39 @@ body {
   height: 0px;
 }
 
-/* Clickable interactive elements */
-a,
-button,
-[role="button"],
-.cursor-pointer,
-select,
-summary,
-input[type="submit"],
-input[type="button"],
-input[type="reset"],
-input[type="checkbox"],
-input[type="radio"],
-label[for] {
-  cursor: pointer !important;
-}
+/* Custom cursor management for mouse devices */
+@media (hover: hover) and (pointer: fine) {
+  body,
+  body * {
+    cursor: none;
+  }
 
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-input[type="number"],
-input[type="search"],
-textarea {
-  cursor: text !important;
+  a,
+  a *,
+  button,
+  button *,
+  [role="button"],
+  [role="button"] *,
+  .cursor-pointer,
+  .cursor-pointer *,
+  select,
+  summary,
+  input[type="submit"],
+  input[type="button"],
+  input[type="reset"],
+  input[type="checkbox"],
+  input[type="radio"],
+  label[for],
+  label[for] * {
+    cursor: pointer !important;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="search"],
+  textarea {
+    cursor: text !important;
+  }
 }
