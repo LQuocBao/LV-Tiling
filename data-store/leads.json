@@ -1,0 +1,38 @@
+[
+  {
+    "name": "ádasd",
+    "phone": "213123123",
+    "email": "23@c.c",
+    "suburb": "5235235",
+    "serviceType": "Completed Jobs photo",
+    "approxArea": "20-40 m²",
+    "message": "2352",
+    "id": "lead-1790770349512",
+    "status": "new",
+    "createdAt": "2026-09-30 12:12"
+  },
+  {
+    "id": "lead-1",
+    "name": "Jason Miller",
+    "phone": "0412 889 201",
+    "email": "jason.miller@gmail.com",
+    "suburb": "Morley",
+    "serviceType": "Luxury Bathroom & Shower Tiling",
+    "approxArea": "25 m²",
+    "message": "Need complete bathroom renovation including waterproofing and floor to ceiling tiles. Looking to start late this month.",
+    "status": "new",
+    "createdAt": "2026-09-08 14:20"
+  },
+  {
+    "id": "lead-2",
+    "name": "Claire Jenkins",
+    "phone": "0423 710 449",
+    "email": "claire.j@outlook.com.au",
+    "suburb": "Dianella",
+    "serviceType": "Precision Floor Tiling",
+    "approxArea": "85 m²",
+    "message": "Living room, dining and hallway large format porcelain. Concrete slab is already cleared.",
+    "status": "quoted",
+    "createdAt": "2026-09-07 09:15"
+  }
+]
