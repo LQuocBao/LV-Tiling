@@ -49,7 +49,7 @@ export default function AdminDashboardPage() {
   // New gallery item state
   const [newGalleryItem, setNewGalleryItem] = useState({
     title: "",
-    category: "bathroom" as "bathroom" | "craftsmanship" | "waterproofing" | "screeding" | "standards",
+    category: "completed" as "completed" | "flashbacks" | "screeding" | "polyurethane" | "bandages" | "waterproof" | "tennax",
     image: "/media/9935903f-3f4e-4182-8197-19e2a50fa065.jpg",
     location: "Morley, WA",
     tileType: "Porcelain 600x1200mm",
@@ -373,7 +373,7 @@ export default function AdminDashboardPage() {
                                 : lead.status === "contacted"
                                 ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
                                 : lead.status === "quoted"
-                                ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                                ? "bg-red-500/20 text-blue-300 border border-blue-500/30"
                                 : lead.status === "booked"
                                 ? "bg-green-500/20 text-green-300 border border-green-500/30"
                                 : "bg-gray-700 text-gray-300"
@@ -739,11 +739,13 @@ export default function AdminDashboardPage() {
                   }
                   className="w-full px-3 py-2 rounded-xl bg-[#090d14] border border-gray-700 text-white text-xs focus:border-[#e53835] focus:outline-none"
                 >
-                  <option value="bathroom">Bathrooms & Showers</option>
-                  <option value="craftsmanship">Precision Tiling & Details</option>
-                  <option value="waterproofing">AS 3740 Waterproofing</option>
-                  <option value="screeding">Screeding & Substrate Prep</option>
-                  <option value="standards">Warranty & Standards</option>
+                  <option value="completed">Completed Jobs photo</option>
+                  <option value="flashbacks">Flashbacks</option>
+                  <option value="screeding">Screeding and prep</option>
+                  <option value="polyurethane">Polyurethane and Primer</option>
+                  <option value="bandages">Shower Bandages</option>
+                  <option value="waterproof">Waterproof</option>
+                  <option value="tennax">tennax seal</option>
                 </select>
               </div>
 

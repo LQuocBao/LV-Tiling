@@ -11,10 +11,7 @@ import HeroSection from "@/components/HeroSection";
 import WelcomeSection from "@/components/WelcomeSection";
 import ServicesGrid from "@/components/ServicesGrid";
 import TradeCredentials from "@/components/TradeCredentials";
-import BeforeAfterSlider from "@/components/BeforeAfterSlider";
-import ProjectGallery from "@/components/ProjectGallery";
 import WhyChooseUs from "@/components/WhyChooseUs";
-import WorkProcess from "@/components/WorkProcess";
 import Testimonials from "@/components/Testimonials";
 import FAQSection from "@/components/FAQSection";
 import QuoteSection from "@/components/QuoteSection";
@@ -48,7 +45,7 @@ export default function HomePage() {
           facebookUrl={settings.facebookUrl}
         />
 
-        {/* 3. Hero Slider with 4-Year Gold Warranty Badge & "Expert Tiling With An Artistic Touch" */}
+        {/* 2. Hero Slider with 4-Year Gold Warranty Badge */}
         <HeroSection
           headline={settings.heroHeadline}
           phone={settings.phone}
@@ -57,37 +54,28 @@ export default function HomePage() {
         />
       </div>
 
-      {/* 4. Welcome Section / "What We Do" with 3 Interactive Tabs (Designing, Approved, Guaranteed) */}
+      {/* 3. About Us / Welcome Section with 3 Interactive Tabs */}
       <WelcomeSection
         headline={settings.heroHeadline}
         phone={settings.phone}
       />
 
-      {/* 5. Core Services Grid: "Services We Do - Our Featured Services" */}
-      <ServicesGrid services={services} />
+      {/* 4. Core Services & Workmanship Grid */}
+      <ServicesGrid services={services} gallery={gallery} />
 
-      {/* 6. Australian Trade Standards: Specialist Workshop vs Subcontractor Broker */}
+      {/* 5. Australian Trade Standards */}
       <TradeCredentials />
 
-      {/* 7. Interactive Before & After Precision Screeding Slider */}
-      <BeforeAfterSlider />
-
-      {/* 8. Representative Projects Portfolio (All 15 Client Photos from media/) */}
-      <ProjectGallery gallery={gallery} />
-
-      {/* 9. Why Choose Us (4-Year Guarantee, Zero-Lippage, Dust Extraction, Direct Trade) */}
+      {/* 6. Why Choose Us */}
       <WhyChooseUs />
 
-      {/* 10. 5-Step Precision Trade Workflow */}
-      <WorkProcess />
+      {/* 8. Customer Testimonials (Temporarily hidden per client request) */}
+      {/* <Testimonials testimonials={testimonials} /> */}
 
-      {/* 11. "What People Say - Words Of Our Clients" (Perth & Morley Feedback) */}
-      <Testimonials testimonials={testimonials} />
-
-      {/* 12. Frequently Asked Questions (SEO Google Rich Snippets) */}
+      {/* 9. Frequently Asked Questions */}
       <FAQSection />
 
-      {/* 13. Free On-Site Measure & Quote Section + Morley WA Google Map */}
+      {/* 10. Free On-Site Measure & Quote Section */}
       <QuoteSection
         phone={settings.phone}
         email={settings.email}
@@ -95,7 +83,7 @@ export default function HomePage() {
         facebookUrl={settings.facebookUrl}
       />
 
-      {/* 14. Australian Standards Accredited High-Contrast Footer */}
+      {/* 11. Australian Standards Accredited Footer */}
       <Footer
         companyName={settings.companyName}
         phone={settings.phone}
@@ -105,7 +93,7 @@ export default function HomePage() {
         abn={settings.abn}
       />
 
-      {/* 15. Floating Pulsing Contact Us Widget & Smooth Scroll to Top */}
+      {/* 12. Floating Pulsing Contact Us Widget & Smooth Scroll to Top */}
       <FloatingContactWidget
         phone={settings.phone}
         email={settings.email}

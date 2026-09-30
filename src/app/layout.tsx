@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
-import CustomCursor from "@/components/CustomCursor";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://lvtiling.com.au"),
@@ -12,7 +11,7 @@ export const metadata: Metadata = {
     apple: "/logo.png",
   },
   description:
-    "At LV Tiling Pty Ltd we treat every project as a work of art, delivering quality, precision even with a small renovation or large scale jobs. Our experts will ensure every detail is done right. Let’s transform your space together.",
+    "At LV Tiling Pty Ltd we treat every project as a work of art, delivering quality, precision even with a small renovation or large scale jobs. 4-Year Workmanship Warranty & 20-Year Waterproofing Guarantee.",
   keywords: [
     "tiling Perth",
     "tiler Morley WA",
@@ -41,9 +40,9 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/media/9935903f-3f4e-4182-8197-19e2a50fa065.jpg",
-        width: 1200,
-        height: 630,
+        url: "/logo.png",
+        width: 800,
+        height: 800,
         alt: "LV Tiling Pty Ltd - Luxury Bathroom and Floor Tiling Perth",
       },
     ],
@@ -51,8 +50,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "LV Tiling Pty Ltd | Perth Master Tilers",
-    description: "At LV Tiling Pty Ltd we treat every project as a work of art. 10-Year Warranty. Call 0452 612 336.",
-    images: ["/media/9935903f-3f4e-4182-8197-19e2a50fa065.jpg"],
+    description: "At LV Tiling Pty Ltd we treat every project as a work of art. 4-Year Workmanship Warranty. Call 0452 612 336.",
+    images: ["/logo.png"],
   },
   alternates: {
     canonical: "https://lvtiling.com.au",
@@ -64,12 +63,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Schema.org LocalBusiness JSON-LD
+  // Schema.org LocalBusiness JSON-LD for Australian Trade Contractor
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "HomeAndConstructionBusiness",
     name: "LV Tiling Pty Ltd",
-    image: "https://lvtiling.com.au/media/9935903f-3f4e-4182-8197-19e2a50fa065.jpg",
+    legalName: "LV Tiling Pty Ltd",
+    vatID: "ABN 84 629 140 821",
+    image: "https://lvtiling.com.au/logo.png",
+    logo: "https://lvtiling.com.au/logo.png",
     telephone: "+61452612336",
     email: "lvotiling@gmail.com",
     address: {
@@ -87,6 +89,13 @@ export default function RootLayout({
     },
     url: "https://lvtiling.com.au",
     priceRange: "$$",
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "5.0",
+      reviewCount: "48",
+      bestRating: "5",
+      worstRating: "1",
+    },
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
@@ -101,6 +110,9 @@ export default function RootLayout({
       "Bayswater",
       "Noranda",
       "Mount Lawley",
+      "Inglewood",
+      "Bedford",
+      "Stirling",
       "Perth Metro",
       "Western Australia",
     ],
@@ -116,7 +128,6 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased bg-white text-slate-900 min-h-screen">
-        <CustomCursor />
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
       </body>
     </html>

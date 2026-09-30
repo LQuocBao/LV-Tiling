@@ -32,22 +32,27 @@ interface ProjectGalleryProps {
 }
 
 export default function ProjectGallery({ gallery }: ProjectGalleryProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedCategory, setSelectedCategory] = useState<string>("completed");
+  const [visibleCount, setVisibleCount] = useState<number>(6);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const categories = [
-    { id: "all", label: "All Portfolio (15 Items)" },
-    { id: "bathroom", label: "Bathrooms & Showers" },
-    { id: "craftsmanship", label: "Precision Tiling & Details" },
-    { id: "waterproofing", label: "AS 3740 Waterproofing" },
-    { id: "screeding", label: "Screeding & Substrate Prep" },
-    { id: "standards", label: "Warranty & Standards" },
+    { id: "completed", label: "Completed Jobs photo" },
+    { id: "flashbacks", label: "Flashbacks" },
+    { id: "screeding", label: "Screeding and prep" },
+    { id: "polyurethane", label: "Polyurethane and Primer" },
+    { id: "bandages", label: "Shower Bandages" },
+    { id: "waterproof", label: "Waterproof" },
+    { id: "tennax", label: "tennax seal" },
   ];
 
-  const filteredItems =
-    selectedCategory === "all"
-      ? gallery
-      : gallery.filter((item) => item.category === selectedCategory);
+  const handleCategoryChange = (catId: string) => {
+    setSelectedCategory(catId);
+    setVisibleCount(6);
+  };
+
+  const filteredItems = gallery.filter((item) => item.category === selectedCategory);
+  const displayedItems = filteredItems.slice(0, visibleCount);
 
   const currentItem = lightboxIndex !== null ? filteredItems[lightboxIndex] : null;
 
@@ -69,12 +74,12 @@ export default function ProjectGallery({ gallery }: ProjectGalleryProps) {
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-12">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-xs font-bold text-blue-800 uppercase tracking-wider shadow-sm">
-            <Camera className="w-3.5 h-3.5 text-[#2563eb]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-[6px] bg-red-50 border border-red-200 text-xs font-bold text-[#b91c1c] uppercase tracking-wider">
+            <Camera className="w-3.5 h-3.5 text-[#b91c1c]" />
             <span>Representative Projects</span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
-            Our Workmanship <span className="text-[#2563eb]">Portfolio</span>
+            Our Workmanship <span className="text-[#b91c1c]">Portfolio</span>
           </h2>
           <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
             Every photo shown below is an authentic LV Tiling Pty Ltd installation completed across Morley, Dianella, Bayswater, and Greater Perth.
@@ -82,31 +87,34 @@ export default function ProjectGallery({ gallery }: ProjectGalleryProps) {
         </div>
 
         {/* Category Filters */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
-                selectedCategory === cat.id
-                  ? "bg-[#dc2626] text-white shadow-md shadow-red-600/25"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200/80"
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
+        <div className="w-full mb-12 overflow-hidden">
+          <div className="flex overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] sm:flex-wrap sm:justify-center items-center gap-2.5 px-4 pb-4 -mb-4">
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => handleCategoryChange(cat.id)}
+                className={`shrink-0 px-6 py-3 rounded-full text-[13px] font-bold tracking-wide transition-all duration-300 cursor-pointer border ${
+                  selectedCategory === cat.id
+                    ? "bg-[#dc2626] text-white border-[#dc2626] shadow-lg shadow-red-600/25 sm:scale-105"
+                    : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900"
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Gallery Grid with Framer Motion Stagger */}
         <motion.div
+          key={selectedCategory}
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {filteredItems.map((item, idx) => (
+          {displayedItems.map((item, idx) => (
             <motion.div
               key={item.id}
               variants={itemVariants}
@@ -148,6 +156,19 @@ export default function ProjectGallery({ gallery }: ProjectGalleryProps) {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Load More Button */}
+        {visibleCount < filteredItems.length && (
+          <div className="mt-12 text-center">
+            <button
+              onClick={() => setVisibleCount((prev) => prev + 6)}
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-[#dc2626] hover:bg-[#b91c1c] text-white text-xs sm:text-sm font-bold uppercase tracking-wider shadow-lg shadow-red-600/25 hover:shadow-xl hover:shadow-red-600/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer"
+            >
+              <span>View More Photos ({filteredItems.length - visibleCount} remaining)</span>
+              <ChevronRight className="w-4 h-4 text-white" />
+            </button>
+          </div>
+        )}
 
       </div>
 

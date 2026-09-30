@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Star, MessageSquareQuote, CheckCircle2, Shield, MapPin } from "lucide-react";
+import { Star, MessageSquareQuote, CheckCircle2, MapPin } from "lucide-react";
 import { TestimonialItem } from "@/data/initialData";
 
 interface TestimonialsProps {
@@ -10,60 +10,60 @@ interface TestimonialsProps {
 
 export default function Testimonials({ testimonials }: TestimonialsProps) {
   return (
-    <section id="reviews" className="py-24 bg-white border-b border-slate-200 relative">
+    <section id="reviews" className="py-16 bg-white border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-xs font-bold text-blue-800 uppercase tracking-wider shadow-sm">
-            <MessageSquareQuote className="w-3.5 h-3.5 text-[#2563eb]" />
+        <div className="text-center max-w-3xl mx-auto space-y-3 mb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[6px] bg-red-50 border border-red-200 text-xs font-bold text-[#b91c1c] uppercase tracking-wider">
+            <MessageSquareQuote className="w-3.5 h-3.5 text-[#b91c1c]" />
             <span>Local Perth Client Feedback</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
-            Trusted by <span className="text-[#2563eb]">Homeowners &amp; Builders</span>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
+            Trusted by <span className="text-[#b91c1c]">Homeowners &amp; Builders</span>
           </h2>
-          <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
+          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
             Read genuine reviews from clients across Morley, Dianella, Bayswater, and throughout Perth who chose LV Tiling Pty Ltd for their renovation projects.
           </p>
         </div>
 
         {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {testimonials.map((review) => (
             <div
               key={review.id}
-              className="p-8 rounded-3xl bg-slate-50 border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-6 relative group"
+              className="p-6 rounded-[6px] bg-slate-50 border border-slate-200 hover:border-slate-400 transition-colors flex flex-col justify-between space-y-4"
             >
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {/* Rating & Service Tag */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-0.5">
                     {[...Array(review.rating)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                      <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                     ))}
                   </div>
-                  <span className="text-xs px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-700 font-bold">
+                  <span className="text-[11px] px-2 py-0.5 rounded-[4px] bg-white border border-slate-200 text-slate-700 font-semibold">
                     {review.service}
                   </span>
                 </div>
 
                 {/* Quote Text */}
-                <p className="text-base text-slate-800 leading-relaxed italic">
+                <p className="text-sm text-slate-800 leading-relaxed italic">
                   &ldquo;{review.comment}&rdquo;
                 </p>
               </div>
 
               {/* Author Info */}
-              <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
+              <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
                 <div>
-                  <h4 className="text-base font-black text-slate-900">{review.name}</h4>
-                  <p className="text-xs text-red-600 font-bold flex items-center gap-1 mt-0.5">
+                  <h4 className="text-sm font-bold text-slate-900">{review.name}</h4>
+                  <p className="text-xs text-[#dc2626] font-medium flex items-center gap-1 mt-0.5">
                     <MapPin className="w-3 h-3" />
-                    {review.suburb}
+                    <span>{review.suburb}</span>
                   </p>
                 </div>
-                <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                  <CheckCircle2 className="w-4 h-4 text-green-600" />
+                <div className="flex items-center gap-1 text-xs text-slate-500">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Verified Client</span>
                 </div>
               </div>

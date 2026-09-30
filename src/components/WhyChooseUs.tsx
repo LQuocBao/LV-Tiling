@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { motion, type Variants } from "framer-motion";
 import {
   ShieldCheck,
   Award,
@@ -10,30 +9,7 @@ import {
   Clock,
   Compass,
   FileCheck,
-  Zap,
 } from "lucide-react";
-import SpotlightCard from "@/components/SpotlightCard";
-
-const containerVariants: Variants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-};
-
-const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: [0.16, 1, 0.3, 1] as const,
-    },
-  },
-};
 
 export default function WhyChooseUs() {
   const advantages = [
@@ -76,67 +52,59 @@ export default function WhyChooseUs() {
   ];
 
   return (
-    <section id="why-us" className="py-24 bg-white border-b border-slate-200 relative">
+    <section id="why-us" className="py-16 bg-white border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-red-50 border border-red-200/80 text-xs font-bold text-red-800 uppercase tracking-wider shadow-sm">
-            <Award className="w-3.5 h-3.5 text-[#dc2626]" />
+        <div className="text-center max-w-3xl mx-auto space-y-3 mb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[6px] bg-red-50 border border-red-200 text-xs font-bold text-[#b91c1c] uppercase tracking-wider">
+            <Award className="w-3.5 h-3.5 text-[#b91c1c]" />
             <span>Why Choose LV Tiling</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
-            Built on <span className="text-[#dc2626]">Precision, Integrity &amp; Accountability</span>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
+            Built on <span className="text-[#b91c1c]">Precision, Integrity &amp; Accountability</span>
           </h2>
-          <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
+          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
             We don’t rush jobs or cut corners on subfloor preparation. Our master tradesmen take pride in delivering architectural-grade results that endure.
           </p>
         </div>
 
-        {/* 6 Advantages Grid with Framer Motion Stagger & Spotlight Border */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-        >
+        {/* 6 Advantages Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {advantages.map((item, idx) => {
             const Icon = item.icon;
             return (
-              <motion.div key={idx} variants={cardVariants}>
-                <SpotlightCard
-                  spotlightColor="rgba(220, 38, 38, 0.12)"
-                  className="h-full p-8 rounded-3xl bg-slate-50 border border-slate-200 shadow-sm hover:shadow-xl hover:border-red-300 hover:bg-white transition-all duration-300 flex flex-col justify-between space-y-5 group"
-                >
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 text-[#dc2626] flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:bg-red-600 group-hover:text-white transition-all">
-                        <Icon className="w-6 h-6" />
-                      </div>
-                      <span className="text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full bg-slate-200/70 text-slate-700">
-                        {item.tag}
-                      </span>
+              <div
+                key={idx}
+                className="h-full p-6 rounded-[6px] bg-slate-50 border border-slate-200 hover:border-slate-400 transition-colors flex flex-col justify-between space-y-4"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="w-9 h-9 rounded-[4px] bg-red-50 text-[#dc2626] border border-red-100 flex items-center justify-center">
+                      <Icon className="w-4 h-4" />
                     </div>
-
-                    <h3 className="text-xl font-bold text-slate-900 group-hover:text-[#dc2626] transition-colors">
-                      {item.title}
-                    </h3>
-
-                    <p className="text-sm text-slate-600 leading-relaxed">
-                      {item.desc}
-                    </p>
+                    <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-[4px] bg-slate-200 text-slate-700">
+                      {item.tag}
+                    </span>
                   </div>
 
-                  <div className="pt-4 border-t border-slate-200/60 flex items-center gap-2 text-xs font-bold text-[#dc2626]">
-                    <CheckCircle className="w-4 h-4" />
-                    <span>Verified Standard</span>
-                  </div>
-                </SpotlightCard>
-              </motion.div>
+                  <h3 className="text-base font-bold text-slate-900">
+                    {item.title}
+                  </h3>
+
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t border-slate-200 flex items-center gap-1.5 text-xs font-semibold text-[#dc2626]">
+                  <CheckCircle className="w-3.5 h-3.5" />
+                  <span>Verified Standard</span>
+                </div>
+              </div>
             );
           })}
-        </motion.div>
+        </div>
 
       </div>
     </section>
