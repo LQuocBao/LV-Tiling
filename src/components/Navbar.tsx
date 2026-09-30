@@ -29,18 +29,18 @@ export default function Navbar({
 
   return (
     <header
-      className={`transition-all duration-300 w-full ${
+      className={`transition-all duration-200 w-full ${
         isScrolled
-          ? "fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-md border-b border-slate-200 py-3 text-slate-800 animate-in slide-in-from-top duration-200"
-          : "absolute top-0 left-0 right-0 z-30 bg-gradient-to-b from-slate-950/85 via-slate-950/40 to-transparent py-4 sm:py-5 text-white"
+          ? "fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 py-3 text-slate-900 shadow-sm"
+          : "absolute top-0 left-0 right-0 z-30 bg-slate-950/30 border-b border-white/10 py-4 text-white"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           
-          {/* 1. Official LV Tiling Brand Logo */}
-          <a href="#" className="flex items-center gap-3 group">
-            <div className="relative h-11 w-11 sm:h-12 sm:w-12 rounded-xl bg-white p-1 shadow-md border border-slate-200/80 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+          {/* 1. Brand Logo */}
+          <a href="#" className="flex items-center gap-3">
+            <div className="relative h-10 w-10 sm:h-11 sm:w-11 rounded-[6px] bg-white p-1 border border-slate-200 flex items-center justify-center flex-shrink-0">
               <Image
                 src="/logo.png"
                 alt="LV Tiling Logo"
@@ -51,15 +51,15 @@ export default function Navbar({
             </div>
             <div className="flex flex-col text-left">
               <span
-                className={`text-base sm:text-lg font-black tracking-tight uppercase leading-none transition-colors ${
-                  isScrolled ? "text-slate-900" : "text-white drop-shadow-sm"
+                className={`text-base sm:text-lg font-bold tracking-tight uppercase leading-none ${
+                  isScrolled ? "text-slate-900" : "text-white"
                 }`}
               >
                 LV Tiling
               </span>
               <span
-                className={`text-[10px] font-bold tracking-widest uppercase leading-tight mt-1 transition-colors ${
-                  isScrolled ? "text-[#dc2626]" : "text-red-400 drop-shadow-sm"
+                className={`text-[11px] font-semibold tracking-wider uppercase leading-tight mt-1 ${
+                  isScrolled ? "text-[#dc2626]" : "text-red-400"
                 }`}
               >
                 Perth Master Tilers
@@ -67,89 +67,86 @@ export default function Navbar({
             </div>
           </a>
 
-          {/* 2. Clean, Minimalist Desktop Menu */}
-          <nav className="hidden lg:flex items-center gap-7">
-            
-            {/* Home */}
+          {/* 2. Desktop Navigation Menu */}
+          <nav className="hidden lg:flex items-center gap-6">
             <a
               href="#"
-              className={`text-sm font-semibold transition-colors ${
-                isScrolled ? "text-slate-800 hover:text-[#dc2626]" : "text-white hover:text-slate-200 drop-shadow-sm"
+              className={`text-sm font-medium transition-colors ${
+                isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
               }`}
             >
               Home
             </a>
-
-            {/* About Us */}
             <a
               href="#about-us"
-              className={`text-sm font-semibold transition-colors ${
-                isScrolled ? "text-slate-800 hover:text-[#dc2626]" : "text-white hover:text-slate-200 drop-shadow-sm"
+              className={`text-sm font-medium transition-colors ${
+                isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
               }`}
             >
               About Us
             </a>
-
-            {/* Services (Direct link, no submenu) */}
             <a
               href="#services"
-              className={`text-sm font-semibold transition-colors ${
-                isScrolled ? "text-slate-800 hover:text-[#dc2626]" : "text-white hover:text-slate-200 drop-shadow-sm"
+              className={`text-sm font-medium transition-colors ${
+                isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
               }`}
             >
               Services
             </a>
-
-            {/* Gallery */}
             <a
-              href="#portfolio"
-              className={`text-sm font-semibold transition-colors ${
-                isScrolled ? "text-slate-800 hover:text-[#5886b9]" : "text-white hover:text-slate-200 drop-shadow-sm"
+              href="#trade-standards"
+              className={`text-sm font-medium transition-colors ${
+                isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
               }`}
             >
-              Gallery
+              Standards
             </a>
-
-            {/* Reviews */}
             <a
-              href="#reviews"
-              className={`text-sm font-semibold transition-colors ${
-                isScrolled ? "text-slate-800 hover:text-[#5886b9]" : "text-white hover:text-slate-200 drop-shadow-sm"
+              href="#why-us"
+              className={`text-sm font-medium transition-colors ${
+                isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
               }`}
             >
-              Reviews
+              Why Us
             </a>
-
-            {/* Contact Us */}
+            <a
+              href="#faq"
+              className={`text-sm font-medium transition-colors ${
+                isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
+              }`}
+            >
+              FAQ
+            </a>
             <a
               href="#contact"
-              className={`text-sm font-semibold transition-colors ${
-                isScrolled ? "text-slate-800 hover:text-[#5886b9]" : "text-white hover:text-slate-200 drop-shadow-sm"
+              className={`text-sm font-medium transition-colors ${
+                isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
               }`}
             >
               Contact Us
             </a>
 
-            {/* Free Quote Primary CTA Button */}
+            {/* Free Quote CTA Button */}
             <a
               href="#contact"
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#dc2626] to-[#b91c1c] text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-red-600/25 hover:shadow-lg hover:shadow-red-600/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+              className="px-4 py-2 rounded-[6px] bg-[#dc2626] hover:bg-[#b91c1c] text-white font-semibold text-xs uppercase tracking-wider transition-colors"
             >
               Free Quote
             </a>
-
           </nav>
 
           {/* 3. Mobile Hamburger Button */}
-          <div className="flex lg:hidden items-center gap-2">
+          <div className="flex lg:hidden items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={`p-2 rounded-lg transition-colors cursor-pointer ${
-                isScrolled ? "text-slate-800 hover:bg-slate-100" : "text-white hover:bg-white/20"
+              className={`w-11 h-11 rounded-[6px] border flex items-center justify-center transition-colors cursor-pointer ${
+                isScrolled
+                  ? "text-slate-800 border-slate-200 hover:bg-slate-100"
+                  : "text-white border-slate-700 hover:bg-slate-800"
               }`}
               aria-label="Toggle navigation"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
 
@@ -158,51 +155,63 @@ export default function Navbar({
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white text-slate-800 border-t border-slate-200 shadow-xl px-4 py-4 space-y-2 animate-in slide-in-from-top duration-200">
+        <div className="lg:hidden bg-white text-slate-900 border-t border-slate-200 px-4 py-4 space-y-1">
           <a
             href="#"
             onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 text-sm font-semibold hover:bg-slate-50 hover:text-[#5886b9] rounded-lg"
+            className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
           >
             Home
           </a>
           <a
             href="#about-us"
             onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 text-sm font-semibold hover:bg-slate-50 hover:text-[#5886b9] rounded-lg"
+            className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
           >
             About Us
           </a>
-          
           <a
             href="#services"
             onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 text-sm font-semibold hover:bg-slate-50 hover:text-[#dc2626] rounded-lg"
+            className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
           >
             Services
           </a>
-
           <a
-            href="#portfolio"
+            href="#trade-standards"
             onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 text-sm font-semibold hover:bg-slate-50 hover:text-[#dc2626] rounded-lg"
+            className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
           >
-            Gallery
+            Standards
           </a>
           <a
-            href="#reviews"
+            href="#why-us"
             onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 text-sm font-semibold hover:bg-slate-50 hover:text-[#dc2626] rounded-lg"
+            className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
           >
-            Reviews
+            Why Us
+          </a>
+          <a
+            href="#faq"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
+          >
+            FAQ
+          </a>
+          <a
+            href="#contact"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
+          >
+            Contact Us
           </a>
           <div className="pt-2">
             <a
               href="#contact"
               onClick={() => setMobileMenuOpen(false)}
-              className="block w-full py-3 px-4 text-center text-xs font-black text-white bg-gradient-to-r from-[#dc2626] to-[#b91c1c] rounded-xl shadow-md shadow-red-600/25 uppercase tracking-wider"
+              className="flex items-center justify-center min-h-[48px] w-full px-4 text-center text-xs font-bold text-white bg-[#dc2626] hover:bg-[#b91c1c] rounded-[6px] uppercase tracking-wider transition-colors"
             >
-              Book Free Measure & Quote
+              Book Free Measure &amp; Quote
             </a>
           </div>
         </div>
