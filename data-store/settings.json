@@ -9,5 +9,6 @@
   "address": "130A Crimea street Morley 6062 WA",
   "facebookUrl": "https://www.facebook.com/share/lvtiling",
   "marqueeAnnouncement": "4-Year Comprehensive Workmanship Warranty · AS 3958.1 & AS 3740 Compliant · Laser Leveling Guarantee · Perth & Morley WA · Call: 0452 612 336",
-  "warrantyYears": 4
+  "warrantyYears": 4,
+  "googleSheetWebhookUrl": ""
 }

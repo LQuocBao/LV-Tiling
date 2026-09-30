@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { addLead } from "@/lib/storage";
+import { addLead, getSettings } from "@/lib/storage";
 
 export async function POST(request: Request) {
   try {
@@ -22,6 +22,32 @@ export async function POST(request: Request) {
       approxArea: approxArea || "Not specified",
       message: message || "No extra notes provided.",
     });
+
+    // Asynchronously dispatch to Google Sheet Webhook if configured
+    try {
+      const settings = getSettings();
+      if (settings.googleSheetWebhookUrl && settings.googleSheetWebhookUrl.trim().startsWith("http")) {
+        fetch(settings.googleSheetWebhookUrl.trim(), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: newLead.id,
+            name: newLead.name,
+            phone: newLead.phone,
+            email: newLead.email,
+            suburb: newLead.suburb,
+            serviceType: newLead.serviceType,
+            approxArea: newLead.approxArea,
+            message: newLead.message,
+            status: newLead.status,
+            createdAt: newLead.createdAt,
+            timestamp: new Date().toLocaleString("en-AU", { timeZone: "Australia/Perth" }),
+          }),
+        }).catch((err) => console.warn("Google Sheet webhook dispatch error:", err));
+      }
+    } catch (sheetErr) {
+      console.warn("Failed to check Google Sheet settings:", sheetErr);
+    }
 
     return NextResponse.json({
       success: true,

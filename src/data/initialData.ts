@@ -10,6 +10,7 @@ export interface SiteSettings {
   facebookUrl: string;
   marqueeAnnouncement: string;
   warrantyYears: number;
+  googleSheetWebhookUrl?: string;
 }
 
 export interface ServiceItem {
@@ -69,6 +70,7 @@ export const defaultSettings: SiteSettings = {
   facebookUrl: "https://www.facebook.com/share/lvtiling",
   marqueeAnnouncement: "4-Year Comprehensive Workmanship Warranty · AS 3958.1 & AS 3740 Compliant · Laser Leveling Guarantee · Perth & Morley WA · Call Now: 0452 612 336",
   warrantyYears: 4,
+  googleSheetWebhookUrl: "",
 };
 
 export const defaultServices: ServiceItem[] = [

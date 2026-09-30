@@ -27,7 +27,7 @@ export default function AdminLoginPage() {
       }
       setTimeout(() => {
         router.push("/admin");
-      }, 500);
+      }, 400);
     } else {
       setLoading(false);
       setError("Invalid username or password. Default: admin / admin123");
@@ -35,31 +35,31 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070a0f] flex items-center justify-center p-4">
-      <div className="max-w-md w-full p-8 rounded-3xl bg-[#121824] border border-gray-800 shadow-2xl space-y-6">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
+      <div className="max-w-sm w-full p-6 sm:p-8 rounded-[6px] bg-white border border-slate-200 space-y-6">
         
         {/* Brand Header */}
-        <div className="text-center space-y-2">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-[#e53835] flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-red-900/40">
+        <div className="text-center space-y-1.5">
+          <div className="w-11 h-11 mx-auto rounded-[6px] bg-[#dc2626] flex items-center justify-center text-white font-black text-lg">
             LV
           </div>
-          <h1 className="text-2xl font-black text-white">LV Tiling Admin CMS</h1>
-          <p className="text-xs text-gray-400">
-            Landing Page Content & Lead Management Portal
+          <h1 className="text-lg font-bold text-slate-900">LV Tiling Admin CMS</h1>
+          <p className="text-xs text-slate-500">
+            Landing Page &amp; Leads Management Portal
           </p>
         </div>
 
         {error && (
-          <div className="p-3 rounded-xl bg-red-950/60 border border-red-500/50 text-red-300 text-xs text-center font-medium">
+          <div className="p-3 rounded-[6px] bg-red-50 border border-red-300 text-red-900 text-xs text-center font-medium">
             {error}
           </div>
         )}
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-1 text-left">
-            <label className="text-xs font-semibold text-gray-300">Username</label>
+            <label className="text-xs font-semibold text-slate-700">Username</label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                 <User className="w-4 h-4" />
               </div>
               <input
@@ -68,15 +68,15 @@ export default function AdminLoginPage() {
                 placeholder="admin"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#090d14] border border-gray-700 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#e53835]"
+                className="w-full pl-9 pr-3 py-2 rounded-[6px] bg-white border border-slate-300 text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:border-slate-500"
               />
             </div>
           </div>
 
           <div className="space-y-1 text-left">
-            <label className="text-xs font-semibold text-gray-300">Password</label>
+            <label className="text-xs font-semibold text-slate-700">Password</label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                 <Lock className="w-4 h-4" />
               </div>
               <input
@@ -85,7 +85,7 @@ export default function AdminLoginPage() {
                 placeholder="admin123"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#090d14] border border-gray-700 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#e53835]"
+                className="w-full pl-9 pr-3 py-2 rounded-[6px] bg-white border border-slate-300 text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:border-slate-500"
               />
             </div>
           </div>
@@ -94,23 +94,23 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#e53835] hover:bg-[#ff4d49] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-red-900/30"
+              className="w-full py-2.5 rounded-[6px] font-semibold text-xs text-white bg-[#dc2626] hover:bg-[#b91c1c] transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60"
             >
-              <span>{loading ? "Verifying..." : "Sign In to CMS"}</span>
+              <span>{loading ? "Signing in..." : "Sign In to CMS"}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </form>
 
-        <div className="pt-4 border-t border-gray-800 text-center space-y-2">
-          <div className="text-[11px] text-gray-400">
-            Default credentials: <span className="text-white font-mono">admin</span> / <span className="text-white font-mono">admin123</span>
+        <div className="pt-4 border-t border-slate-100 text-center space-y-2 text-xs">
+          <div className="text-slate-500 text-[11px]">
+            Default: <span className="font-mono font-semibold text-slate-800">admin</span> / <span className="font-mono font-semibold text-slate-800">admin123</span>
           </div>
           <a
             href="/"
-            className="text-xs text-gray-400 hover:text-white transition-colors block"
+            className="text-slate-500 hover:text-slate-900 transition-colors block"
           >
-            ← Back to Public Landing Page
+            ← Back to Public Website
           </a>
         </div>
 
