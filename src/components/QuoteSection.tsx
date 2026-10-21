@@ -106,7 +106,7 @@ export default function QuoteSection({
       }
       case "email": {
         const trimmed = value.trim();
-        if (!trimmed) return ""; // Email is optional, but if provided must be valid
+        if (!trimmed) return "Please enter your email address to receive the itemized quote.";
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
         if (!emailRegex.test(trimmed)) {
           return "Please enter a valid email address (e.g. name@example.com).";
@@ -467,7 +467,7 @@ export default function QuoteSection({
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
                       <label htmlFor="quote-email" className="text-xs font-semibold text-slate-800 block">
-                        Email Address <span className="text-slate-400 font-normal">(Optional)</span>
+                        Email Address <span className="text-[#dc2626]">*</span>
                       </label>
                       {touched.email && !errors.email && formData.email.trim() && (
                         <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-0.5">
@@ -479,6 +479,7 @@ export default function QuoteSection({
                       id="quote-email"
                       name="email"
                       type="email"
+                      required
                       value={formData.email}
                       onBlur={() => handleBlur("email")}
                       onChange={(e) => handleChange("email", e.target.value)}

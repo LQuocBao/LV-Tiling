@@ -467,7 +467,7 @@ export default function AdminDashboardPage() {
         {/* Brand Header */}
         <div className="p-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-[6px] bg-amber-500 flex items-center justify-center font-black text-slate-950 text-sm">
+            <div className="w-9 h-9 rounded-[6px] bg-[#dc2626] flex items-center justify-center font-black text-white text-sm shadow-xs">
               LV
             </div>
             <div>
@@ -489,7 +489,7 @@ export default function AdminDashboardPage() {
                 onClick={() => setActiveTab("dashboard")}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
                   activeTab === "dashboard"
-                    ? "bg-amber-500 text-slate-950"
+                    ? "bg-[#dc2626] text-white font-bold"
                     : "text-slate-300 hover:bg-slate-800 hover:text-white"
                 }`}
               >
@@ -511,7 +511,7 @@ export default function AdminDashboardPage() {
                 onClick={() => setActiveTab("leads")}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
                   activeTab === "leads"
-                    ? "bg-amber-500 text-slate-950"
+                    ? "bg-[#dc2626] text-white font-bold"
                     : "text-slate-300 hover:bg-slate-800 hover:text-white"
                 }`}
               >
@@ -522,7 +522,7 @@ export default function AdminDashboardPage() {
                 {newLeadsCount > 0 && (
                   <span
                     className={`px-1.5 py-0.5 text-[10px] font-bold rounded-[4px] ${
-                      activeTab === "leads" ? "bg-slate-950 text-amber-400" : "bg-amber-500 text-slate-950"
+                      activeTab === "leads" ? "bg-white text-[#dc2626]" : "bg-[#dc2626] text-white"
                     }`}
                   >
                     {newLeadsCount} mới
@@ -542,7 +542,7 @@ export default function AdminDashboardPage() {
                 onClick={() => setActiveTab("notifications-email")}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
                   activeTab === "notifications-email"
-                    ? "bg-amber-500 text-slate-950"
+                    ? "bg-[#dc2626] text-white font-bold"
                     : "text-slate-300 hover:bg-slate-800 hover:text-white"
                 }`}
               >
@@ -556,7 +556,7 @@ export default function AdminDashboardPage() {
                 onClick={() => setActiveTab("notifications-sheets")}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
                   activeTab === "notifications-sheets"
-                    ? "bg-amber-500 text-slate-950"
+                    ? "bg-[#dc2626] text-white font-bold"
                     : "text-slate-300 hover:bg-slate-800 hover:text-white"
                 }`}
               >
@@ -578,7 +578,7 @@ export default function AdminDashboardPage() {
                 onClick={() => setActiveTab("settings-general")}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
                   activeTab === "settings-general"
-                    ? "bg-amber-500 text-slate-950"
+                    ? "bg-[#dc2626] text-white font-bold"
                     : "text-slate-300 hover:bg-slate-800 hover:text-white"
                 }`}
               >
@@ -592,7 +592,7 @@ export default function AdminDashboardPage() {
                 onClick={() => setActiveTab("cms-gallery")}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
                   activeTab === "cms-gallery"
-                    ? "bg-amber-500 text-slate-950"
+                    ? "bg-[#dc2626] text-white font-bold"
                     : "text-slate-300 hover:bg-slate-800 hover:text-white"
                 }`}
               >
@@ -612,7 +612,7 @@ export default function AdminDashboardPage() {
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-between px-3 py-2 rounded-[6px] text-xs text-slate-400 hover:bg-slate-800 hover:text-amber-400 transition-colors"
+            className="flex items-center justify-between px-3 py-2 rounded-[6px] text-xs text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
           >
             <div className="flex items-center space-x-2">
               <Eye className="w-4 h-4" />
@@ -702,7 +702,7 @@ export default function AdminDashboardPage() {
                   </div>
                   <div className="text-2xl font-bold text-slate-900">{leads.length}</div>
                   <div className="text-[11px] text-slate-500 mt-1 flex items-center space-x-1">
-                    <span className="font-semibold text-amber-600">{newLeadsCount} đơn mới</span>
+                    <span className="font-semibold text-[#dc2626]">{newLeadsCount} đơn mới</span>
                     <span>cần gọi tư vấn</span>
                   </div>
                 </div>
@@ -721,7 +721,7 @@ export default function AdminDashboardPage() {
                 <div className="bg-white border border-slate-200 rounded-[6px] p-4 shadow-xs">
                   <div className="flex items-center justify-between text-slate-500 mb-2">
                     <span className="text-xs font-semibold uppercase tracking-wider">Email thông báo 2 chiều</span>
-                    <Mail className="w-4 h-4 text-blue-600" />
+                    <Mail className="w-4 h-4 text-[#dc2626]" />
                   </div>
                   <div className="text-xs font-semibold text-slate-800 mt-1">
                     {settings.emailNotificationsEnabled !== false ? "Đang kích hoạt" : "Đang tắt"}
@@ -752,7 +752,7 @@ export default function AdminDashboardPage() {
                   </div>
                   <button
                     onClick={() => setActiveTab("leads")}
-                    className="text-xs font-semibold text-amber-600 hover:text-amber-700 flex items-center space-x-1"
+                    className="text-xs font-semibold text-[#dc2626] hover:text-[#b91c1c] flex items-center space-x-1"
                   >
                     <span>Xem tất cả ({leads.length})</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -763,6 +763,7 @@ export default function AdminDashboardPage() {
                   <table className="w-full text-left text-xs">
                     <thead className="bg-slate-50 text-slate-500 border-b border-slate-200 font-semibold">
                       <tr>
+                        <th className="p-3">Ref ID</th>
                         <th className="p-3">Khách hàng</th>
                         <th className="p-3">Số điện thoại</th>
                         <th className="p-3">Dịch vụ yêu cầu</th>
@@ -775,8 +776,13 @@ export default function AdminDashboardPage() {
                     <tbody className="divide-y divide-slate-100">
                       {leads.slice(0, 5).map((lead) => (
                         <tr key={lead.id} className="hover:bg-slate-50 transition-colors">
+                          <td className="p-3 font-mono font-bold text-slate-900">
+                            <span className="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-[10px]">
+                              #LV-{lead.id.slice(-6).toUpperCase()}
+                            </span>
+                          </td>
                           <td className="p-3 font-semibold text-slate-900">{lead.name}</td>
-                          <td className="p-3 font-mono text-amber-600 font-semibold">{lead.phone}</td>
+                          <td className="p-3 font-mono text-[#dc2626] font-semibold">{lead.phone}</td>
                           <td className="p-3 text-slate-700">{lead.serviceType}</td>
                           <td className="p-3 text-slate-600">{lead.suburb}</td>
                           <td className="p-3 text-slate-500">{new Date(lead.createdAt).toLocaleString("vi-VN")}</td>
@@ -784,7 +790,7 @@ export default function AdminDashboardPage() {
                             <span
                               className={`inline-block px-2 py-0.5 rounded-[4px] text-[10px] font-bold ${
                                 lead.status === "new"
-                                  ? "bg-amber-100 text-amber-800"
+                                  ? "bg-red-50 text-red-700 border border-red-200"
                                   : lead.status === "contacted"
                                   ? "bg-blue-100 text-blue-800"
                                   : lead.status === "booked"
@@ -806,7 +812,7 @@ export default function AdminDashboardPage() {
                           <td className="p-3 text-right">
                             <a
                               href={`tel:${lead.phone}`}
-                              className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-[4px] bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-[11px]"
+                              className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-[4px] bg-[#dc2626] hover:bg-[#b91c1c] text-white font-bold text-[11px] shadow-xs"
                             >
                               <Phone className="w-3 h-3" />
                               <span>Gọi ngay</span>
@@ -876,6 +882,7 @@ export default function AdminDashboardPage() {
                   <table className="w-full text-left text-xs">
                     <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 font-bold uppercase tracking-wider text-[11px]">
                       <tr>
+                        <th className="p-3">Ref ID</th>
                         <th className="p-3">Khách hàng</th>
                         <th className="p-3">Liên hệ</th>
                         <th className="p-3">Dịch vụ & Khu vực</th>
@@ -888,12 +895,16 @@ export default function AdminDashboardPage() {
                     <tbody className="divide-y divide-slate-100">
                       {filteredLeads.map((lead) => (
                         <tr key={lead.id} className="hover:bg-slate-50/80 transition-colors">
-                          <td className="p-3">
-                            <div className="font-bold text-slate-900">{lead.name}</div>
-                            <div className="text-[10px] text-slate-400 font-mono">#{lead.id.slice(-6)}</div>
+                          <td className="p-3 whitespace-nowrap">
+                            <span className="font-mono font-bold px-2 py-0.5 rounded-[4px] bg-slate-900 text-white text-[11px] shadow-2xs">
+                              #LV-{lead.id.slice(-6).toUpperCase()}
+                            </span>
                           </td>
                           <td className="p-3">
-                            <div className="font-mono font-bold text-amber-600 flex items-center space-x-1">
+                            <div className="font-bold text-slate-900">{lead.name}</div>
+                          </td>
+                          <td className="p-3">
+                            <div className="font-mono font-bold text-[#dc2626] flex items-center space-x-1">
                               <Phone className="w-3 h-3 text-slate-400" />
                               <a href={`tel:${lead.phone}`} className="hover:underline">
                                 {lead.phone}
@@ -929,7 +940,7 @@ export default function AdminDashboardPage() {
                               onChange={(e) => handleUpdateLeadStatus(lead.id, e.target.value as any)}
                               className={`text-[11px] font-bold rounded-[4px] px-2 py-1 border focus:outline-none ${
                                 lead.status === "new"
-                                  ? "bg-amber-50 border-amber-300 text-amber-800"
+                                  ? "bg-red-50 border-red-300 text-red-800"
                                   : lead.status === "contacted"
                                   ? "bg-blue-50 border-blue-300 text-blue-800"
                                   : lead.status === "quoted"
@@ -950,7 +961,7 @@ export default function AdminDashboardPage() {
                             <div className="flex items-center justify-end space-x-1">
                               <button
                                 onClick={() => setSelectedLead(lead)}
-                                className="px-2 py-1 rounded-[4px] bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold"
+                                className="px-2.5 py-1 rounded-[4px] bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-semibold transition-colors"
                               >
                                 Chi tiết
                               </button>
@@ -992,22 +1003,22 @@ export default function AdminDashboardPage() {
                   Khi khách hàng nhấn nút gửi yêu cầu báo giá ngoài landing page, hệ thống sẽ tự động kích hoạt 2 email song song:
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4 text-xs">
-                  <div className="p-3 bg-amber-50/70 border border-amber-200 rounded-[6px]">
-                    <div className="font-bold text-amber-900 mb-1 flex items-center space-x-1.5">
-                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                  <div className="p-3 bg-red-50/70 border border-red-200 rounded-[6px]">
+                    <div className="font-bold text-red-900 mb-1 flex items-center space-x-1.5">
+                      <span className="w-2 h-2 rounded-full bg-[#dc2626]"></span>
                       <span>1. Email Gửi Đến Chủ Doanh Nghiệp (Admin Alert)</span>
                     </div>
-                    <p className="text-amber-800 text-[11px]">
-                      Gửi ngay thông báo kèm đầy đủ Tên, SĐT, Dịch vụ, Địa chỉ và nút bấm gọi điện trực tiếp trên di động.
+                    <p className="text-red-800 text-[11px]">
+                      Gửi ngay thông báo kèm Reference ID, Tên, SĐT, Dịch vụ, Địa chỉ và nút bấm gọi điện trực tiếp trên di động.
                     </p>
                   </div>
 
-                  <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-[6px]">
-                    <div className="font-bold text-emerald-900 mb-1 flex items-center space-x-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <div className="p-3 bg-slate-50 border border-slate-200 rounded-[6px]">
+                    <div className="font-bold text-slate-900 mb-1 flex items-center space-x-1.5">
+                      <span className="w-2 h-2 rounded-full bg-slate-800"></span>
                       <span>2. Email Gửi Cho Khách Hàng (Customer Confirmation)</span>
                     </div>
-                    <p className="text-emerald-800 text-[11px]">
+                    <p className="text-slate-700 text-[11px]">
                       Thư cảm ơn chuyên nghiệp chuẩn Úc, xác nhận đã tiếp nhận đơn và cam kết kỹ thuật viên sẽ gọi lại trong 15-30 phút.
                     </p>
                   </div>
@@ -1028,7 +1039,7 @@ export default function AdminDashboardPage() {
                       onChange={(e) =>
                         setSettings({ ...settings, emailNotificationsEnabled: e.target.checked })
                       }
-                      className="rounded text-amber-500 focus:ring-amber-500"
+                      className="rounded text-[#dc2626] focus:ring-[#dc2626]"
                     />
                     <span>Bật gửi Email tự động</span>
                   </label>
@@ -1044,7 +1055,7 @@ export default function AdminDashboardPage() {
                       value={settings.adminNotificationEmail || settings.email || ""}
                       onChange={(e) => setSettings({ ...settings, adminNotificationEmail: e.target.value })}
                       placeholder="lvotiling@gmail.com"
-                      className="w-full px-3 py-2 border border-slate-300 rounded-[6px] bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-[6px] bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#dc2626]"
                     />
                     <p className="text-[10px] text-slate-400 mt-1">Đơn hàng mới từ khách sẽ được gửi tới hòm thư này.</p>
                   </div>
@@ -1058,7 +1069,7 @@ export default function AdminDashboardPage() {
                       value={settings.emailFromName || "LV Tiling Pty Ltd"}
                       onChange={(e) => setSettings({ ...settings, emailFromName: e.target.value })}
                       placeholder="LV Tiling Pty Ltd"
-                      className="w-full px-3 py-2 border border-slate-300 rounded-[6px] bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-[6px] bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#dc2626]"
                     />
                   </div>
 
@@ -1071,7 +1082,7 @@ export default function AdminDashboardPage() {
                       value={settings.smtpUser || ""}
                       onChange={(e) => setSettings({ ...settings, smtpUser: e.target.value })}
                       placeholder="lvotiling.notification@gmail.com"
-                      className="w-full px-3 py-2 border border-slate-300 rounded-[6px] bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-[6px] bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#dc2626]"
                     />
                   </div>
 
@@ -1084,7 +1095,7 @@ export default function AdminDashboardPage() {
                       value={settings.smtpPass || ""}
                       onChange={(e) => setSettings({ ...settings, smtpPass: e.target.value })}
                       placeholder="xxxx xxxx xxxx xxxx"
-                      className="w-full px-3 py-2 border border-slate-300 rounded-[6px] bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-amber-500 font-mono"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-[6px] bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#dc2626] font-mono"
                     />
                     <p className="text-[10px] text-slate-400 mt-1">
                       (Tạo trong: Google Account &gt; Security &gt; 2-Step Verification &gt; App Passwords)
@@ -1122,13 +1133,13 @@ export default function AdminDashboardPage() {
                       placeholder="Nhập email nhận thử..."
                       value={testEmailAddress}
                       onChange={(e) => setTestEmailAddress(e.target.value)}
-                      className="text-xs px-3 py-1.5 border border-slate-300 rounded-[6px] w-64 focus:outline-none"
+                      className="text-xs px-3 py-1.5 border border-slate-300 rounded-[6px] w-64 focus:outline-none focus:ring-1 focus:ring-[#dc2626]"
                     />
                     <button
                       type="button"
                       onClick={handleTestEmail}
                       disabled={testingEmail}
-                      className="flex items-center space-x-1.5 px-3 py-1.5 rounded-[6px] bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold disabled:opacity-50"
+                      className="flex items-center space-x-1.5 px-3 py-1.5 rounded-[6px] bg-[#dc2626] hover:bg-[#b91c1c] text-white text-xs font-semibold disabled:opacity-50 shadow-xs"
                     >
                       {testingEmail ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
                       <span>{testingEmail ? "Đang gửi thử..." : "Gửi Email Thử Nghiệm"}</span>
@@ -1139,9 +1150,9 @@ export default function AdminDashboardPage() {
                     type="button"
                     onClick={() => handleSaveSettings()}
                     disabled={saving}
-                    className="flex items-center space-x-1.5 px-4 py-1.5 rounded-[6px] bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold"
+                    className="flex items-center space-x-1.5 px-4 py-1.5 rounded-[6px] bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs"
                   >
-                    <Save className="w-3.5 h-3.5 text-amber-400" />
+                    <Save className="w-3.5 h-3.5 text-white" />
                     <span>Lưu Cấu Hình Email</span>
                   </button>
                 </div>
@@ -1429,8 +1440,13 @@ export default function AdminDashboardPage() {
           <div className="bg-white rounded-[6px] max-w-lg w-full p-6 shadow-xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <div>
-                <h3 className="font-bold text-slate-900 text-sm">Chi tiết Yêu cầu Báo giá #{selectedLead.id.slice(-6)}</h3>
-                <p className="text-xs text-slate-500">{new Date(selectedLead.createdAt).toLocaleString("vi-VN")}</p>
+                <div className="flex items-center space-x-2">
+                  <span className="font-mono font-bold px-2 py-0.5 rounded-[4px] bg-slate-900 text-white text-xs">
+                    #LV-{selectedLead.id.slice(-6).toUpperCase()}
+                  </span>
+                  <h3 className="font-bold text-slate-900 text-sm">Chi tiết Yêu cầu Báo giá</h3>
+                </div>
+                <p className="text-xs text-slate-500 mt-1">{new Date(selectedLead.createdAt).toLocaleString("vi-VN")}</p>
               </div>
               <button
                 onClick={() => setSelectedLead(null)}
@@ -1448,7 +1464,7 @@ export default function AdminDashboardPage() {
                 </div>
                 <div>
                   <span className="text-slate-500 font-medium">Số điện thoại:</span>
-                  <p className="font-bold text-amber-600 text-sm font-mono">{selectedLead.phone}</p>
+                  <p className="font-bold text-[#dc2626] text-sm font-mono">{selectedLead.phone}</p>
                 </div>
                 <div>
                   <span className="text-slate-500 font-medium">Email:</span>
@@ -1494,7 +1510,7 @@ export default function AdminDashboardPage() {
             <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
               <a
                 href={`tel:${selectedLead.phone}`}
-                className="flex items-center space-x-1.5 px-4 py-2 rounded-[6px] bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs"
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-[6px] bg-[#dc2626] hover:bg-[#b91c1c] text-white font-bold text-xs shadow-xs"
               >
                 <Phone className="w-3.5 h-3.5" />
                 <span>Gọi Điện Thoại Ngay</span>

@@ -48,28 +48,31 @@ export async function sendAdminLeadNotification(lead: QuoteLead, settings: SiteS
   const fromEmail = settings.smtpUser || adminEmail;
   const fromName = settings.emailFromName || "LV Tiling Website Notifications";
 
-  const subject = `🚨 [ĐƠN BÁO GIÁ MỚI] ${lead.name} - ${lead.phone} (${lead.serviceType})`;
+  const refId = `#LV-${lead.id.slice(-6).toUpperCase()}`;
+  const subject = `🚨 [NEW QUOTE REQUEST] ${refId} - ${lead.name} (${lead.serviceType})`;
 
   const html = `
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f1f5f9; margin: 0; padding: 24px; color: #1e293b; }
-    .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; }
-    .header { background: #0f172a; color: #ffffff; padding: 24px 30px; border-bottom: 3px solid #f59e0b; }
-    .header h1 { margin: 0 0 6px 0; font-size: 20px; font-weight: 700; color: #f59e0b; letter-spacing: 0.5px; }
+    .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 6px; border: 1px solid #e2e8f0; overflow: hidden; }
+    .header { background: #0f172a; color: #ffffff; padding: 24px 30px; border-bottom: 3px solid #dc2626; }
+    .header h1 { margin: 0 0 6px 0; font-size: 20px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; }
+    .header h1 span { color: #dc2626; }
     .header p { margin: 0; font-size: 13px; color: #94a3b8; }
     .content { padding: 28px 30px; }
-    .badge { display: inline-block; background: #fef3c7; color: #92400e; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 4px; margin-bottom: 20px; }
+    .badge { display: inline-block; background: #fee2e2; color: #991b1b; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #fecaca; }
     .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 18px; margin-bottom: 20px; }
-    .row { display: flex; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; font-size: 14px; }
+    .row { display: flex; padding: 9px 0; border-bottom: 1px dashed #e2e8f0; font-size: 14px; }
     .row:last-child { border-bottom: none; }
-    .label { width: 140px; font-weight: 600; color: #64748b; }
+    .label { width: 150px; font-weight: 600; color: #64748b; }
     .value { flex: 1; font-weight: 600; color: #0f172a; }
+    .ref-tag { display: inline-block; font-family: monospace; background: #0f172a; color: #ffffff; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 13px; }
     .btn-group { margin-top: 24px; text-align: center; }
-    .btn-call { display: inline-block; background: #d97706; color: #ffffff !important; font-weight: 700; font-size: 15px; padding: 12px 28px; border-radius: 6px; text-decoration: none; margin-right: 10px; }
+    .btn-call { display: inline-block; background: #dc2626; color: #ffffff !important; font-weight: 700; font-size: 15px; padding: 12px 28px; border-radius: 6px; text-decoration: none; margin-right: 10px; }
     .btn-mail { display: inline-block; background: #0f172a; color: #ffffff !important; font-weight: 600; font-size: 14px; padding: 12px 20px; border-radius: 6px; text-decoration: none; }
     .footer { background: #f8fafc; padding: 16px 30px; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; text-align: center; }
   </style>
@@ -77,60 +80,64 @@ export async function sendAdminLeadNotification(lead: QuoteLead, settings: SiteS
 <body>
   <div class="container">
     <div class="header">
-      <h1>LV TILING PTY LTD</h1>
-      <p>Hệ thống Thông báo Yêu cầu Báo giá Trực tuyến</p>
+      <h1>LV TILING <span>PTY LTD</span></h1>
+      <p>Instant Online Quote Inquiry Alert</p>
     </div>
     <div class="content">
-      <span class="badge">🔥 CÓ KHÁCH HÀNG MỚI CẦN LIÊN HỆ NGAY</span>
+      <span class="badge">🔥 NEW CLIENT INQUIRY - CALL BACK REQUIRED</span>
       
       <div class="card">
         <div class="row">
-          <div class="label">👤 Họ và tên:</div>
+          <div class="label">🔖 Reference ID:</div>
+          <div class="value"><span class="ref-tag">${refId}</span></div>
+        </div>
+        <div class="row">
+          <div class="label">👤 Client Name:</div>
           <div class="value">${lead.name}</div>
         </div>
         <div class="row">
-          <div class="label">📞 Số điện thoại:</div>
-          <div class="value" style="color: #d97706; font-size: 16px;">${lead.phone}</div>
+          <div class="label">📞 Mobile Number:</div>
+          <div class="value" style="color: #dc2626; font-size: 16px;"><a href="tel:${lead.phone}" style="color: #dc2626; text-decoration: none;">${lead.phone}</a></div>
         </div>
         <div class="row">
-          <div class="label">📧 Email khách:</div>
-          <div class="value">${lead.email || "Không cung cấp"}</div>
+          <div class="label">📧 Client Email:</div>
+          <div class="value">${lead.email || "Not provided"}</div>
         </div>
         <div class="row">
-          <div class="label">🛠 Dịch vụ yêu cầu:</div>
+          <div class="label">🛠 Service Required:</div>
           <div class="value">${lead.serviceType}</div>
         </div>
         <div class="row">
-          <div class="label">📍 Địa chỉ/Khu vực:</div>
-          <div class="value">${lead.suburb || "Perth & Vùng lân cận"}</div>
+          <div class="label">📍 Job Location / Suburb:</div>
+          <div class="value">${lead.suburb || "Perth Metro Area"}</div>
         </div>
         <div class="row">
-          <div class="label">📐 Diện tích ước tính:</div>
-          <div class="value">${lead.approxArea || "Chưa xác định"}</div>
+          <div class="label">📐 Estimated Area:</div>
+          <div class="value">${lead.approxArea || "Not specified"}</div>
         </div>
         <div class="row">
-          <div class="label">⏰ Thời gian gửi:</div>
-          <div class="value">${new Date(lead.createdAt).toLocaleString("vi-VN", { timeZone: "Australia/Perth" })} (Perth Time)</div>
+          <div class="label">⏰ Submission Time:</div>
+          <div class="value">${new Date(lead.createdAt).toLocaleString("en-AU", { timeZone: "Australia/Perth" })} (Perth Time)</div>
         </div>
       </div>
 
       ${
         lead.message
           ? `
-      <div style="background: #fffbeb; border: 1px solid #fef3c7; border-radius: 6px; padding: 14px; margin-bottom: 20px;">
-        <div style="font-weight: 700; color: #b45309; font-size: 13px; margin-bottom: 6px;">📝 Ghi chú yêu cầu từ khách:</div>
-        <div style="font-size: 14px; color: #78350f; line-height: 1.5;">"${lead.message}"</div>
+      <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 14px; margin-bottom: 20px;">
+        <div style="font-weight: 700; color: #991b1b; font-size: 13px; margin-bottom: 6px;">📝 Client Notes & Project Specifications:</div>
+        <div style="font-size: 14px; color: #7f1d1d; line-height: 1.5;">"${lead.message}"</div>
       </div>`
           : ""
       }
 
       <div class="btn-group">
-        <a href="tel:${lead.phone}" class="btn-call">📞 GỌI CHO KHÁCH NGAY</a>
-        ${lead.email ? `<a href="mailto:${lead.email}" class="btn-mail">✉️ Gửi Email</a>` : ""}
+        <a href="tel:${lead.phone}" class="btn-call">📞 CALL CLIENT NOW</a>
+        ${lead.email ? `<a href="mailto:${lead.email}" class="btn-mail">✉️ Send Email</a>` : ""}
       </div>
     </div>
     <div class="footer">
-      Email tự động được gửi từ hệ thống Website LV Tiling Pty Ltd · 130A Crimea street, Morley WA 6062
+      Automated notification from LV Tiling Pty Ltd Website · 130A Crimea street, Morley WA 6062
     </div>
   </div>
 </body>
@@ -183,21 +190,22 @@ export async function sendCustomerConfirmationEmail(lead: QuoteLead, settings: S
   <meta charset="UTF-8">
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 24px; color: #1e293b; line-height: 1.6; }
-    .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-    .header { background: #0f172a; color: #ffffff; padding: 32px 30px; text-align: center; border-bottom: 4px solid #d97706; }
-    .header h1 { margin: 0 0 6px 0; font-size: 22px; font-weight: 800; color: #f59e0b; letter-spacing: 1px; }
+    .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 6px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .header { background: #0f172a; color: #ffffff; padding: 32px 30px; text-align: center; border-bottom: 4px solid #dc2626; }
+    .header h1 { margin: 0 0 6px 0; font-size: 22px; font-weight: 800; color: #ffffff; letter-spacing: 1px; }
+    .header h1 span { color: #dc2626; }
     .header p { margin: 0; font-size: 13px; color: #94a3b8; letter-spacing: 0.5px; }
     .content { padding: 32px 30px; }
     .greeting { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 12px; }
-    .highlight-box { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; padding: 16px; margin: 20px 0; color: #065f46; font-size: 14px; }
+    .highlight-box { background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 16px; margin: 20px 0; color: #991b1b; font-size: 14px; }
     .summary-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
     .summary-table td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; }
     .summary-table td.label { font-weight: 600; color: #64748b; width: 35%; background: #f8fafc; }
     .summary-table td.value { font-weight: 600; color: #0f172a; }
     .contact-card { background: #0f172a; color: #ffffff; border-radius: 6px; padding: 20px; text-align: center; margin-top: 28px; }
-    .contact-card h4 { margin: 0 0 6px 0; color: #f59e0b; font-size: 16px; font-weight: 700; }
+    .contact-card h4 { margin: 0 0 6px 0; color: #dc2626; font-size: 16px; font-weight: 700; }
     .contact-card p { margin: 0 0 14px 0; font-size: 13px; color: #cbd5e1; }
-    .phone-btn { display: inline-block; background: #d97706; color: #ffffff !important; font-size: 15px; font-weight: 700; padding: 10px 24px; border-radius: 6px; text-decoration: none; }
+    .phone-btn { display: inline-block; background: #dc2626; color: #ffffff !important; font-size: 15px; font-weight: 700; padding: 10px 24px; border-radius: 6px; text-decoration: none; }
     .guarantee-badges { margin-top: 24px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 12px; color: #64748b; }
     .guarantee-badges span { display: inline-block; margin: 4px 8px; font-weight: 600; color: #334155; }
     .footer { background: #f8fafc; padding: 20px 30px; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; text-align: center; }
@@ -206,7 +214,7 @@ export async function sendCustomerConfirmationEmail(lead: QuoteLead, settings: S
 <body>
   <div class="container">
     <div class="header">
-      <h1>LV TILING PTY LTD</h1>
+      <h1>LV TILING <span>PTY LTD</span></h1>
       <p>ARCHITECTURAL & RESIDENTIAL TILING SPECIALISTS · PERTH WA</p>
     </div>
     <div class="content">
