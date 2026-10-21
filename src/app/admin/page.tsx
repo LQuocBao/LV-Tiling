@@ -1125,32 +1125,13 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
 
-                {/* Test Email Section */}
-                <div className="pt-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="email"
-                      placeholder="Nhập email nhận thử..."
-                      value={testEmailAddress}
-                      onChange={(e) => setTestEmailAddress(e.target.value)}
-                      className="text-xs px-3 py-1.5 border border-slate-300 rounded-[6px] w-64 focus:outline-none focus:ring-1 focus:ring-[#dc2626]"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleTestEmail}
-                      disabled={testingEmail}
-                      className="flex items-center space-x-1.5 px-3 py-1.5 rounded-[6px] bg-[#dc2626] hover:bg-[#b91c1c] text-white text-xs font-semibold disabled:opacity-50 shadow-xs"
-                    >
-                      {testingEmail ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-                      <span>{testingEmail ? "Đang gửi thử..." : "Gửi Email Thử Nghiệm"}</span>
-                    </button>
-                  </div>
-
+                {/* Actions Section */}
+                <div className="pt-4 border-t border-slate-200 flex justify-end">
                   <button
                     type="button"
                     onClick={() => handleSaveSettings()}
                     disabled={saving}
-                    className="flex items-center space-x-1.5 px-4 py-1.5 rounded-[6px] bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs"
+                    className="flex items-center space-x-1.5 px-4 py-2 rounded-[6px] bg-[#dc2626] hover:bg-[#b91c1c] text-white text-xs font-semibold shadow-xs transition-colors"
                   >
                     <Save className="w-3.5 h-3.5 text-white" />
                     <span>Lưu Cấu Hình Email</span>
