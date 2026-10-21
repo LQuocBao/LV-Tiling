@@ -121,14 +121,14 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="antialiased bg-white text-slate-900 min-h-screen">
+      <body className="antialiased bg-white text-slate-900 min-h-screen" suppressHydrationWarning>
         <CustomCursor />
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
       </body>
