@@ -108,9 +108,10 @@ export default function AdminDashboardPage() {
         fetch("/api/gallery").then((r) => r.json()),
       ]);
 
-      if (resSettings.settings) {
-        setSettings(resSettings.settings);
-        setTestEmailAddress(resSettings.settings.adminNotificationEmail || resSettings.settings.email || "lvotiling@gmail.com");
+      const loadedSettings = resSettings.settings || resSettings.data;
+      if (loadedSettings) {
+        setSettings(loadedSettings);
+        setTestEmailAddress(loadedSettings.adminNotificationEmail || loadedSettings.email || "lvotiling@gmail.com");
       }
       if (resLeads.leads) setLeads(resLeads.leads);
       if (resGallery.gallery) setGallery(resGallery.gallery);
@@ -136,7 +137,11 @@ export default function AdminDashboardPage() {
       });
       const data = await res.json();
       if (data.success) {
-        setSettings(data.settings);
+        if (data.settings) {
+          setSettings(data.settings);
+        } else {
+          setSettings(payload);
+        }
         setStatusMsg({ type: "success", msg: "✅ Đã lưu cài đặt hệ thống thành công!" });
       } else {
         setStatusMsg({ type: "error", msg: "❌ Lưu thất bại: " + (data.error || "Lỗi không xác định") });

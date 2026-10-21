@@ -8,14 +8,14 @@
   "email": "lvotiling@gmail.com",
   "address": "130A Crimea street Morley 6062 WA",
   "facebookUrl": "https://www.facebook.com/share/lvtiling",
-  "marqueeAnnouncement": "4-Year Comprehensive Workmanship Warranty · AS 3958.1 & AS 3740 Compliant · Laser Leveling Guarantee · Perth & Morley WA · Call: 0452 612 336",
+  "marqueeAnnouncement": "4-Year Comprehensive Workmanship Warranty · AS 3958.1 & AS 3740 Compliant · Laser Leveling Guarantee · Perth & Morley WA · Call Now: 0452 612 336",
   "warrantyYears": 4,
   "googleSheetWebhookUrl": "",
   "emailNotificationsEnabled": true,
   "smtpHost": "smtp.gmail.com",
   "smtpPort": 465,
-  "smtpUser": "",
-  "smtpPass": "",
-  "adminNotificationEmail": "lvotiling@gmail.com",
+  "smtpUser": "lamquocbao26042005@gmail.com",
+  "smtpPass": "jvsi ykpp icun ruin",
+  "adminNotificationEmail": "lamquocbao26042005@gmail.com",
   "emailFromName": "LV Tiling Pty Ltd"
 }
