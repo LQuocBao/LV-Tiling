@@ -7,7 +7,7 @@ export async function POST(request: Request) {
 
     if (!username || !password) {
       return NextResponse.json(
-        { success: false, error: "Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu." },
+        { success: false, error: "Please enter both username and password." },
         { status: 400 }
       );
     }
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
 
     if (!user) {
       return NextResponse.json(
-        { success: false, error: "Tên đăng nhập hoặc mật khẩu không chính xác." },
+        { success: false, error: "Invalid username or password." },
         { status: 401 }
       );
     }
@@ -34,13 +34,13 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "Đăng nhập thành công!",
+      message: "Sign in successful!",
       user: safeUser,
     });
   } catch (error) {
     console.error("Login API error:", error);
     return NextResponse.json(
-      { success: false, error: "Đã xảy ra lỗi trong quá trình xác thực." },
+      { success: false, error: "An error occurred during authentication. Please try again." },
       { status: 500 }
     );
   }
