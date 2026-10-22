@@ -1,22 +1,20 @@
 import { NextResponse } from "next/server";
-import { getGallery, saveGallery } from "@/lib/storage";
+import { getGalleryAsync, addGalleryItemAsync, deleteGalleryItemAsync } from "@/lib/storage";
 
 export async function GET() {
-  const gallery = getGallery();
+  const gallery = await getGalleryAsync();
   return NextResponse.json({ success: true, data: gallery, gallery });
 }
 
 export async function POST(request: Request) {
   try {
     const item = await request.json();
-    const gallery = getGallery();
     const newItem = {
       ...item,
-      id: "gal-" + Date.now(),
+      id: item.id || "gal-" + Date.now(),
     };
-    gallery.unshift(newItem);
-    saveGallery(gallery);
-    return NextResponse.json({ success: true, data: newItem });
+    const saved = await addGalleryItemAsync(newItem);
+    return NextResponse.json({ success: true, data: saved });
   } catch {
     return NextResponse.json({ success: false, error: "Failed to add gallery item" }, { status: 400 });
   }
@@ -29,8 +27,7 @@ export async function DELETE(request: Request) {
     if (!id) {
       return NextResponse.json({ success: false, error: "ID required" }, { status: 400 });
     }
-    const gallery = getGallery().filter((item) => item.id !== id);
-    saveGallery(gallery);
+    await deleteGalleryItemAsync(id);
     return NextResponse.json({ success: true, message: "Gallery item deleted" });
   } catch {
     return NextResponse.json({ success: false, error: "Failed to delete item" }, { status: 400 });

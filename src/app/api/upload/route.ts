@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+import { getServiceSupabase } from "@/lib/supabase";
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,10 +30,6 @@ export async function POST(request: NextRequest) {
     // Sanitize folder name (only allow alphanumeric, dash, underscore)
     const safeFolder = folder.replace(/[^a-zA-Z0-9\-_]/g, "") || "uploads";
 
-    // Build destination path under /public/media/<folder>/
-    const uploadDir = path.join(process.cwd(), "public", "media", safeFolder);
-    await mkdir(uploadDir, { recursive: true });
-
     // Generate slug-based filename
     const ext = path.extname(file.name) || ".jpg";
     const customName = (formData.get("customName") as string)?.trim();
@@ -47,12 +44,42 @@ export async function POST(request: NextRequest) {
       .replace(/^-|-$/g, "");
 
     const fileName = `${safeBase || "photo"}_${Date.now()}${ext.toLowerCase()}`;
-    const filePath = path.join(uploadDir, fileName);
 
+    // 1. Prioritize uploading to Supabase Storage if configured (Cloud CDN)
+    const supabase = getServiceSupabase();
+    if (supabase) {
+      const storagePath = `${safeFolder}/${fileName}`;
+      const { error: uploadError } = await supabase.storage
+        .from("gallery")
+        .upload(storagePath, buffer, {
+          contentType: file.type,
+          upsert: true,
+        });
+
+      if (!uploadError) {
+        const { data: publicUrlData } = supabase.storage
+          .from("gallery")
+          .getPublicUrl(storagePath);
+
+        return NextResponse.json({
+          success: true,
+          url: publicUrlData.publicUrl,
+          fileName,
+          storage: "supabase",
+        });
+      }
+      console.warn("Supabase upload failed, falling back to local filesystem:", uploadError);
+    }
+
+    // 2. Fallback to local filesystem (development or self-hosted)
+    const uploadDir = path.join(process.cwd(), "public", "media", safeFolder);
+    await mkdir(uploadDir, { recursive: true });
+
+    const filePath = path.join(uploadDir, fileName);
     await writeFile(filePath, buffer);
 
     const publicUrl = `/media/${safeFolder}/${fileName}`;
-    return NextResponse.json({ success: true, url: publicUrl, fileName });
+    return NextResponse.json({ success: true, url: publicUrl, fileName, storage: "local" });
   } catch (err) {
     console.error("Upload error:", err);
     return NextResponse.json({ success: false, error: "Upload failed" }, { status: 500 });

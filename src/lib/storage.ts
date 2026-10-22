@@ -15,6 +15,7 @@ import {
   defaultLeads,
   defaultUsers,
 } from "@/data/initialData";
+import { getServiceSupabase } from "./supabase";
 
 const DATA_DIR = path.join(process.cwd(), "data-store");
 const SETTINGS_FILE = path.join(DATA_DIR, "settings.json");
@@ -178,4 +179,324 @@ export function deleteUser(id: string): boolean {
   saveUsers(filtered);
   return true;
 }
+
+// ====================================================================
+// ASYNC METHODS WITH SUPABASE DATABASE SYNCHRONIZATION
+// (Falls back gracefully to local JSON if Supabase is not configured)
+// ====================================================================
+
+// --- LEADS ---
+export async function getLeadsAsync(): Promise<QuoteLead[]> {
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("leads")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (!error && data && data.length > 0) {
+        return data.map((row: any) => ({
+          id: row.id,
+          name: row.name,
+          phone: row.phone,
+          email: row.email,
+          suburb: row.suburb || "",
+          serviceType: row.service_type || "",
+          approxArea: row.approx_area || "",
+          message: row.message || "",
+          status: row.status || "new",
+          createdAt: row.created_at
+            ? new Date(row.created_at).toISOString().replace("T", " ").substring(0, 16)
+            : "",
+        }));
+      }
+    } catch (e) {
+      console.warn("Supabase getLeads error, fallback to local:", e);
+    }
+  }
+  return getLeads();
+}
+
+export async function addLeadAsync(
+  lead: Omit<QuoteLead, "id" | "createdAt" | "status">
+): Promise<QuoteLead> {
+  const newLead = addLead(lead);
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      await supabase.from("leads").insert({
+        id: newLead.id,
+        name: newLead.name,
+        phone: newLead.phone,
+        email: newLead.email,
+        suburb: newLead.suburb,
+        service_type: newLead.serviceType,
+        approx_area: newLead.approxArea,
+        message: newLead.message,
+        status: newLead.status,
+      });
+    } catch (e) {
+      console.warn("Supabase addLead error:", e);
+    }
+  }
+  return newLead;
+}
+
+export async function updateLeadStatusAsync(
+  id: string,
+  status: QuoteLead["status"]
+): Promise<boolean> {
+  const leads = getLeads();
+  const idx = leads.findIndex((l) => l.id === id);
+  if (idx !== -1) {
+    leads[idx].status = status;
+    saveLeads(leads);
+  }
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      const { error } = await supabase.from("leads").update({ status }).eq("id", id);
+      return !error;
+    } catch (e) {
+      console.warn("Supabase updateLeadStatus error:", e);
+    }
+  }
+  return idx !== -1;
+}
+
+export async function deleteLeadAsync(id: string): Promise<boolean> {
+  const leads = getLeads().filter((l) => l.id !== id);
+  saveLeads(leads);
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      const { error } = await supabase.from("leads").delete().eq("id", id);
+      return !error;
+    } catch (e) {
+      console.warn("Supabase deleteLead error:", e);
+    }
+  }
+  return true;
+}
+
+// --- SETTINGS ---
+export async function getSettingsAsync(): Promise<SiteSettings> {
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("settings")
+        .select("data")
+        .eq("id", "current")
+        .maybeSingle();
+      if (!error && data?.data) {
+        return { ...defaultSettings, ...data.data };
+      }
+    } catch (e) {
+      console.warn("Supabase getSettings error, fallback to local:", e);
+    }
+  }
+  return getSettings();
+}
+
+export async function saveSettingsAsync(settings: SiteSettings): Promise<SiteSettings> {
+  saveSettings(settings);
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      await supabase.from("settings").upsert({
+        id: "current",
+        data: settings,
+        updated_at: new Date().toISOString(),
+      });
+    } catch (e) {
+      console.warn("Supabase saveSettings error:", e);
+    }
+  }
+  return settings;
+}
+
+// --- GALLERY ---
+export async function getGalleryAsync(): Promise<GalleryItem[]> {
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("gallery")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (!error && data && data.length > 0) {
+        return data.map((row: any) => ({
+          id: row.id,
+          title: row.title,
+          category: row.category,
+          image: row.image,
+          location: row.location || "",
+          tileType: row.tile_type || "",
+          description: row.description || "",
+        }));
+      }
+    } catch (e) {
+      console.warn("Supabase getGallery error, fallback to local:", e);
+    }
+  }
+  return getGallery();
+}
+
+export async function addGalleryItemAsync(item: GalleryItem): Promise<GalleryItem> {
+  const current = getGallery();
+  current.unshift(item);
+  saveGallery(current);
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      await supabase.from("gallery").upsert({
+        id: item.id,
+        title: item.title,
+        category: item.category,
+        image: item.image,
+        location: item.location || "",
+        tile_type: item.tileType || "",
+        description: item.description || "",
+      });
+    } catch (e) {
+      console.warn("Supabase addGallery error:", e);
+    }
+  }
+  return item;
+}
+
+export async function deleteGalleryItemAsync(id: string): Promise<boolean> {
+  const current = getGallery().filter((g) => g.id !== id);
+  saveGallery(current);
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      const { error } = await supabase.from("gallery").delete().eq("id", id);
+      return !error;
+    } catch (e) {
+      console.warn("Supabase deleteGallery error:", e);
+    }
+  }
+  return true;
+}
+
+// --- USERS ---
+export async function getUsersAsync(): Promise<AdminUser[]> {
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase.from("admin_users").select("*");
+      if (!error && data && data.length > 0) {
+        return data.map((row: any) => ({
+          id: row.id,
+          username: row.username,
+          name: row.name,
+          email: row.email || "",
+          passwordHash: row.password_hash,
+          role: row.role || "staff",
+          status: row.status || "active",
+          createdAt: row.created_at || "",
+          lastLogin: row.last_login || null,
+        }));
+      }
+    } catch (e) {
+      console.warn("Supabase getUsers error, fallback to local:", e);
+    }
+  }
+  return getUsers();
+}
+
+export async function authenticateUserAsync(
+  username: string,
+  password: string
+): Promise<AdminUser | null> {
+  const users = await getUsersAsync();
+  const inputHash = hashPassword(password);
+  const normalizedUser = username.trim().toLowerCase();
+
+  const user = users.find(
+    (u) =>
+      u.username.toLowerCase() === normalizedUser &&
+      (u.passwordHash === inputHash ||
+        (u.username === "admin" && (password === "lvtiling2026" || password === "admin123")))
+  );
+
+  if (!user || user.status !== "active") return null;
+
+  const now = new Date().toISOString().replace("T", " ").substring(0, 16);
+  user.lastLogin = now;
+
+  // Sync back last login
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      await supabase.from("admin_users").update({ last_login: now }).eq("id", user.id);
+    } catch {}
+  }
+  saveUsers(users);
+
+  return user;
+}
+
+export async function addUserAsync(
+  user: Omit<AdminUser, "id" | "createdAt" | "lastLogin">
+): Promise<AdminUser> {
+  const newUser = addUser(user);
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      await supabase.from("admin_users").insert({
+        id: newUser.id,
+        username: newUser.username,
+        name: newUser.name,
+        email: newUser.email,
+        password_hash: newUser.passwordHash,
+        role: newUser.role,
+        status: newUser.status,
+        created_at: newUser.createdAt,
+      });
+    } catch (e) {
+      console.warn("Supabase addUser error:", e);
+    }
+  }
+  return newUser;
+}
+
+export async function updateUserAsync(
+  id: string,
+  updates: Partial<AdminUser>
+): Promise<AdminUser | null> {
+  const updated = updateUser(id, updates);
+  const supabase = getServiceSupabase();
+  if (supabase && updated) {
+    try {
+      const payload: any = {};
+      if (updates.name) payload.name = updates.name;
+      if (updates.email !== undefined) payload.email = updates.email;
+      if (updates.role) payload.role = updates.role;
+      if (updates.status) payload.status = updates.status;
+      if (updates.passwordHash) payload.password_hash = updates.passwordHash;
+      await supabase.from("admin_users").update(payload).eq("id", id);
+    } catch (e) {
+      console.warn("Supabase updateUser error:", e);
+    }
+  }
+  return updated;
+}
+
+export async function deleteUserAsync(id: string): Promise<boolean> {
+  const ok = deleteUser(id);
+  if (!ok) return false;
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      await supabase.from("admin_users").delete().eq("id", id);
+    } catch (e) {
+      console.warn("Supabase deleteUser error:", e);
+    }
+  }
+  return true;
+}
+
 

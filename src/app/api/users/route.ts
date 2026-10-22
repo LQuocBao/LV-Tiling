@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
-import { getUsers, addUser, updateUser, deleteUser, hashPassword } from "@/lib/storage";
+import {
+  getUsersAsync,
+  addUserAsync,
+  updateUserAsync,
+  deleteUserAsync,
+  hashPassword,
+} from "@/lib/storage";
 
 // Helper to strip password hashes
 const sanitizeUser = (u: any) => ({
@@ -14,7 +20,7 @@ const sanitizeUser = (u: any) => ({
 });
 
 export async function GET() {
-  const users = getUsers();
+  const users = await getUsersAsync();
   const safeUsers = users.map(sanitizeUser);
   return NextResponse.json({ success: true, data: safeUsers, users: safeUsers });
 }
@@ -46,7 +52,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const currentUsers = getUsers();
+    const currentUsers = await getUsersAsync();
     const existing = currentUsers.find((u) => u.username.toLowerCase() === cleanUsername);
     if (existing) {
       return NextResponse.json(
@@ -55,7 +61,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const newUser = addUser({
+    const newUser = await addUserAsync({
       username: cleanUsername,
       passwordHash: hashPassword(password),
       name: name.trim(),
@@ -96,7 +102,7 @@ export async function PATCH(request: Request) {
       updates.passwordHash = hashPassword(newPassword.trim());
     }
 
-    const updated = updateUser(id, updates);
+    const updated = await updateUserAsync(id, updates);
     if (!updated) {
       return NextResponse.json({ success: false, error: "Không tìm thấy tài khoản." }, { status: 404 });
     }
@@ -124,7 +130,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ success: false, error: "ID tài khoản là bắt buộc." }, { status: 400 });
     }
 
-    const success = deleteUser(id);
+    const success = await deleteUserAsync(id);
     if (!success) {
       return NextResponse.json(
         { success: false, error: "Không thể xóa tài khoản (tài khoản không tồn tại hoặc đây là tài khoản Quản trị viên duy nhất)." },

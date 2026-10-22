@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { authenticateUser } from "@/lib/storage";
+import { authenticateUserAsync } from "@/lib/storage";
 
 export async function POST(request: Request) {
   try {
@@ -12,7 +12,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const user = authenticateUser(username, password);
+    const user = await authenticateUserAsync(username, password);
 
     if (!user) {
       return NextResponse.json(

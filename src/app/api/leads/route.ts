@@ -1,22 +1,19 @@
 import { NextResponse } from "next/server";
-import { getLeads, saveLeads } from "@/lib/storage";
+import { getLeadsAsync, updateLeadStatusAsync, deleteLeadAsync } from "@/lib/storage";
 
 export async function GET() {
-  const leads = getLeads();
+  const leads = await getLeadsAsync();
   return NextResponse.json({ success: true, data: leads, leads });
 }
 
 export async function PATCH(request: Request) {
   try {
     const { id, status } = await request.json();
-    const leads = getLeads();
-    const index = leads.findIndex((l) => l.id === id);
-    if (index === -1) {
+    const ok = await updateLeadStatusAsync(id, status);
+    if (!ok) {
       return NextResponse.json({ success: false, error: "Lead not found" }, { status: 404 });
     }
-    leads[index].status = status;
-    saveLeads(leads);
-    return NextResponse.json({ success: true, data: leads[index] });
+    return NextResponse.json({ success: true, data: { id, status } });
   } catch {
     return NextResponse.json({ success: false, error: "Failed to update lead" }, { status: 400 });
   }
@@ -29,8 +26,7 @@ export async function DELETE(request: Request) {
     if (!id) {
       return NextResponse.json({ success: false, error: "ID required" }, { status: 400 });
     }
-    const leads = getLeads().filter((l) => l.id !== id);
-    saveLeads(leads);
+    await deleteLeadAsync(id);
     return NextResponse.json({ success: true, message: "Lead deleted" });
   } catch {
     return NextResponse.json({ success: false, error: "Failed to delete lead" }, { status: 400 });

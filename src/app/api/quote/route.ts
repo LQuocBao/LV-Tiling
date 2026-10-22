@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { addLead, getLeads, getSettings } from "@/lib/storage";
+import { addLeadAsync, getLeadsAsync, getSettingsAsync } from "@/lib/storage";
 import {
   checkRateLimit,
   getClientIp,
@@ -54,7 +54,8 @@ export async function POST(request: Request) {
     }
 
     // Layer 6 – Duplicate detection: same phone/email recently submitted
-    if (isDuplicateLead(getLeads(), phone, email)) {
+    const existingLeads = await getLeadsAsync();
+    if (isDuplicateLead(existingLeads, phone, email)) {
       return reject(
         "We've already received your request a few minutes ago — no need to resend. Our team will contact you shortly.",
         409,
@@ -62,7 +63,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const newLead = addLead({
+    const newLead = await addLeadAsync({
       name: String(name).slice(0, 120),
       phone: String(phone).slice(0, 30),
       email: String(email || "").slice(0, 160),
@@ -74,7 +75,7 @@ export async function POST(request: Request) {
 
     // Asynchronously dispatch to Google Sheet Webhook if configured
     try {
-      const settings = getSettings();
+      const settings = await getSettingsAsync();
       if (settings.googleSheetWebhookUrl && settings.googleSheetWebhookUrl.trim().startsWith("http")) {
         fetch(settings.googleSheetWebhookUrl.trim(), {
           method: "POST",
