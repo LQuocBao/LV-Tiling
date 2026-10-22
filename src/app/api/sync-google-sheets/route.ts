@@ -58,7 +58,7 @@ export async function POST(request: Request) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          id: lead.id,
+          id: `#LV-${lead.id.slice(-6).toUpperCase()}`,
           name: lead.name,
           phone: lead.phone,
           email: lead.email,

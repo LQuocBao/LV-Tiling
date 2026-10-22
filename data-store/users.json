@@ -1,0 +1,13 @@
+[
+  {
+    "id": "user-admin-1",
+    "username": "admin",
+    "passwordHash": "9be44a887289c0764ed7a8295d2ac0972825047ea7843b76802d85fb732e8333",
+    "name": "Master Admin (Quản trị viên)",
+    "email": "lvotiling@gmail.com",
+    "role": "admin",
+    "status": "active",
+    "createdAt": "2026-09-01 08:00",
+    "lastLogin": "2026-10-22 02:34"
+  }
+]

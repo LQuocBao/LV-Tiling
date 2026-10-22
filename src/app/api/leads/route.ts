@@ -3,7 +3,7 @@ import { getLeads, saveLeads } from "@/lib/storage";
 
 export async function GET() {
   const leads = getLeads();
-  return NextResponse.json({ success: true, data: leads });
+  return NextResponse.json({ success: true, data: leads, leads });
 }
 
 export async function PATCH(request: Request) {

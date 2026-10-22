@@ -12,6 +12,8 @@ import {
   ShieldCheck,
   Loader2,
   Check,
+  RefreshCw,
+  Lock,
 } from "lucide-react";
 import FacebookIcon from "@/components/FacebookIcon";
 
@@ -46,6 +48,30 @@ export default function QuoteSection({
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [responseMsg, setResponseMsg] = useState("");
   const isInitialMount = useRef(true);
+
+  // Anti-spam: signed math challenge + invisible honeypot
+  const [captcha, setCaptcha] = useState<{ question: string; token: string } | null>(null);
+  const [captchaAnswer, setCaptchaAnswer] = useState("");
+  const [captchaLoading, setCaptchaLoading] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
+
+  const loadCaptcha = async () => {
+    setCaptchaLoading(true);
+    try {
+      const res = await fetch("/api/quote/challenge", { cache: "no-store" });
+      const data = await res.json();
+      if (data.success) setCaptcha({ question: data.question, token: data.token });
+    } catch (err) {
+      console.warn("Could not load security question", err);
+    } finally {
+      setCaptchaAnswer("");
+      setCaptchaLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadCaptcha();
+  }, []);
 
   // 1. Restore draft from localStorage silently on initial load
   useEffect(() => {
@@ -123,6 +149,11 @@ export default function QuoteSection({
         if (!value) return "Please select the service required.";
         return "";
       }
+      case "captcha": {
+        if (!value.trim()) return "Please answer the security question.";
+        if (!/^-?\d+$/.test(value.trim())) return "Please enter a number.";
+        return "";
+      }
       default:
         return "";
     }
@@ -135,6 +166,7 @@ export default function QuoteSection({
       email: validateField("email", formData.email),
       suburb: validateField("suburb", formData.suburb),
       serviceType: validateField("serviceType", formData.serviceType),
+      captcha: validateField("captcha", captchaAnswer),
     };
 
     // Filter out empty strings
@@ -156,6 +188,7 @@ export default function QuoteSection({
       serviceType: true,
       approxArea: true,
       message: true,
+      captcha: true,
     });
 
     return isValid;
@@ -193,10 +226,17 @@ export default function QuoteSection({
       const res = await fetch("/api/quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          website: honeypot,
+          captchaToken: captcha?.token,
+          captchaAnswer: captchaAnswer.trim(),
+        }),
       });
 
       const data = await res.json();
+      // Every token is single-use → always fetch a fresh question after a submit attempt
+      loadCaptcha();
       if (data.success) {
         setStatus("success");
         setResponseMsg(data.message || "Your quote request has been received! Our Morley trade team will contact you shortly.");
@@ -211,7 +251,11 @@ export default function QuoteSection({
         setErrors({});
       } else {
         setStatus("error");
-        setResponseMsg(data.message || "Failed to submit quote request. Please try again or phone us directly.");
+        setResponseMsg(data.message || data.error || "Failed to submit quote request. Please try again or phone us directly.");
+        if (data.field === "captcha") {
+          setTouched((prev) => ({ ...prev, captcha: true }));
+          setErrors((prev) => ({ ...prev, captcha: data.message || "Incorrect answer." }));
+        }
       }
     } catch (err) {
       console.error(err);
@@ -366,11 +410,22 @@ export default function QuoteSection({
 
               {/* Form Status Messages */}
               {status === "success" && (
-                <div className="p-3.5 rounded-[6px] bg-emerald-50 border border-emerald-300 text-emerald-900 text-sm flex items-start gap-2.5" role="alert">
-                  <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-emerald-700" />
-                  <div>
-                    <span className="font-semibold block">Quote Request Received!</span>
-                    <span className="text-xs text-emerald-800 mt-0.5 block">{responseMsg}</span>
+                <div className="p-4 rounded-[6px] bg-emerald-50 border border-emerald-300 text-emerald-900 text-sm flex items-start gap-3 shadow-xs" role="alert">
+                  <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-emerald-700" />
+                  <div className="space-y-2 flex-1">
+                    <div>
+                      <span className="font-bold text-sm sm:text-base block text-emerald-950">Quote Request Received!</span>
+                      <span className="text-xs text-emerald-800 mt-0.5 block leading-relaxed">{responseMsg}</span>
+                    </div>
+                    <div className="p-2.5 rounded-[5px] bg-white border border-emerald-200 text-xs text-slate-800 space-y-1">
+                      <div className="flex items-center gap-1.5 font-bold text-[#dc2626]">
+                        <Mail className="w-3.5 h-3.5 text-[#dc2626] shrink-0" />
+                        <span>Important: Please check your Email (including Spam / Junk folder)</span>
+                      </div>
+                      <p className="text-[11px] text-slate-600 leading-normal">
+                        Our automated itemized receipt and quote details have been sent to your email. If you do not see it in your Primary Inbox, please inspect your <strong>Spam, Junk, or Promotions folder</strong>.
+                      </p>
+                    </div>
                   </div>
                 </div>
               )}
@@ -599,10 +654,83 @@ export default function QuoteSection({
                   />
                 </div>
 
+                {/* Honeypot (anti-bot): hidden from humans & screen readers, bots auto-fill it */}
+                <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", top: "auto", width: 1, height: 1, overflow: "hidden" }}>
+                  <label htmlFor="quote-website">Website</label>
+                  <input
+                    id="quote-website"
+                    name="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                  />
+                </div>
+
+                {/* Security check (anti-spam) */}
+                <div className="space-y-1">
+                  <label htmlFor="quote-captcha" className="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
+                    <Lock className="w-3.5 h-3.5 text-[#dc2626]" />
+                    Security Check <span className="text-[#dc2626]">*</span>
+                    <span className="font-normal text-slate-500">— helps us block spam</span>
+                  </label>
+                  <div className="flex items-stretch gap-2">
+                    <div
+                      className="min-h-[44px] min-w-[120px] px-4 flex items-center justify-center rounded-[6px] bg-slate-50 border border-slate-300 font-mono font-bold text-slate-900 text-base select-none tracking-wider"
+                      aria-live="polite"
+                    >
+                      {captchaLoading || !captcha ? (
+                        <Loader2 className="w-4 h-4 animate-spin text-slate-400" />
+                      ) : (
+                        <span>{captcha.question} = ?</span>
+                      )}
+                    </div>
+                    <input
+                      id="quote-captcha"
+                      name="captcha"
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="off"
+                      value={captchaAnswer}
+                      onChange={(e) => {
+                        setCaptchaAnswer(e.target.value);
+                        if (touched.captcha) setErrors((prev) => ({ ...prev, captcha: validateField("captcha", e.target.value) }));
+                      }}
+                      onBlur={() => {
+                        setTouched((prev) => ({ ...prev, captcha: true }));
+                        setErrors((prev) => ({ ...prev, captcha: validateField("captcha", captchaAnswer) }));
+                      }}
+                      placeholder="Your answer"
+                      className={`flex-1 min-w-0 min-h-[44px] px-3.5 py-2.5 rounded-[6px] bg-white border text-slate-900 text-sm focus:outline-none transition-colors ${
+                        touched.captcha && errors.captcha
+                          ? "border-red-500 bg-red-50/20 focus:border-red-600"
+                          : "border-slate-300 focus:border-[#dc2626]"
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={loadCaptcha}
+                      disabled={captchaLoading}
+                      aria-label="Get a new security question"
+                      title="New question"
+                      className="min-h-[44px] w-11 flex items-center justify-center rounded-[6px] border border-slate-300 text-slate-600 hover:text-[#dc2626] hover:border-[#dc2626] transition-colors disabled:opacity-50"
+                    >
+                      <RefreshCw className={`w-4 h-4 ${captchaLoading ? "animate-spin" : ""}`} />
+                    </button>
+                  </div>
+                  {touched.captcha && errors.captcha && (
+                    <p className="text-xs text-red-600 flex items-center gap-1 mt-1 font-medium">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      <span>{errors.captcha}</span>
+                    </p>
+                  )}
+                </div>
+
                 {/* Submit button */}
                 <button
                   type="submit"
-                  disabled={status === "loading"}
+                  disabled={status === "loading" || !captcha}
                   className="w-full min-h-[48px] py-3 rounded-[6px] bg-[#dc2626] hover:bg-[#b91c1c] text-white font-semibold text-xs sm:text-sm uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {status === "loading" ? (

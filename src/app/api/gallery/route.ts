@@ -3,7 +3,7 @@ import { getGallery, saveGallery } from "@/lib/storage";
 
 export async function GET() {
   const gallery = getGallery();
-  return NextResponse.json({ success: true, data: gallery });
+  return NextResponse.json({ success: true, data: gallery, gallery });
 }
 
 export async function POST(request: Request) {

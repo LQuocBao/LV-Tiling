@@ -1,9 +1,22 @@
+export interface SectionVisibility {
+  announcementBar: boolean;
+  hero: boolean;
+  welcome: boolean;
+  services: boolean;
+  tradeCredentials: boolean;
+  whyChooseUs: boolean;
+  testimonials: boolean;
+  faq: boolean;
+  quote: boolean;
+}
+
 export interface SiteSettings {
   companyName: string;
   abn: string;
   tagline: string;
   heroHeadline: string;
   heroSubheadline: string;
+  heroImage?: string;
   phone: string;
   email: string;
   address: string;
@@ -18,6 +31,7 @@ export interface SiteSettings {
   smtpPass?: string;
   adminNotificationEmail?: string;
   emailFromName?: string;
+  sectionVisibility?: SectionVisibility;
 }
 
 export interface ServiceItem {
@@ -65,12 +79,50 @@ export interface QuoteLead {
   createdAt: string;
 }
 
+export interface AdminUser {
+  id: string;
+  username: string;
+  passwordHash: string;
+  name: string;
+  email: string;
+  role: "admin" | "staff";
+  status: "active" | "inactive";
+  createdAt: string;
+  lastLogin?: string | null;
+}
+
+export const defaultUsers: AdminUser[] = [
+  {
+    id: "user-admin-1",
+    username: "admin",
+    passwordHash: "9be44a887289c0764ed7a8295d2ac0972825047ea7843b76802d85fb732e8333", // lvtiling2026
+    name: "Master Admin (Quản trị viên)",
+    email: "lvotiling@gmail.com",
+    role: "admin",
+    status: "active",
+    createdAt: "2026-09-01 08:00",
+    lastLogin: null,
+  },
+];
+
+export const defaultSectionVisibility = {
+  announcementBar: true,
+  hero: true,
+  welcome: true,
+  services: true,
+  tradeCredentials: true,
+  whyChooseUs: true,
+  testimonials: false, // Hidden per client request, can be enabled later
+  faq: true,
+  quote: true,
+};
 export const defaultSettings: SiteSettings = {
   companyName: "LV Tiling Pty Ltd",
   abn: "ABN 84 629 140 821",
   tagline: "Perth's Premier Architectural & Residential Tiling Specialists",
   heroHeadline: "At LV Tiling Pty Ltd we treat every project as a work of art, delivering quality, precision even with a small renovation or large scale jobs. Our experts will ensure every detail is done right. Let’s transform your space together.",
   heroSubheadline: "Licensed Western Australian tiling contractor providing laser-aligned screeding, AS 3740 waterproofing, and flawless tile installations backed by our 4-year comprehensive workmanship warranty.",
+  heroImage: "",
   phone: "0452 612 336",
   email: "lvotiling@gmail.com",
   address: "130A Crimea street Morley 6062 WA",
@@ -85,6 +137,7 @@ export const defaultSettings: SiteSettings = {
   smtpPass: "",
   adminNotificationEmail: "lvotiling@gmail.com",
   emailFromName: "LV Tiling Pty Ltd",
+  sectionVisibility: defaultSectionVisibility,
 };
 
 export const defaultServices: ServiceItem[] = [

@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cẩm Nang Quản Trị Website — LV Tiling Pty Ltd</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #dc2626;
+      --primary-dark: #b91c1c;
+      --primary-light: #fef2f2;
+      --slate-900: #0f172a;
+      --slate-800: #1e293b;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-200: #e2e8f0;
+      --slate-100: #f1f5f9;
+      --slate-50: #f8fafc;
+      --emerald-600: #059669;
+      --emerald-50: #ecfdf5;
+      --amber-600: #d97706;
+      --amber-50: #fffbeb;
+      --blue-600: #2563eb;
+      --blue-50: #eff6ff;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 85px; /* Giữ khoảng trống để thanh menu dính không che nội dung */
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--slate-50);
+      color: var(--slate-800);
+      line-height: 1.65;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top banner */
+    .brand-header {
+      background: linear-gradient(135deg, var(--slate-900) 0%, #1a2234 100%);
+      color: #fff;
+      padding: 44px 24px;
+      border-bottom: 4px solid var(--primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand-header::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(220, 38, 38, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .header-container {
+      max-width: 1040px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(220, 38, 38, 0.2);
+      border: 1px solid rgba(220, 38, 38, 0.4);
+      color: #fca5a5;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      margin-bottom: 14px;
+    }
+
+    .header-title {
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .header-subtitle {
+      color: var(--slate-200);
+      font-size: 15px;
+      max-width: 680px;
+      font-weight: 400;
+      opacity: 0.9;
+    }
+
+    .header-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 13px;
+      color: var(--slate-400);
+    }
+
+    .header-meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-meta strong {
+      color: #fff;
+    }
+
+    /* Print & Quick Action Bar */
+    .quick-bar {
+      background: #fff;
+      border-bottom: 1px solid var(--slate-200);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .quick-bar-container {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .quick-status {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--slate-600);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot-live {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .print-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--slate-900);
+      color: #fff;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .print-btn:hover {
+      background: var(--primary);
+    }
+
+    /* Layout structure */
+    .main-wrapper {
+      max-width: 1040px;
+      margin: 32px auto;
+      padding: 0 24px 80px 24px;
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      gap: 36px;
+      align-items: start;
+    }
+
+    @media (max-width: 880px) {
+      .main-wrapper {
+        grid-template-columns: 1fr;
+      }
+      .toc-sidebar {
+        display: none;
+      }
+    }
+
+    /* TOC Sidebar */
+    .toc-sidebar {
+      position: sticky;
+      top: 76px;
+      background: #fff;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+
+    .toc-title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--slate-500);
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--slate-100);
+    }
+
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .toc-list a {
+      color: var(--slate-700);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 10px;
+      border-radius: 6px;
+      display: block;
+      transition: all 0.15s;
+    }
+
+    .toc-list a:hover {
+      background: var(--slate-100);
+      color: var(--primary);
+      padding-left: 14px;
+    }
+
+    /* Content Area */
+    .content-area {
+      min-width: 0;
+    }
+
+    .guide-card {
+      background: #fff;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-md);
+      padding: 30px;
+      margin-bottom: 26px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      scroll-margin-top: 85px; /* Ngăn chặn bị thanh header che mất */
+    }
+
+    .card-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      height: 28px;
+      padding: 0 6px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      margin-right: 10px;
+    }
+
+    .section-title {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--slate-900);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+    }
+
+    p {
+      margin-bottom: 14px;
+      color: var(--slate-600);
+    }
+
+    /* Callout Boxes */
+    .callout {
+      border-radius: var(--radius-sm);
+      padding: 16px 18px;
+      margin: 18px 0;
+      display: flex;
+      gap: 14px;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .callout-icon {
+      font-size: 20px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .callout.tip {
+      background: var(--emerald-50);
+      border-left: 4px solid var(--emerald-600);
+      color: #065f46;
+    }
+
+    .callout.warning {
+      background: var(--amber-50);
+      border-left: 4px solid var(--amber-600);
+      color: #92400e;
+    }
+
+    .callout.info {
+      background: var(--blue-50);
+      border-left: 4px solid var(--blue-600);
+      color: #1e40af;
+    }
+
+    .callout.danger {
+      background: var(--primary-light);
+      border-left: 4px solid var(--primary);
+      color: #991b1b;
+    }
+
+    /* Steps UI */
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      padding: 15px;
+      border-radius: var(--radius-sm);
+    }
+
+    .step-badge {
+      background: var(--slate-900);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .step-content {
+      font-size: 14px;
+      color: var(--slate-700);
+    }
+
+    .step-content strong {
+      color: var(--slate-900);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .badge-red { background: var(--primary-light); color: var(--primary); }
+    .badge-green { background: var(--emerald-50); color: var(--emerald-600); }
+    .badge-blue { background: var(--blue-50); color: var(--blue-600); }
+    .badge-slate { background: var(--slate-200); color: var(--slate-700); }
+
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-sm);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13.5px;
+    }
+
+    th {
+      background: var(--slate-100);
+      color: var(--slate-900);
+      font-weight: 700;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--slate-200);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--slate-200);
+      color: var(--slate-700);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: var(--slate-50);
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      background: var(--slate-100);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--primary-dark);
+      border: 1px solid var(--slate-200);
+    }
+
+    /* Print styling */
+    @media print {
+      body {
+        background: #fff;
+        font-size: 12pt;
+      }
+      .quick-bar, .toc-sidebar, .print-btn {
+        display: none !important;
+      }
+      .brand-header {
+        padding: 24px 0;
+        background: none;
+        color: #000;
+        border-bottom: 2px solid #000;
+      }
+      .brand-badge {
+        border: 1px solid #000;
+        color: #000;
+      }
+      .header-title { color: #000; }
+      .header-subtitle, .header-meta { color: #555; }
+      .main-wrapper {
+        display: block;
+        padding: 0;
+        margin: 0;
+      }
+      .guide-card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        break-inside: avoid;
+        margin-bottom: 20px;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Banner -->
+  <header class="brand-header">
+    <div class="header-container">
+      <div class="brand-badge">Sách Hướng Dẫn Bàn Giao Quản Trị</div>
+      <h1 class="header-title">HỆ THỐNG QUẢN TRỊ ADMIN (CMS)</h1>
+      <p class="header-subtitle">Tài liệu hướng dẫn trực quan dành riêng cho Quản lý & Nhân sự <strong>LV Tiling Pty Ltd</strong> (Perth, Western Australia). Dễ dàng vận hành, đăng tải công trình và chăm sóc khách hàng không cần kiến thức lập trình.</p>
+      
+      <div class="header-meta">
+        <span>🏢 Doanh nghiệp: <strong>LV TILING PTY LTD</strong></span>
+        <span>📍 Khu vực: <strong>Perth & Toàn bang WA</strong></span>
+        <span>🛡️ Chuẩn kỹ thuật: <strong>AS 3958.1 & AS 3740</strong></span>
+        <span>🌐 Phiên bản: <strong>V2.5 Enterprise (Bilingual)</strong></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sticky Quick Action Bar -->
+  <div class="quick-bar">
+    <div class="quick-bar-container">
+      <div class="quick-status">
+        <span class="dot-live"></span>
+        Hệ thống trực quan • Cập nhật tức thì thời gian thực
+      </div>
+      <button class="print-btn" onclick="window.print()">
+        🖨️ In tài liệu / Xuất file PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content Layout -->
+  <div class="main-wrapper">
+
+    <!-- Sidebar Navigation -->
+    <aside class="toc-sidebar">
+      <div class="toc-title">Mục lục hướng dẫn</div>
+      <ul class="toc-list">
+        <li><a href="#sec-layout">1. Giao diện & Ngôn ngữ</a></li>
+        <li><a href="#sec-leads">2. Quản lý Đơn Báo Giá</a></li>
+        <li><a href="#sec-excel">3. Xuất File Excel Chuẩn</a></li>
+        <li><a href="#sec-notifications">4. Email & Google Sheets</a></li>
+        <li><a href="#sec-company">5. Hotline & Doanh nghiệp</a></li>
+        <li><a href="#sec-accounts">6. Quản lý Tài khoản Staff</a></li>
+        <li><a href="#sec-gallery">7. Thư viện ảnh Dự án</a></li>
+        <li><a href="#sec-services">8. Dịch vụ & Sắp xếp</a></li>
+        <li><a href="#sec-hero">9. Nội dung Hero & Banner</a></li>
+        <li><a href="#sec-visibility">10. Ẩn / Hiện Section</a></li>
+        <li><a href="#sec-testimonials">11. Đánh giá Khách hàng</a></li>
+        <li><a href="#sec-faq">12. Khắc phục sự cố & FAQ</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content-area">
+
+      <!-- SECTION 1: GIAO DIỆN & NGÔN NGỮ -->
+      <section id="sec-layout" class="guide-card">
+        <h2 class="section-title"><span class="card-num">1</span> Bố cục Giao diện & Chuyển đổi Ngôn ngữ</h2>
+        <p>Giao diện được tinh giản theo tông màu của thương hiệu LV Tiling (Đỏ Crimson, Slate than chì và Trắng ngọc) mang lại trải nghiệm làm việc mượt mà, chuyên nghiệp.</p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Vị trí</th>
+                <th>Thành phần</th>
+                <th>Chức năng chính</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Cột trái (Sidebar)</strong></td>
+                <td>Logo & Menu điều hướng</td>
+                <td>Chuyển đổi linh hoạt giữa các mục: Báo giá, Dự án, Dịch vụ, Cài đặt...</td>
+              </tr>
+              <tr>
+                <td><strong>Dưới Logo</strong></td>
+                <td>Nút <code>EN</code> | <code>VI</code></td>
+                <td>Chuyển đổi toàn bộ giao diện sang Tiếng Anh (cho nhân viên Úc) hoặc Tiếng Việt (cho quản lý).</td>
+              </tr>
+              <tr>
+                <td><strong>Khu vực chính</strong></td>
+                <td>Bảng số liệu & Biểu mẫu</td>
+                <td>Thao tác trực tiếp, xem trước số liệu thống kê và lưu dữ liệu.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 2: QUẢN LÝ ĐƠN BÁO GIÁ -->
+      <section id="sec-leads" class="guide-card">
+        <h2 class="section-title"><span class="card-num">2</span> Quản lý Khách hàng & Báo giá (Leads)</h2>
+        <p>Trọng tâm vận hành của công ty. Khi khách điền form yêu cầu đo đạc/báo giá ngoài trang chủ, đơn sẽ được gửi ngay lập tức vào tab <strong>"Danh sách Báo giá"</strong>.</p>
+
+        <h3 style="font-size: 15px; margin: 16px 0 8px 0; color: var(--slate-900);">Quy trình xử lý một đơn báo giá:</h3>
+        <div class="step-list">
+          <div class="step-item">
+            <span class="step-badge">1</span>
+            <div class="step-content"><strong>Lọc đơn Mới:</strong> Chọn lọc trạng thái <span class="badge badge-red">Mới tiếp nhận</span> để nhận diện ngay các khách hàng cần gọi lại trong 15-30 phút.</div>
+          </div>
+          <div class="step-item">
+            <span class="step-badge">2</span>
+            <div class="step-content"><strong>Xem Chi tiết & Gọi điện 1-chạm:</strong> Bấm nút <strong>"Chi tiết"</strong> trên dòng đơn. Trên điện thoại, bạn có thể bấm nút đỏ <strong>"Gọi Điện Thoại Ngay"</strong> để kết nối trực tiếp với khách mà không cần nhập số.</div>
+          </div>
+          <div class="step-item">
+            <span class="step-badge">3</span>
+            <div class="step-content"><strong>Cập nhật Tiến độ:</strong> Sau khi trao đổi, đổi trạng thái sang <span class="badge badge-blue">Đã liên hệ</span>, <span class="badge badge-slate">Đã báo giá</span>, hoặc <span class="badge badge-green">Đã chốt việc</span> để cả đội ngũ nắm được.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: XUẤT FILE EXCEL CHUẨN -->
+      <section id="sec-excel" class="guide-card">
+        <h2 class="section-title"><span class="card-num">3</span> Xuất Dữ liệu Ra File Excel Cao Cấp (.xlsx)</h2>
+        <p>Hệ thống hỗ trợ xuất file Excel chuẩn format công sở, giúp chủ doanh nghiệp dễ dàng lưu trữ, làm việc với kế toán hoặc in danh sách đi đo đạc thực tế.</p>
+
+        <div class="callout info">
+          <div class="callout-icon">✨</div>
+          <div>
+            <strong>Đặc tính nổi bật của file Excel xuất ra:</strong>
+            <ul style="margin: 6px 0 0 16px; padding: 0;">
+              <li><strong>Lọc trước khi xuất:</strong> Chỉ xuất các đơn theo ngày, tuần, tháng, năm hoặc trạng thái bạn đang chọn (tránh xuất ồ ạt).</li>
+              <li><strong>Không bị lỗi số điện thoại:</strong> Số điện thoại được lưu chuẩn dạng văn bản, hiển thị trọn vẹn <code>0452612336</code> (không bị Excel tự động biến thành <code>7.86E+08</code>).</li>
+              <li><strong>Mã đơn Ref ID đồng nhất:</strong> Hiển thị mã chuẩn <code>#LV-XXXXXX</code> đồng bộ 100% với trên web, email và Google Sheets.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: THÔNG BÁO TỰ ĐỘNG -->
+      <section id="sec-notifications" class="guide-card">
+        <h2 class="section-title"><span class="card-num">4</span> Hệ thống Thông báo Tự động (Email & Google Sheets)</h2>
+        <p>Cơ chế thông báo tức thì 2 kênh giúp bạn không bao giờ chậm trễ trước yêu cầu của khách hàng:</p>
+
+        <div class="step-list">
+          <div class="step-item">
+            <span class="step-badge">Kênh 1</span>
+            <div class="step-content">
+              <strong>Email Thông báo 2 Chiều (Tab "Email 2 Chiều"):</strong>
+              <br>• Gửi thông báo đến email Admin kèm đầy đủ diện tích, địa chỉ, nhu cầu của khách.
+              <br>• Tự động gửi thư phản hồi xác nhận chuyên nghiệp chuẩn Úc đến hòm thư của khách hàng.
+            </div>
+          </div>
+          <div class="step-item">
+            <span class="step-badge">Kênh 2</span>
+            <div class="step-content">
+              <strong>Google Sheets Webhook (Tab "Google Sheets"):</strong>
+              <br>• Tự động ghi 1 dòng mới vào bảng tính Google Sheets của bạn ngay khi khách bấm gửi form.
+              <br>• Giúp đội ngũ thợ, kế toán theo dõi chung trên điện thoại mà không cần vào trang admin.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 5: THÔNG TIN DOANH NGHIỆP & HOTLINE -->
+      <section id="sec-company" class="guide-card">
+        <h2 class="section-title"><span class="card-num">5</span> Hotline & Thông tin Doanh nghiệp</h2>
+        <p>Cài đặt các thông tin thương hiệu hiển thị trên toàn bộ website (Tab <strong>"Hotline & Thông tin"</strong>):</p>
+        <ul style="margin-left: 20px; color: var(--slate-700); line-height: 1.8;">
+          <li><strong>Hotline kinh doanh:</strong> Số điện thoại khách bấm gọi nhanh ngoài trang chủ (ví dụ: <code>0452 612 336</code>).</li>
+          <li><strong>Email & Địa chỉ trụ sở:</strong> Địa chỉ xưởng hoặc khu vực hoạt động (ví dụ: <em>Morley, WA 6062</em>).</li>
+          <li><strong>Số ABN / Trade Licence:</strong> Số giấy phép hành nghề xây dựng tại Tây Úc (WA).</li>
+          <li><strong>Dòng chữ chạy Marquee:</strong> Thông điệp màu đỏ chạy ngang trên cùng trang web (cam kết bảo hành 4 năm, chứng chỉ AS 3958.1 & AS 3740).</li>
+        </ul>
+      </section>
+
+      <!-- SECTION 6: QUẢN LÝ TÀI KHOẢN STAFF -->
+      <section id="sec-accounts" class="guide-card">
+        <h2 class="section-title"><span class="card-num">6</span> Quản lý Tài khoản Quản trị & Nhân viên</h2>
+        <p>Phân quyền và cấp tài khoản cho các thành viên trong công ty cùng theo dõi đơn báo giá (Tab <strong>"Quản lý Tài khoản"</strong>):</p>
+        <ul style="margin-left: 20px; color: var(--slate-700); line-height: 1.8;">
+          <li><strong>Thêm tài khoản mới:</strong> Nhấn nút <strong>"+ Thêm Tài khoản Mới"</strong>, điền Họ tên, Tên đăng nhập, Email, Mật khẩu và phân quyền (<em>Admin</em> toàn quyền hoặc <em>Nhân viên</em> chỉ xem đơn).</li>
+          <li><strong>Đổi mật khẩu:</strong> Nhấn nút "Sửa" bên cạnh tài khoản, nhập mật khẩu mới và bấm Lưu. Nếu không muốn đổi mật khẩu, chỉ cần để trống ô mật khẩu.</li>
+          <li><strong>Khóa tạm thời:</strong> Chuyển sang trạng thái <em>Tạm khóa</em> khi nhân sự nghỉ phép hoặc chuyển công tác.</li>
+        </ul>
+      </section>
+
+      <!-- SECTION 7: THƯ VIỆN DỰ ÁN -->
+      <section id="sec-gallery" class="guide-card">
+        <h2 class="section-title"><span class="card-num">7</span> Quản lý Thư viện Dự án (Project Gallery)</h2>
+        <p>Hệ thống tự động hóa thông minh giúp việc tải ảnh công trình lên web trở nên vô cùng nhanh chóng và tiện lợi (Tab <strong>"Thư viện dự án"</strong>).</p>
+
+        <div class="step-list">
+          <div class="step-item">
+            <span class="step-badge">Bước 1</span>
+            <div class="step-content">Bấm nút đỏ <strong>"+ Thêm Hình Ảnh Mới"</strong>.</div>
+          </div>
+          <div class="step-item">
+            <span class="step-badge">Bước 2</span>
+            <div class="step-content"><strong>Chọn Hạng mục công trình:</strong> Chọn <em>Completed Jobs</em>, <em>Screeding & Prep</em>, hoặc <em>Waterproofing</em>... Hệ thống sẽ <strong>tự động chuyển thư mục lưu ảnh</strong> về đúng phân loại đó.</div>
+          </div>
+          <div class="step-item">
+            <span class="step-badge">Bước 3</span>
+            <div class="step-content"><strong>Nhập Tên công trình:</strong> Ví dụ: <code>Bathroom Renovation Morley</code>. Hệ thống sẽ <strong>tự sinh tên file chuẩn SEO</strong> dạng <code>bathroom-renovation-morley.jpg</code>.</div>
+          </div>
+          <div class="step-item">
+            <span class="step-badge">Bước 4</span>
+            <div class="step-content">Bấm nút đỏ <strong>"Tải ảnh từ máy tính"</strong>: Chọn ảnh từ máy tính hoặc điện thoại, ảnh sẽ được tự động lưu lên máy chủ và hiển thị khung xem trước ngay lập tức mà không cần gõ đường dẫn tay.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 8: DỊCH VỤ CỐT LÕI -->
+      <section id="sec-services" class="guide-card">
+        <h2 class="section-title"><span class="card-num">8</span> Quản lý Dịch vụ cốt lõi & Sắp xếp</h2>
+        <p>Quản lý các thẻ dịch vụ chính hiển thị ngoài trang chủ (Tab <strong>"Dịch vụ"</strong>):</p>
+        <ul style="margin-left: 20px; color: var(--slate-700); line-height: 1.8;">
+          <li><strong>Đổi thứ tự ưu tiên:</strong> Bấm mũi tên <strong>Lên (▲)</strong> hoặc <strong>Xuống (▼)</strong> để đưa dịch vụ muốn tập trung quảng bá lên vị trí đầu tiên.</li>
+          <li><strong>Chỉnh sửa nội dung:</strong> Bấm "Chỉnh sửa" trên từng thẻ để cập nhật Tên dịch vụ, Huy hiệu chứng chỉ đỏ, Mô tả ngắn và các gạch đầu dòng kỹ thuật.</li>
+          <li>Nhớ bấm nút đỏ <strong>"Lưu Tất Cả Dịch Vụ"</strong> để áp dụng thay đổi ra ngoài trang chủ.</li>
+        </ul>
+      </section>
+
+      <!-- SECTION 9: HERO & BANNER -->
+      <section id="sec-hero" class="guide-card">
+        <h2 class="section-title"><span class="card-num">9</span> Nội dung Trang chủ & Banner Hero</h2>
+        <p>Tùy chỉnh hình ảnh và các thông điệp nổi bật ở phần đầu website (Tab <strong>"Nội dung Trang & Hero"</strong>):</p>
+        <ul style="margin-left: 20px; color: var(--slate-700); line-height: 1.8;">
+          <li><strong>Hình nền Banner Hero:</strong> Nhấn nút <strong>"Tải Ảnh Hero Mới"</strong> để tải lên bức ảnh công trình đẹp nhất làm ảnh đại diện toàn màn hình.</li>
+          <li><strong>Tiêu đề & Khẩu hiệu:</strong> Chỉnh sửa tiêu đề chính, cam kết tay nghề và số năm bảo hành (mặc định <code>4</code> năm).</li>
+          <li>Nhấn nút <strong>"Lưu Nội Dung"</strong> để hoàn tất.</li>
+        </ul>
+      </section>
+
+      <!-- SECTION 10: SECTION VISIBILITY -->
+      <section id="sec-visibility" class="guide-card">
+        <h2 class="section-title"><span class="card-num">10</span> Bật / Tắt hiển thị các Section (Visibility)</h2>
+        <p>Toàn quyền quyết định mục nào xuất hiện ngoài trang chủ mà <strong>không lo làm vỡ bố cục website</strong> (Tab <strong>"Ẩn/Hiện Section"</strong>):</p>
+        <p>Bạn muốn tạm thời ẩn mục <em>Đánh giá Khách hàng</em> khi chưa kịp cập nhật feedback mới? Chỉ cần gạt công tắc sang <code>Đang ẩn</code>. Mục đó sẽ lập tức biến mất khỏi trang chủ mà dữ liệu đã nhập vẫn được lưu an toàn trong hệ thống, bạn có thể bật lại bất cứ lúc nào!</p>
+      </section>
+
+      <!-- SECTION 11: ĐÁNH GIÁ KHÁCH HÀNG -->
+      <section id="sec-testimonials" class="guide-card">
+        <h2 class="section-title"><span class="card-num">11</span> Quản lý Đánh giá Khách hàng (Testimonials)</h2>
+        <p>Thu thập và hiển thị các nhận xét thực tế để tăng uy tín chốt hợp đồng (Tab <strong>"Đánh giá Khách hàng"</strong>):</p>
+        <div class="step-list">
+          <div class="step-item">
+            <span class="step-badge">+</span>
+            <div class="step-content">Nhấn <strong>"+ Thêm Đánh Giá"</strong>: Điền Tên khách hàng (ví dụ: <code>John Smith</code>), Khu vực (<code>Morley, WA</code>), Dịch vụ đã làm, Số sao (5★) và Lời nhận xét chi tiết.</div>
+          </div>
+          <div class="step-item">
+            <span class="step-badge">✏️</span>
+            <div class="step-content">Nhấn nút <strong>"Sửa"</strong> trên từng đánh giá để cập nhật câu chữ hoặc biểu tượng thùng rác màu đỏ để xóa nhận xét cũ.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 12: KHẮC PHỤC SỰ CỐ & FAQ -->
+      <section id="sec-faq" class="guide-card">
+        <h2 class="section-title"><span class="card-num">12</span> Khắc phục Sự cố Thường gặp & Lưu ý</h2>
+
+        <div class="callout warning">
+          <div class="callout-icon">⚠️</div>
+          <div>
+            <strong>1. Khách điền form nhưng không thấy email gửi về?</strong>
+            <br>• Hãy kiểm tra hòm thư <strong>Spam / Thư rác</strong> trong email của bạn.
+            <br>• Đảm bảo ô <em>Bật gửi Email tự động</em> trong tab <em>Email 2 Chiều</em> đang được tích chọn.
+          </div>
+        </div>
+
+        <div class="callout tip">
+          <div class="callout-icon">📱</div>
+          <div>
+            <strong>2. Tiêu chuẩn kích thước ảnh tải lên:</strong>
+            <br>• Nên tải ảnh dung lượng dưới <strong>5MB</strong> để trang web tải cực nhanh trên điện thoại của khách hàng 4G/5G.
+            <br>• Ảnh chụp ngang tỉ lệ 4:3 hoặc 16:9 là kích thước hiển thị cân đối và đẹp nhất.
+          </div>
+        </div>
+
+        <div class="callout danger">
+          <div class="callout-icon">🔒</div>
+          <div>
+            <strong>3. Đăng xuất an toàn:</strong>
+            <br>Luôn bấm nút <strong>"Đăng xuất"</strong> ở cuối menu bên trái sau khi hoàn thành công việc, đặc biệt khi sử dụng máy tính nơi công cộng hoặc thiết bị của người khác.
+          </div>
+        </div>
+
+        <div style="margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--slate-200); text-align: center; color: var(--slate-500); font-size: 13px;">
+          Tài liệu bàn giao bản quyền thuộc về <strong>LV Tiling Pty Ltd</strong> • Perth, Western Australia.
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>

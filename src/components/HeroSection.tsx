@@ -9,17 +9,19 @@ interface HeroProps {
   phone?: string;
   address?: string;
   warrantyYears?: number;
+  heroImage?: string;
 }
 
 export default function HeroSection({
   phone = "0452 612 336",
+  heroImage,
 }: HeroProps) {
   return (
     <section className="relative min-h-[70vh] lg:min-h-[76vh] flex items-center justify-center overflow-hidden bg-slate-950 border-b border-slate-800">
       {/* 1. Background Image */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <Image
-          src="/media/completed/completed_21.jpg"
+          src={heroImage && heroImage.trim() ? heroImage : "/media/completed/completed_21.jpg"}
           alt="LV Tiling Master Bathroom Finish in Perth"
           fill
           priority
