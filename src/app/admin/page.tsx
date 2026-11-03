@@ -176,6 +176,21 @@ export default function AdminDashboardPage() {
     }
   }, [router]);
 
+  // Staff guard: must stay above any early return to keep hook order stable
+  useEffect(() => {
+    const restrictedTabs = [
+      "notifications-email",
+      "notifications-sheets",
+      "settings-general",
+      "settings-users",
+      "cms-content",
+      "cms-visibility",
+    ];
+    if (currentUser?.role === "staff" && restrictedTabs.includes(activeTab)) {
+      setActiveTab("dashboard");
+    }
+  }, [currentUser, activeTab]);
+
   const switchLanguage = (newLang: "en" | "vi") => {
     setLang(newLang);
     localStorage.setItem("lv_admin_lang", newLang);
@@ -193,6 +208,13 @@ export default function AdminDashboardPage() {
       ]);
 
       const loadedSettings = resSettings.settings || resSettings.data;
+      // Session cookie missing/expired (e.g. old localStorage login) -> force re-login
+      if (resLeads && resLeads.success === false && String(resLeads.error || "").startsWith("Unauthorized")) {
+        localStorage.removeItem("lv_admin_auth");
+        localStorage.removeItem("lv_admin_user");
+        router.push("/admin/login");
+        return;
+      }
       if (loadedSettings) {
         setSettings(loadedSettings);
         setTestEmailAddress(loadedSettings.adminNotificationEmail || loadedSettings.email || "lvotiling@gmail.com");
@@ -895,20 +917,6 @@ export default function AdminDashboardPage() {
   const newLeadsCount = leads.filter((l) => l.status === "new").length;
   const bookedLeadsCount = leads.filter((l) => l.status === "booked" || l.status === "completed").length;
   const isStaff = currentUser?.role === "staff";
-
-  useEffect(() => {
-    if (
-      isStaff &&
-      (activeTab === "notifications-email" ||
-        activeTab === "notifications-sheets" ||
-        activeTab === "settings-general" ||
-        activeTab === "settings-users" ||
-        activeTab === "cms-content" ||
-        activeTab === "cms-visibility")
-    ) {
-      setActiveTab("dashboard");
-    }
-  }, [isStaff, activeTab]);
 
   const googleAppsScriptCode = `function doPost(e) {
   try {
