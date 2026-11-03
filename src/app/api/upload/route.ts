@@ -54,6 +54,20 @@ export async function POST(request: NextRequest) {
     // 1. Prioritize uploading to Supabase Storage if configured (Cloud CDN)
     const supabase = getServiceSupabase();
     if (supabase) {
+      // Auto-ensure bucket 'gallery' exists as public
+      try {
+        const { data: buckets } = await supabase.storage.listBuckets();
+        const hasGallery = buckets?.some((b) => b.name === "gallery");
+        if (!hasGallery) {
+          await supabase.storage.createBucket("gallery", {
+            public: true,
+            fileSizeLimit: 10485760, // 10MB
+          });
+        }
+      } catch (bErr) {
+        console.warn("Auto-create bucket warning:", bErr);
+      }
+
       const storagePath = `${safeFolder}/${fileName}`;
       const { error: uploadError } = await supabase.storage
         .from("gallery")
@@ -74,20 +88,41 @@ export async function POST(request: NextRequest) {
           storage: "supabase",
         });
       }
-      console.warn("Supabase upload failed, falling back to local filesystem:", uploadError);
+
+      console.error("Supabase Storage upload error:", uploadError);
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Supabase Storage: ${uploadError.message || "Failed to upload image"}`,
+        },
+        { status: 400 }
+      );
     }
 
-    // 2. Fallback to local filesystem (development or self-hosted)
-    const uploadDir = path.join(process.cwd(), "public", "media", safeFolder);
-    await mkdir(uploadDir, { recursive: true });
+    // 2. Fallback to local filesystem only in local development (not on Vercel Serverless)
+    if (!process.env.VERCEL) {
+      const uploadDir = path.join(process.cwd(), "public", "media", safeFolder);
+      await mkdir(uploadDir, { recursive: true });
 
-    const filePath = path.join(uploadDir, fileName);
-    await writeFile(filePath, buffer);
+      const filePath = path.join(uploadDir, fileName);
+      await writeFile(filePath, buffer);
 
-    const publicUrl = `/media/${safeFolder}/${fileName}`;
-    return NextResponse.json({ success: true, url: publicUrl, fileName, storage: "local" });
-  } catch (err) {
+      const publicUrl = `/media/${safeFolder}/${fileName}`;
+      return NextResponse.json({ success: true, url: publicUrl, fileName, storage: "local" });
+    }
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Supabase Storage is not configured. Please check NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY on Vercel.",
+      },
+      { status: 500 }
+    );
+  } catch (err: any) {
     console.error("Upload error:", err);
-    return NextResponse.json({ success: false, error: "Upload failed" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: err?.message || "Upload failed due to server error" },
+      { status: 500 }
+    );
   }
 }

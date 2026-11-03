@@ -40,7 +40,18 @@ export default function FloatingContactWidget({
     });
   };
 
-  const cleanPhone = phone.replace(/\s+/g, "");
+  const cleanPhone = (phone && phone.trim() ? phone : "0452 612 336").replace(/\s+/g, "");
+  const displayPhone = phone && phone.trim() ? phone : "0452 612 336";
+  const displayEmail = email && email.trim() ? email : "lvotiling@gmail.com";
+
+  const normalizeFacebookUrl = (url?: string) => {
+    if (!url || !url.trim()) return "https://www.facebook.com/share/lvtiling";
+    const trimmed = url.trim();
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    return `https://${trimmed}`;
+  };
+
+  const finalFacebookUrl = normalizeFacebookUrl(facebookUrl);
 
   return (
     <aside aria-label="Quick contact and navigation" className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 pointer-events-auto select-none">
@@ -104,14 +115,14 @@ export default function FloatingContactWidget({
                     Hotline
                   </span>
                   <span className="text-xs text-slate-500">
-                    {phone} (7:00 - 17:30)
+                    {displayPhone} (7:00 - 17:30)
                   </span>
                 </div>
               </a>
 
               {/* 2. Messenger */}
               <a
-                href={facebookUrl}
+                href={finalFacebookUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3.5 p-3 rounded-xl hover:bg-red-50/60 transition-colors group"
@@ -131,7 +142,7 @@ export default function FloatingContactWidget({
 
               {/* 3. Email us */}
               <a
-                href={`mailto:${email}`}
+                href={`mailto:${displayEmail}`}
                 className="flex items-center gap-3.5 p-3 rounded-xl hover:bg-amber-50/60 transition-colors group"
               >
                 <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-600 group-hover:text-white group-hover:scale-105 transition-all shadow-sm">
@@ -142,7 +153,7 @@ export default function FloatingContactWidget({
                     Email us
                   </span>
                   <span className="text-xs text-slate-500 truncate max-w-[170px]">
-                    {email}
+                    {displayEmail}
                   </span>
                 </div>
               </a>

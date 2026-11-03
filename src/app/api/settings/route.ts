@@ -40,7 +40,8 @@ export async function POST(request: Request) {
     };
 
     const updated = await saveSettingsAsync(payload);
-    revalidatePath("/");
+    revalidatePath("/", "page");
+    revalidatePath("/", "layout");
 
     const safeResponseSettings = {
       ...updated,
@@ -52,7 +53,10 @@ export async function POST(request: Request) {
       message: "Settings updated successfully",
       settings: safeResponseSettings,
     });
-  } catch {
-    return NextResponse.json({ success: false, error: "Failed to update settings" }, { status: 400 });
+  } catch (err: any) {
+    return NextResponse.json(
+      { success: false, error: err?.message || "Failed to update settings" },
+      { status: 400 }
+    );
   }
 }

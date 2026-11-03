@@ -19,8 +19,9 @@ import QuoteSection from "@/components/QuoteSection";
 import Footer from "@/components/Footer";
 import FloatingContactWidget from "@/components/FloatingContactWidget";
 
-// Revalidate every 60 seconds if data changes via storage
-export const revalidate = 60;
+// Force dynamic SSR so admin updates appear instantly with zero cache delay
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function HomePage() {
   const [settings, services, gallery, testimonials] = await Promise.all([

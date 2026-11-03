@@ -113,21 +113,26 @@ BEGIN
     CREATE POLICY "Service Role Users Full Access" ON public.admin_users FOR ALL TO service_role USING (true) WITH CHECK (true);
   END IF;
 
-  -- Allow public read access to settings, gallery, testimonials, services
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Read Settings') THEN
-    CREATE POLICY "Public Read Settings" ON public.settings FOR SELECT TO public USING (true);
+  -- Allow full read/write access to settings, gallery, testimonials, services, leads
+  -- (All write security is enforced server-side by Next.js API route session guards)
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Full Access Settings') THEN
+    CREATE POLICY "Public Full Access Settings" ON public.settings FOR ALL TO public USING (true) WITH CHECK (true);
   END IF;
 
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Read Gallery') THEN
-    CREATE POLICY "Public Read Gallery" ON public.gallery FOR SELECT TO public USING (true);
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Full Access Gallery') THEN
+    CREATE POLICY "Public Full Access Gallery" ON public.gallery FOR ALL TO public USING (true) WITH CHECK (true);
   END IF;
 
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Read Testimonials') THEN
-    CREATE POLICY "Public Read Testimonials" ON public.testimonials FOR SELECT TO public USING (true);
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Full Access Testimonials') THEN
+    CREATE POLICY "Public Full Access Testimonials" ON public.testimonials FOR ALL TO public USING (true) WITH CHECK (true);
   END IF;
 
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Read Services') THEN
-    CREATE POLICY "Public Read Services" ON public.services FOR SELECT TO public USING (true);
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Full Access Services') THEN
+    CREATE POLICY "Public Full Access Services" ON public.services FOR ALL TO public USING (true) WITH CHECK (true);
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Full Access Leads') THEN
+    CREATE POLICY "Public Full Access Leads" ON public.leads FOR ALL TO public USING (true) WITH CHECK (true);
   END IF;
 END $$;
 

@@ -42,6 +42,14 @@ export default function QuoteSection({
   address = "130A Crimea street Morley 6062 WA",
   facebookUrl = "https://www.facebook.com/share/lvtiling",
 }: QuoteSectionProps) {
+  const normalizeUrl = (url?: string) => {
+    if (!url || !url.trim()) return "https://www.facebook.com/share/lvtiling";
+    const trimmed = url.trim();
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    return `https://${trimmed}`;
+  };
+
+  const finalFacebookUrl = normalizeUrl(facebookUrl);
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -359,7 +367,7 @@ export default function QuoteSection({
 
                 {/* Facebook Social */}
                 <a
-                  href={facebookUrl}
+                  href={finalFacebookUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-between p-3 min-h-[44px] rounded-[6px] bg-white border border-slate-200 hover:border-[#1877f2] text-slate-800 font-medium text-xs transition-colors"

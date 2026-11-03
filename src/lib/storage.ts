@@ -307,13 +307,18 @@ export async function saveSettingsAsync(settings: SiteSettings): Promise<SiteSet
   const supabase = getServiceSupabase();
   if (supabase) {
     try {
-      await supabase.from("settings").upsert({
+      const { error } = await supabase.from("settings").upsert({
         id: "current",
         data: settings,
         updated_at: new Date().toISOString(),
       });
+      if (error) {
+        console.error("Supabase saveSettings error:", error);
+        throw new Error(`Supabase saveSettings failed: ${error.message}`);
+      }
     } catch (e) {
-      console.warn("Supabase saveSettings error:", e);
+      console.error("Supabase saveSettings exception:", e);
+      throw e;
     }
   }
   return settings;

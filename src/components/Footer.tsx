@@ -36,6 +36,15 @@ export default function Footer({
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const normalizeUrl = (url?: string) => {
+    if (!url || !url.trim()) return "https://www.facebook.com/share/lvtiling";
+    const trimmed = url.trim();
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    return `https://${trimmed}`;
+  };
+
+  const finalFacebookUrl = normalizeUrl(facebookUrl);
+
   return (
     <footer className="bg-slate-900 text-slate-300 text-sm">
       
@@ -179,7 +188,7 @@ export default function Footer({
               </div>
               <div className="pt-1">
                 <a
-                  href={facebookUrl}
+                  href={finalFacebookUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-3 py-2 rounded-[6px] bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white transition-colors text-xs font-semibold min-h-[36px]"
