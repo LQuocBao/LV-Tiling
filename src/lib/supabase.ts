@@ -1,13 +1,24 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || "";
+function cleanEnv(val?: string): string {
+  if (!val) return "";
+  let res = val.trim();
+  if (
+    (res.startsWith('"') && res.endsWith('"')) ||
+    (res.startsWith("'") && res.endsWith("'"))
+  ) {
+    res = res.slice(1, -1).trim();
+  }
+  return res;
+}
+
+const supabaseUrl = cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_URL);
 const supabaseAnonKey =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ||
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim() ||
-  "";
+  cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) ||
+  cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
 const supabaseServiceKey =
-  process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ||
-  process.env.SUPABASE_SECRET_KEY?.trim() ||
+  cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY) ||
+  cleanEnv(process.env.SUPABASE_SECRET_KEY) ||
   supabaseAnonKey;
 
 export const isSupabaseConfigured = Boolean(

@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
 import { getServiceSupabase, isSupabaseConfigured } from "@/lib/supabase";
 
+function mask(val?: string) {
+  if (!val) return "MISSING";
+  const trimmed = val.trim();
+  if (trimmed.length < 8) return `INVALID (len: ${trimmed.length})`;
+  return `${trimmed.substring(0, 6)}...${trimmed.substring(trimmed.length - 4)} (len: ${trimmed.length})`;
+}
+
 export async function GET() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "MISSING";
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "EXISTS" : "MISSING";
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY ? "EXISTS" : "MISSING";
+  const anonKey = mask(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+  const serviceKey = mask(process.env.SUPABASE_SERVICE_ROLE_KEY);
 
   const diagnostics: any = {
     isSupabaseConfigured,
