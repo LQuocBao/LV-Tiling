@@ -155,12 +155,26 @@ body,
   cursor: auto !important;
 }
 .admin-root a,
+.admin-root a *,
 .admin-root button,
+.admin-root button *,
 .admin-root select,
+.admin-root select *,
 .admin-root [role="button"],
+.admin-root [role="button"] *,
 .admin-root .cursor-pointer,
-.admin-root label[for] {
+.admin-root .cursor-pointer *,
+.admin-root label[for],
+.admin-root label[for] * {
   cursor: pointer !important;
+}
+.admin-root .cursor-zoom-in,
+.admin-root .cursor-zoom-in * {
+  cursor: zoom-in !important;
+}
+.admin-root .cursor-zoom-out,
+.admin-root .cursor-zoom-out * {
+  cursor: zoom-out !important;
 }
 .admin-root input,
 .admin-root textarea {

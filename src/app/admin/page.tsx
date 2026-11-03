@@ -43,6 +43,9 @@ import {
   ToggleRight,
   Upload,
   X,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
   Layout,
   MessageSquare,
   Globe,
@@ -148,9 +151,9 @@ export default function AdminDashboardPage() {
   const [newGalleryItem, setNewGalleryItem] = useState({
     title: "",
     category: "completed" as "completed" | "flashbacks" | "screeding" | "polyurethane" | "bandages" | "waterproof" | "tennax",
-    image: "/media/completed/completed_1.jpg",
-    location: "Morley, WA",
-    tileType: "Porcelain 600x1200mm",
+    image: "",
+    location: "",
+    tileType: "",
   });
   const [showAddGalleryModal, setShowAddGalleryModal] = useState(false);
   const [galleryUploading, setGalleryUploading] = useState(false);
@@ -159,6 +162,16 @@ export default function AdminDashboardPage() {
   const [showEditGalleryModal, setShowEditGalleryModal] = useState(false);
   const [galleryEditUploading, setGalleryEditUploading] = useState(false);
   const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
+
+  // Admin Lightbox state for zoom in / zoom out
+  const [adminLightbox, setAdminLightbox] = useState<{
+    src: string;
+    title: string;
+    category?: string;
+    location?: string;
+    tileType?: string;
+  } | null>(null);
+  const [lightboxZoom, setLightboxZoom] = useState(1);
 
   // Check authentication & language preference
   useEffect(() => {
@@ -230,6 +243,25 @@ export default function AdminDashboardPage() {
       handleSelectTab("dashboard");
     }
   }, [currentUser, activeTab]);
+
+  // Lightbox keyboard shortcuts: Esc to close, +/- to zoom
+  useEffect(() => {
+    if (!adminLightbox) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setAdminLightbox(null);
+        setLightboxZoom(1);
+      } else if (e.key === "+" || e.key === "=") {
+        setLightboxZoom((prev) => Math.min(3, prev + 0.25));
+      } else if (e.key === "-") {
+        setLightboxZoom((prev) => Math.max(0.5, prev - 0.25));
+      } else if (e.key === "0") {
+        setLightboxZoom(1);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [adminLightbox]);
 
   const switchLanguage = (newLang: "en" | "vi") => {
     setLang(newLang);
@@ -509,8 +541,8 @@ export default function AdminDashboardPage() {
       title: "",
       category: "completed",
       image: "",
-      location: "Perth, WA",
-      tileType: "Porcelain 600x1200mm",
+      location: "",
+      tileType: "",
     });
     setHasCustomImage(false);
     setShowAddGalleryModal(true);
@@ -565,22 +597,27 @@ export default function AdminDashboardPage() {
     }
 
     try {
+      const payload = {
+        ...newGalleryItem,
+        location: newGalleryItem.location.trim() || "Perth, WA",
+        tileType: newGalleryItem.tileType.trim() || "Porcelain 600x1200mm",
+      };
       const res = await fetch("/api/gallery", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newGalleryItem),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (data.success) {
-        const itemToAdd = data.data || data.item || { ...newGalleryItem, id: "gal-" + Date.now() };
+        const itemToAdd = data.data || data.item || { ...payload, id: "gal-" + Date.now() };
         setGallery((prev) => [itemToAdd, ...prev]);
         setShowAddGalleryModal(false);
         setNewGalleryItem({
           title: "",
           category: "completed",
           image: "",
-          location: "Perth, WA",
-          tileType: "Porcelain 600x1200mm",
+          location: "",
+          tileType: "",
         });
         setHasCustomImage(false);
         setStatusMsg({ type: "success", msg: lang === "en" ? "New project photo added to gallery!" : "Đã thêm ảnh công trình mới vào thư viện!" });
@@ -593,7 +630,11 @@ export default function AdminDashboardPage() {
   };
 
   const handleOpenEditGallery = (item: GalleryItem) => {
-    setEditingGalleryItem({ ...item });
+    setEditingGalleryItem({
+      ...item,
+      location: item.location || "",
+      tileType: item.tileType || "",
+    });
     setShowEditGalleryModal(true);
   };
 
@@ -2521,17 +2562,38 @@ export default function AdminDashboardPage() {
                       key={item.id}
                       className="bg-white border border-slate-200 rounded-[6px] overflow-hidden group shadow-xs hover:border-slate-300 transition-colors flex flex-col"
                     >
-                      <div className="relative aspect-4/3 bg-slate-100 overflow-hidden">
+                      <div
+                        onClick={() => {
+                          setAdminLightbox({
+                            src: item.image,
+                            title: item.title,
+                            category: item.category,
+                            location: item.location,
+                            tileType: item.tileType,
+                          });
+                          setLightboxZoom(1);
+                        }}
+                        className="relative aspect-4/3 bg-slate-100 overflow-hidden cursor-zoom-in group/img"
+                        title={lang === "en" ? "Click to view full size & zoom" : "Bấm để xem ảnh phóng to / thu nhỏ"}
+                      >
                         <Image
                           src={item.image}
                           alt={item.title}
                           fill
                           sizes="(max-width: 768px) 50vw, 25vw"
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="object-cover group-hover/img:scale-105 transition-transform duration-300"
                         />
-                        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-[4px] bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-bold uppercase">
+                        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-[4px] bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-bold uppercase z-10">
                           {item.category}
                         </span>
+
+                        {/* Hover Zoom Overlay */}
+                        <div className="absolute inset-0 bg-black/35 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                          <span className="px-2.5 py-1 rounded bg-black/75 text-white text-[11px] font-semibold flex items-center gap-1.5 shadow-md">
+                            <ZoomIn className="w-3.5 h-3.5 text-white pointer-events-none" />
+                            <span>{lang === "en" ? "Zoom" : "Xem to"}</span>
+                          </span>
+                        </div>
                       </div>
 
                       <div className="p-3 flex-1 flex flex-col justify-between">
@@ -2540,23 +2602,23 @@ export default function AdminDashboardPage() {
                           <p className="text-[11px] text-slate-500 mt-0.5">{item.location || "Perth, WA"}</p>
                         </div>
                         <div className="flex items-center justify-between pt-2 mt-2 border-t border-slate-100">
-                          <span className="text-[10px] text-slate-400 truncate max-w-[120px]">{item.tileType}</span>
-                          <div className="flex items-center gap-1">
+                          <span className="text-[10px] text-slate-400 truncate max-w-[110px]">{item.tileType || "Porcelain"}</span>
+                          <div className="flex items-center gap-1.5">
                             <button
                               type="button"
                               onClick={() => handleOpenEditGallery(item)}
-                              className="p-1 text-slate-400 hover:text-blue-600 rounded-[4px] hover:bg-blue-50 cursor-pointer"
+                              className="w-7 h-7 rounded-md bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-600 hover:text-blue-600 flex items-center justify-center transition-colors cursor-pointer"
                               title={lang === "en" ? "Edit photo" : "Sửa hình ảnh"}
                             >
-                              <Edit3 className="w-3.5 h-3.5" />
+                              <Edit3 className="w-3.5 h-3.5 pointer-events-none" />
                             </button>
                             <button
                               type="button"
                               onClick={() => handleDeleteGallery(item.id)}
-                              className="p-1 text-slate-400 hover:text-red-600 rounded-[4px] hover:bg-red-50 cursor-pointer"
+                              className="w-7 h-7 rounded-md bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-300 text-slate-600 hover:text-red-600 flex items-center justify-center transition-colors cursor-pointer"
                               title={lang === "en" ? "Delete photo" : "Xóa hình ảnh"}
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Trash2 className="w-3.5 h-3.5 pointer-events-none" />
                             </button>
                           </div>
                         </div>
@@ -3449,12 +3511,33 @@ export default function AdminDashboardPage() {
                   </label>
                 ) : (
                   <div className="space-y-2">
-                    <div className="relative aspect-video max-h-48 rounded-[6px] border border-slate-200 bg-slate-100 overflow-hidden">
+                    <div
+                      onClick={() => {
+                        if (newGalleryItem.image) {
+                          setAdminLightbox({
+                            src: newGalleryItem.image,
+                            title: newGalleryItem.title || (lang === "en" ? "Uploaded Photo Preview" : "Xem trước ảnh tải lên"),
+                            category: newGalleryItem.category,
+                            location: newGalleryItem.location,
+                            tileType: newGalleryItem.tileType,
+                          });
+                          setLightboxZoom(1);
+                        }
+                      }}
+                      className="relative aspect-video max-h-48 rounded-[6px] border border-slate-200 bg-slate-100 overflow-hidden cursor-zoom-in group"
+                      title={lang === "en" ? "Click to view full size & zoom" : "Bấm để xem ảnh phóng to / thu nhỏ"}
+                    >
                       <img
                         src={newGalleryItem.image}
                         alt="Preview"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
+                      <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <span className="px-2.5 py-1 rounded bg-black/75 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md">
+                          <ZoomIn className="w-3.5 h-3.5 text-white pointer-events-none" />
+                          <span>{lang === "en" ? "Click to Zoom" : "Bấm để phóng to"}</span>
+                        </span>
+                      </div>
                     </div>
                     <div className="flex items-center justify-between gap-2">
                       <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] bg-slate-200 hover:bg-slate-300 text-slate-800 text-[11px] font-semibold cursor-pointer transition-colors">
@@ -3472,7 +3555,7 @@ export default function AdminDashboardPage() {
                         />
                       </label>
                       <span className="text-[10px] text-emerald-600 font-semibold truncate max-w-[220px]">
-                        ✓ {lang === "en" ? "Image ready" : "Đã có ảnh hợp lệ"}
+                        ✓ {lang === "en" ? "Image ready (click preview to zoom)" : "Đã có ảnh (bấm ảnh để phóng to)"}
                       </span>
                     </div>
                   </div>
@@ -3503,10 +3586,10 @@ export default function AdminDashboardPage() {
                   </label>
                   <input
                     type="text"
-                    placeholder="Morley, WA"
+                    placeholder="Perth, WA"
                     value={newGalleryItem.location}
                     onChange={(e) => setNewGalleryItem({ ...newGalleryItem, location: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-[6px]"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-[6px] text-xs focus:outline-none focus:border-[#dc2626]"
                   />
                 </div>
                 <div>
@@ -3515,10 +3598,10 @@ export default function AdminDashboardPage() {
                   </label>
                   <input
                     type="text"
-                    placeholder="Porcelain 600x1200"
+                    placeholder="Porcelain 600x1200mm"
                     value={newGalleryItem.tileType}
                     onChange={(e) => setNewGalleryItem({ ...newGalleryItem, tileType: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-[6px]"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-[6px] text-xs focus:outline-none focus:border-[#dc2626]"
                   />
                 </div>
               </div>
@@ -3619,27 +3702,47 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-20 h-16 rounded-[4px] border border-slate-200 bg-slate-100 overflow-hidden flex-shrink-0 relative flex items-center justify-center">
+                  <div
+                    onClick={() => {
+                      if (editingGalleryItem.image) {
+                        setAdminLightbox({
+                          src: editingGalleryItem.image,
+                          title: editingGalleryItem.title || (lang === "en" ? "Photo Preview" : "Xem trước hình ảnh"),
+                          category: editingGalleryItem.category,
+                          location: editingGalleryItem.location,
+                          tileType: editingGalleryItem.tileType,
+                        });
+                        setLightboxZoom(1);
+                      }
+                    }}
+                    className="w-20 h-16 rounded-[4px] border border-slate-200 bg-slate-100 overflow-hidden flex-shrink-0 relative flex items-center justify-center cursor-zoom-in group"
+                    title={lang === "en" ? "Click to view full size & zoom" : "Bấm để xem ảnh phóng to / thu nhỏ"}
+                  >
                     {editingGalleryItem.image ? (
-                      <img
-                        src={editingGalleryItem.image}
-                        alt="Preview"
-                        className="w-full h-full object-cover"
-                      />
+                      <>
+                        <img
+                          src={editingGalleryItem.image}
+                          alt="Preview"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                        <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <ZoomIn className="w-4 h-4 text-white pointer-events-none" />
+                        </div>
+                      </>
                     ) : (
                       <ImageIcon className="w-6 h-6 text-slate-300" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
-                      {lang === "en" ? "Image Path / URL:" : "Đường dẫn hình ảnh:"}
+                      {lang === "en" ? "Image Path / URL (Click thumbnail to zoom):" : "Đường dẫn hình ảnh (Bấm ảnh nhỏ để phóng to):"}
                     </label>
                     <input
                       type="text"
                       required
                       value={editingGalleryItem.image}
                       onChange={(e) => setEditingGalleryItem({ ...editingGalleryItem, image: e.target.value })}
-                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-[4px] font-mono text-[11px] bg-white"
+                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-[4px] font-mono text-[11px] bg-white focus:outline-none focus:border-[#dc2626]"
                     />
                   </div>
                 </div>
@@ -3653,10 +3756,10 @@ export default function AdminDashboardPage() {
                   </label>
                   <input
                     type="text"
-                    placeholder="Morley, WA"
+                    placeholder="Perth, WA"
                     value={editingGalleryItem.location || ""}
                     onChange={(e) => setEditingGalleryItem({ ...editingGalleryItem, location: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-[6px]"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-[6px] text-xs focus:outline-none focus:border-[#dc2626]"
                   />
                 </div>
                 <div>
@@ -3665,10 +3768,10 @@ export default function AdminDashboardPage() {
                   </label>
                   <input
                     type="text"
-                    placeholder="Porcelain 600x1200"
+                    placeholder="Porcelain 600x1200mm"
                     value={editingGalleryItem.tileType || ""}
                     onChange={(e) => setEditingGalleryItem({ ...editingGalleryItem, tileType: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-[6px]"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-[6px] text-xs focus:outline-none focus:border-[#dc2626]"
                   />
                 </div>
               </div>
@@ -3838,6 +3941,124 @@ export default function AdminDashboardPage() {
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* ================= ADMIN IMAGE LIGHTBOX MODAL WITH ZOOM ================= */}
+      {adminLightbox && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/92 backdrop-blur-md flex flex-col items-center justify-between p-4 sm:p-6 select-none animate-in fade-in-50 duration-200"
+          onClick={() => {
+            setAdminLightbox(null);
+            setLightboxZoom(1);
+          }}
+        >
+          {/* Top Bar */}
+          <div
+            className="w-full max-w-5xl flex items-center justify-between text-white pb-3 z-10"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#dc2626] text-white">
+                {adminLightbox.category || "Gallery"}
+              </span>
+              <h3 className="text-sm sm:text-base font-bold text-white truncate max-w-md">
+                {adminLightbox.title || "Project Photo"}
+              </h3>
+            </div>
+
+            {/* Zoom Controls & Close */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <button
+                type="button"
+                onClick={() => setLightboxZoom((prev) => Math.max(0.5, prev - 0.25))}
+                disabled={lightboxZoom <= 0.5}
+                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors disabled:opacity-40 cursor-pointer"
+                title={lang === "en" ? "Zoom Out (-)" : "Thu nhỏ (-)"}
+              >
+                <ZoomOut className="w-4 h-4 pointer-events-none" />
+              </button>
+
+              <span className="px-2 py-1 rounded bg-white/10 text-white font-mono text-xs min-w-[52px] text-center">
+                {Math.round(lightboxZoom * 100)}%
+              </span>
+
+              <button
+                type="button"
+                onClick={() => setLightboxZoom((prev) => Math.min(3, prev + 0.25))}
+                disabled={lightboxZoom >= 3}
+                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors disabled:opacity-40 cursor-pointer"
+                title={lang === "en" ? "Zoom In (+)" : "Phóng to (+)"}
+              >
+                <ZoomIn className="w-4 h-4 pointer-events-none" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setLightboxZoom(1)}
+                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
+                title={lang === "en" ? "Reset Zoom (100%)" : "Khôi phục 100%"}
+              >
+                <RotateCcw className="w-3.5 h-3.5 pointer-events-none" />
+              </button>
+
+              <div className="w-[1px] h-6 bg-white/20 mx-1" />
+
+              <button
+                type="button"
+                onClick={() => {
+                  setAdminLightbox(null);
+                  setLightboxZoom(1);
+                }}
+                className="w-8 h-8 rounded-lg bg-red-600/80 hover:bg-red-600 text-white flex items-center justify-center transition-colors cursor-pointer ml-1"
+                title={lang === "en" ? "Close (Esc)" : "Đóng (Esc)"}
+              >
+                <X className="w-4 h-4 pointer-events-none" />
+              </button>
+            </div>
+          </div>
+
+          {/* Center Image Container with Smooth Scaling */}
+          <div
+            className="flex-1 w-full max-w-5xl flex items-center justify-center overflow-auto p-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className="relative max-h-[75vh] max-w-full flex items-center justify-center transition-transform duration-200 ease-out"
+              style={{ transform: `scale(${lightboxZoom})` }}
+            >
+              <img
+                src={adminLightbox.src}
+                alt={adminLightbox.title || "Project Photo Preview"}
+                className="max-h-[75vh] max-w-full object-contain rounded-lg shadow-2xl border border-white/10"
+              />
+            </div>
+          </div>
+
+          {/* Bottom Bar / Location Info */}
+          <div
+            className="w-full max-w-5xl flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-white/10 z-10"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3">
+              {adminLightbox.location && (
+                <span className="flex items-center gap-1 text-slate-300">
+                  <MapPin className="w-3.5 h-3.5 text-[#dc2626]" />
+                  <span>{adminLightbox.location}</span>
+                </span>
+              )}
+              {adminLightbox.tileType && (
+                <span className="text-slate-400">
+                  • {adminLightbox.tileType}
+                </span>
+              )}
+            </div>
+            <span className="text-[11px] text-slate-500 hidden sm:inline">
+              {lang === "en"
+                ? "Click anywhere outside or press Esc to close"
+                : "Bấm ra ngoài hoặc bấm Esc để đóng"}
+            </span>
+          </div>
         </div>
       )}
     </div>
