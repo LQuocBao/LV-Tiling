@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
+import { SectionVisibility, defaultSectionVisibility } from "@/data/initialData";
 
 interface NavbarProps {
   phone?: string;
@@ -10,12 +11,15 @@ interface NavbarProps {
   address?: string;
   facebookUrl?: string;
   companyName?: string;
+  sectionVisibility?: SectionVisibility;
 }
 
 export default function Navbar({
   phone = "0452 612 336",
   companyName = "LV Tiling Pty Ltd",
+  sectionVisibility,
 }: NavbarProps) {
+  const vis = { ...defaultSectionVisibility, ...(sectionVisibility ?? {}) };
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -69,70 +73,86 @@ export default function Navbar({
 
           {/* 2. Desktop Navigation Menu */}
           <nav className="hidden lg:flex items-center gap-6">
-            <a
-              href="#"
-              className={`text-sm font-medium transition-colors ${
-                isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
-              }`}
-            >
-              Home
-            </a>
-            <a
-              href="#about-us"
-              className={`text-sm font-medium transition-colors ${
-                isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
-              }`}
-            >
-              About Us
-            </a>
-            <a
-              href="#services"
-              className={`text-sm font-medium transition-colors ${
-                isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
-              }`}
-            >
-              Services
-            </a>
-            <a
-              href="#trade-standards"
-              className={`text-sm font-medium transition-colors ${
-                isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
-              }`}
-            >
-              Standards
-            </a>
-            <a
-              href="#why-us"
-              className={`text-sm font-medium transition-colors ${
-                isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
-              }`}
-            >
-              Why Us
-            </a>
-            <a
-              href="#faq"
-              className={`text-sm font-medium transition-colors ${
-                isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
-              }`}
-            >
-              FAQ
-            </a>
-            <a
-              href="#contact"
-              className={`text-sm font-medium transition-colors ${
-                isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
-              }`}
-            >
-              Contact Us
-            </a>
+            {vis.hero && (
+              <a
+                href="#"
+                className={`text-sm font-medium transition-colors ${
+                  isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
+                }`}
+              >
+                Home
+              </a>
+            )}
+            {vis.welcome && (
+              <a
+                href="#about-us"
+                className={`text-sm font-medium transition-colors ${
+                  isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
+                }`}
+              >
+                About Us
+              </a>
+            )}
+            {vis.services && (
+              <a
+                href="#services"
+                className={`text-sm font-medium transition-colors ${
+                  isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
+                }`}
+              >
+                Services
+              </a>
+            )}
+            {vis.tradeCredentials && (
+              <a
+                href="#trade-standards"
+                className={`text-sm font-medium transition-colors ${
+                  isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
+                }`}
+              >
+                Standards
+              </a>
+            )}
+            {vis.whyChooseUs && (
+              <a
+                href="#why-us"
+                className={`text-sm font-medium transition-colors ${
+                  isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
+                }`}
+              >
+                Why Us
+              </a>
+            )}
+            {vis.faq && (
+              <a
+                href="#faq"
+                className={`text-sm font-medium transition-colors ${
+                  isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
+                }`}
+              >
+                FAQ
+              </a>
+            )}
+            {vis.quote && (
+              <>
+                <a
+                  href="#contact"
+                  className={`text-sm font-medium transition-colors ${
+                    isScrolled ? "text-slate-700 hover:text-[#dc2626]" : "text-slate-200 hover:text-white"
+                  }`}
+                >
+                  Contact Us
+                </a>
 
-            {/* Free Quote CTA Button */}
-            <a
-              href="#contact"
-              className="px-4 py-2 rounded-[6px] bg-[#dc2626] hover:bg-[#b91c1c] text-white font-semibold text-xs uppercase tracking-wider transition-colors"
-            >
-              Free Quote
-            </a>
+                {/* Free Quote CTA Button */}
+                <a
+                  href="#contact"
+                  className="px-4 py-2 rounded-[6px] bg-[#dc2626] hover:bg-[#b91c1c] text-white font-semibold text-xs uppercase tracking-wider transition-colors"
+                >
+                  Free Quote
+                </a>
+              </>
+            )}
           </nav>
 
           {/* 3. Mobile Hamburger Button */}
@@ -156,64 +176,80 @@ export default function Navbar({
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white text-slate-900 border-t border-slate-200 px-4 py-4 space-y-1">
-          <a
-            href="#"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
-          >
-            Home
-          </a>
-          <a
-            href="#about-us"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
-          >
-            About Us
-          </a>
-          <a
-            href="#services"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
-          >
-            Services
-          </a>
-          <a
-            href="#trade-standards"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
-          >
-            Standards
-          </a>
-          <a
-            href="#why-us"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
-          >
-            Why Us
-          </a>
-          <a
-            href="#faq"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
-          >
-            FAQ
-          </a>
-          <a
-            href="#contact"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
-          >
-            Contact Us
-          </a>
-          <div className="pt-2">
+          {vis.hero && (
             <a
-              href="#contact"
+              href="#"
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-center min-h-[48px] w-full px-4 text-center text-xs font-bold text-white bg-[#dc2626] hover:bg-[#b91c1c] rounded-[6px] uppercase tracking-wider transition-colors"
+              className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
             >
-              Book Free Measure &amp; Quote
+              Home
             </a>
-          </div>
+          )}
+          {vis.welcome && (
+            <a
+              href="#about-us"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
+            >
+              About Us
+            </a>
+          )}
+          {vis.services && (
+            <a
+              href="#services"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
+            >
+              Services
+            </a>
+          )}
+          {vis.tradeCredentials && (
+            <a
+              href="#trade-standards"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
+            >
+              Standards
+            </a>
+          )}
+          {vis.whyChooseUs && (
+            <a
+              href="#why-us"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
+            >
+              Why Us
+            </a>
+          )}
+          {vis.faq && (
+            <a
+              href="#faq"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
+            >
+              FAQ
+            </a>
+          )}
+          {vis.quote && (
+            <>
+              <a
+                href="#contact"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center min-h-[44px] px-3 text-sm font-medium text-slate-800 hover:bg-slate-50 hover:text-[#dc2626] rounded-[6px]"
+              >
+                Contact Us
+              </a>
+              <div className="pt-2">
+                <a
+                  href="#contact"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-center min-h-[48px] w-full px-4 text-center text-xs font-bold text-white bg-[#dc2626] hover:bg-[#b91c1c] rounded-[6px] uppercase tracking-wider transition-colors"
+                >
+                  Book Free Measure &amp; Quote
+                </a>
+              </div>
+            </>
+          )}
         </div>
       )}
     </header>

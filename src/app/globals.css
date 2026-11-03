@@ -112,10 +112,10 @@ body,
   height: 0px !important;
 }
 
-/* Custom cursor management for mouse devices */
+/* Custom cursor management for mouse devices (Homepage & Public pages) */
 @media (hover: hover) and (pointer: fine) {
-  body,
-  body * {
+  body:not(:has(.admin-root)),
+  body:not(:has(.admin-root)) *:not(.admin-root *) {
     cursor: none;
   }
 
@@ -147,4 +147,22 @@ body,
   textarea {
     cursor: text !important;
   }
+}
+
+/* Explicit standard system cursor inside Admin Portal */
+.admin-root,
+.admin-root * {
+  cursor: auto !important;
+}
+.admin-root a,
+.admin-root button,
+.admin-root select,
+.admin-root [role="button"],
+.admin-root .cursor-pointer,
+.admin-root label[for] {
+  cursor: pointer !important;
+}
+.admin-root input,
+.admin-root textarea {
+  cursor: text !important;
 }

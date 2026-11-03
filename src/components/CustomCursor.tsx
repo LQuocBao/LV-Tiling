@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 
 export default function CustomCursor() {
+  const pathname = usePathname();
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
 
@@ -13,6 +15,11 @@ export default function CustomCursor() {
   const isVisible = useRef(false);
 
   useEffect(() => {
+    // Disable custom cursor completely inside admin area
+    if (pathname?.startsWith("/admin")) {
+      return;
+    }
+
     // Only enable on devices that have a precise pointer (desktop / laptop mice)
     if (
       typeof window === "undefined" ||
@@ -111,7 +118,11 @@ export default function CustomCursor() {
       window.removeEventListener("mouseover", handleMouseOver);
       cancelAnimationFrame(animId);
     };
-  }, []);
+  }, [pathname]);
+
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <>

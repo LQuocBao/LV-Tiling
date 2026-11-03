@@ -62,24 +62,28 @@ import {
   defaultSectionVisibility,
 } from "@/data/initialData";
 
+const VALID_ADMIN_TABS = [
+  "dashboard",
+  "leads",
+  "notifications-email",
+  "notifications-sheets",
+  "settings-general",
+  "settings-users",
+  "cms-gallery",
+  "cms-services",
+  "cms-content",
+  "cms-visibility",
+  "cms-testimonials",
+] as const;
+
+type AdminTab = (typeof VALID_ADMIN_TABS)[number];
+
 export default function AdminDashboardPage() {
   const router = useRouter();
   const [authenticated, setAuthenticated] = useState(false);
 
   // Tab State
-  const [activeTab, setActiveTab] = useState<
-    | "dashboard"
-    | "leads"
-    | "notifications-email"
-    | "notifications-sheets"
-    | "settings-general"
-    | "settings-users"
-    | "cms-gallery"
-    | "cms-services"
-    | "cms-content"
-    | "cms-visibility"
-    | "cms-testimonials"
-  >("dashboard");
+  const [activeTab, setActiveTab] = useState<AdminTab>("dashboard");
 
   // State data
   const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
@@ -159,7 +163,14 @@ export default function AdminDashboardPage() {
   // Check authentication & language preference
   useEffect(() => {
     const isAuth = localStorage.getItem("lv_admin_auth");
-    if (!isAuth) {
+    const expiresAt = localStorage.getItem("lv_admin_expires_at");
+
+    // Session expiration check: 4 hours limit
+    if (!isAuth || (expiresAt && Date.now() > Number(expiresAt))) {
+      localStorage.removeItem("lv_admin_auth");
+      localStorage.removeItem("lv_admin_user");
+      localStorage.removeItem("lv_admin_expires_at");
+      localStorage.removeItem("lv_admin_active_tab");
       router.push("/admin/login");
     } else {
       setAuthenticated(true);
@@ -172,9 +183,38 @@ export default function AdminDashboardPage() {
           setCurrentUser(u);
         } catch {}
       }
+
+      // Restore active tab from URL hash (e.g. #settings-users) or localStorage on page reload
+      const hash = window.location.hash.replace("#", "") as AdminTab;
+      const savedTab = localStorage.getItem("lv_admin_active_tab") as AdminTab;
+      if (hash && VALID_ADMIN_TABS.includes(hash)) {
+        setActiveTab(hash);
+      } else if (savedTab && VALID_ADMIN_TABS.includes(savedTab)) {
+        setActiveTab(savedTab);
+        window.history.replaceState(null, "", `#${savedTab}`);
+      }
+
       fetchData();
     }
+
+    const handleHashChange = () => {
+      const h = window.location.hash.replace("#", "") as AdminTab;
+      if (h && VALID_ADMIN_TABS.includes(h)) {
+        setActiveTab(h);
+      }
+    };
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
   }, [router]);
+
+  // Tab switch handler that persists active tab in localStorage & URL hash across F5 reloads
+  const handleSelectTab = (tab: AdminTab) => {
+    setActiveTab(tab);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("lv_admin_active_tab", tab);
+      window.history.replaceState(null, "", `#${tab}`);
+    }
+  };
 
   // Staff guard: must stay above any early return to keep hook order stable
   useEffect(() => {
@@ -187,7 +227,7 @@ export default function AdminDashboardPage() {
       "cms-visibility",
     ];
     if (currentUser?.role === "staff" && restrictedTabs.includes(activeTab)) {
-      setActiveTab("dashboard");
+      handleSelectTab("dashboard");
     }
   }, [currentUser, activeTab]);
 
@@ -212,6 +252,8 @@ export default function AdminDashboardPage() {
       if (resLeads && resLeads.success === false && String(resLeads.error || "").startsWith("Unauthorized")) {
         localStorage.removeItem("lv_admin_auth");
         localStorage.removeItem("lv_admin_user");
+        localStorage.removeItem("lv_admin_expires_at");
+        localStorage.removeItem("lv_admin_active_tab");
         router.push("/admin/login");
         return;
       }
@@ -235,6 +277,8 @@ export default function AdminDashboardPage() {
     } catch {}
     localStorage.removeItem("lv_admin_auth");
     localStorage.removeItem("lv_admin_user");
+    localStorage.removeItem("lv_admin_expires_at");
+    localStorage.removeItem("lv_admin_active_tab");
     router.push("/admin/login");
   };
 
@@ -876,7 +920,7 @@ export default function AdminDashboardPage() {
 
   if (!authenticated) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">
+      <div className="admin-root min-h-screen bg-slate-900 flex items-center justify-center text-white">
         <div className="flex items-center space-x-3">
           <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
           <span className="font-medium text-slate-300">Đang xác thực quyền quản trị...</span>
@@ -994,7 +1038,7 @@ export default function AdminDashboardPage() {
 }`;
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-slate-100 flex text-slate-900 font-sans antialiased">
+    <div className="admin-root h-screen w-screen overflow-hidden bg-slate-100 flex text-slate-900 font-sans antialiased">
       {/* ================= LEFT SIDEBAR ================= */}
       <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 border-r border-slate-800 select-none h-full overflow-hidden">
         {/* Brand Header */}
@@ -1066,7 +1110,7 @@ export default function AdminDashboardPage() {
             </div>
             <div className="space-y-1">
               <button
-                onClick={() => setActiveTab("dashboard")}
+                onClick={() => handleSelectTab("dashboard")}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
                   activeTab === "dashboard"
                     ? "bg-[#dc2626] text-white font-bold"
@@ -1088,7 +1132,7 @@ export default function AdminDashboardPage() {
             </div>
             <div className="space-y-1">
               <button
-                onClick={() => setActiveTab("leads")}
+                onClick={() => handleSelectTab("leads")}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
                   activeTab === "leads"
                     ? "bg-[#dc2626] text-white font-bold"
@@ -1120,7 +1164,7 @@ export default function AdminDashboardPage() {
               </div>
               <div className="space-y-1">
                 <button
-                  onClick={() => setActiveTab("notifications-email")}
+                  onClick={() => handleSelectTab("notifications-email")}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
                     activeTab === "notifications-email"
                       ? "bg-[#dc2626] text-white font-bold"
@@ -1134,7 +1178,7 @@ export default function AdminDashboardPage() {
                 </button>
 
                 <button
-                  onClick={() => setActiveTab("notifications-sheets")}
+                  onClick={() => handleSelectTab("notifications-sheets")}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
                     activeTab === "notifications-sheets"
                       ? "bg-[#dc2626] text-white font-bold"
@@ -1159,7 +1203,7 @@ export default function AdminDashboardPage() {
               {!isStaff && (
                 <>
                   <button
-                    onClick={() => setActiveTab("settings-general")}
+                    onClick={() => handleSelectTab("settings-general")}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
                       activeTab === "settings-general"
                         ? "bg-[#dc2626] text-white font-bold"
@@ -1173,7 +1217,7 @@ export default function AdminDashboardPage() {
                   </button>
 
                   <button
-                    onClick={() => setActiveTab("settings-users")}
+                    onClick={() => handleSelectTab("settings-users")}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
                       activeTab === "settings-users"
                         ? "bg-[#dc2626] text-white font-bold"
@@ -1190,7 +1234,7 @@ export default function AdminDashboardPage() {
               )}
 
               <button
-                onClick={() => setActiveTab("cms-gallery")}
+                onClick={() => handleSelectTab("cms-gallery")}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
                   activeTab === "cms-gallery"
                     ? "bg-[#dc2626] text-white font-bold"
@@ -1213,7 +1257,7 @@ export default function AdminDashboardPage() {
             </div>
             <div className="space-y-1">
               <button
-                onClick={() => setActiveTab("cms-services")}
+                onClick={() => handleSelectTab("cms-services")}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
                   activeTab === "cms-services"
                     ? "bg-[#dc2626] text-white font-bold"
@@ -1230,7 +1274,7 @@ export default function AdminDashboardPage() {
               {!isStaff && (
                 <>
                   <button
-                    onClick={() => setActiveTab("cms-content")}
+                    onClick={() => handleSelectTab("cms-content")}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
                       activeTab === "cms-content"
                         ? "bg-[#dc2626] text-white font-bold"
@@ -1244,7 +1288,7 @@ export default function AdminDashboardPage() {
                   </button>
 
                   <button
-                    onClick={() => setActiveTab("cms-visibility")}
+                    onClick={() => handleSelectTab("cms-visibility")}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
                       activeTab === "cms-visibility"
                         ? "bg-[#dc2626] text-white font-bold"
@@ -1260,7 +1304,7 @@ export default function AdminDashboardPage() {
               )}
 
               <button
-                onClick={() => setActiveTab("cms-testimonials")}
+                onClick={() => handleSelectTab("cms-testimonials")}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
                   activeTab === "cms-testimonials"
                     ? "bg-[#dc2626] text-white font-bold"
@@ -1438,7 +1482,7 @@ export default function AdminDashboardPage() {
                     </p>
                   </div>
                   <button
-                    onClick={() => setActiveTab("leads")}
+                    onClick={() => handleSelectTab("leads")}
                     className="text-xs font-semibold text-[#dc2626] hover:text-[#b91c1c] flex items-center space-x-1"
                   >
                     <span>{lang === "en" ? `View All (${leads.length})` : `Xem tất cả (${leads.length})`}</span>

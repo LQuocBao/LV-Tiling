@@ -52,6 +52,7 @@ export default async function HomePage() {
           email={settings.email}
           address={settings.address}
           facebookUrl={settings.facebookUrl}
+          sectionVisibility={vis}
         />
 
         {/* 2. Hero Slider with 4-Year Gold Warranty Badge */}

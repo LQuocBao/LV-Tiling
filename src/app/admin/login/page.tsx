@@ -29,7 +29,9 @@ export default function AdminLoginPage() {
 
       if (data.success && data.user) {
         if (typeof window !== "undefined") {
+          const FOUR_HOURS_MS = 4 * 60 * 60 * 1000;
           localStorage.setItem("lv_admin_auth", "true");
+          localStorage.setItem("lv_admin_expires_at", (Date.now() + FOUR_HOURS_MS).toString());
           localStorage.setItem("lv_admin_user", JSON.stringify(data.user));
           localStorage.setItem("lv_admin_lang", lang);
         }
@@ -56,7 +58,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 font-sans text-slate-900">
+    <div className="admin-root min-h-screen bg-slate-100 flex items-center justify-center p-4 font-sans text-slate-900">
       <div className="max-w-sm w-full p-6 sm:p-8 rounded-[8px] bg-white border border-slate-200 shadow-sm space-y-6 relative">
         
         {/* Language Switcher */}

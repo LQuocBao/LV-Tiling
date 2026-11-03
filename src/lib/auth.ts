@@ -11,7 +11,7 @@ export interface SessionPayload {
 }
 
 export const SESSION_COOKIE_NAME = "lv_admin_session";
-const SESSION_MAX_AGE_SEC = 7 * 24 * 60 * 60; // 7 days
+export const SESSION_MAX_AGE_SEC = 4 * 60 * 60; // 4 hours session limit
 
 function getSecretKey(): string {
   return (
