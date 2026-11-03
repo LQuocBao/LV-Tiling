@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { addLeadAsync, getLeadsAsync, getSettingsAsync } from "@/lib/storage";
+import { sendAdminLeadNotification, sendCustomerConfirmationEmail } from "@/lib/email";
 import {
   checkRateLimit,
   getClientIp,
@@ -73,11 +74,13 @@ export async function POST(request: Request) {
       message: String(message || "No extra notes provided.").slice(0, 2000),
     });
 
-    // Asynchronously dispatch to Google Sheet Webhook if configured
+    // Dispatch Google Sheet Webhook and Email Notifications in parallel (Serverless safe)
     try {
       const settings = await getSettingsAsync();
+      const asyncTasks: Promise<any>[] = [];
+
       if (settings.googleSheetWebhookUrl && settings.googleSheetWebhookUrl.trim().startsWith("http")) {
-        fetch(settings.googleSheetWebhookUrl.trim(), {
+        const sheetTask = fetch(settings.googleSheetWebhookUrl.trim(), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -94,23 +97,30 @@ export async function POST(request: Request) {
             timestamp: new Date().toLocaleString("en-AU", { timeZone: "Australia/Perth" }),
           }),
         }).catch((err) => console.warn("Google Sheet webhook dispatch error:", err));
+        asyncTasks.push(sheetTask);
       }
 
       // Send Two-Way Email Notifications (Admin alert + Customer confirmation)
       if (settings.emailNotificationsEnabled !== false) {
-        import("@/lib/email").then(async ({ sendAdminLeadNotification, sendCustomerConfirmationEmail }) => {
-          try {
-            await sendAdminLeadNotification(newLead, settings);
-            if (newLead.email) {
-              await sendCustomerConfirmationEmail(newLead, settings);
-            }
-          } catch (e) {
-            console.error("Email notification dispatch error:", e);
-          }
-        });
+        asyncTasks.push(
+          sendAdminLeadNotification(newLead, settings).catch((e) =>
+            console.error("Admin email alert dispatch error:", e)
+          )
+        );
+        if (newLead.email) {
+          asyncTasks.push(
+            sendCustomerConfirmationEmail(newLead, settings).catch((e) =>
+              console.error("Customer confirmation email dispatch error:", e)
+            )
+          );
+        }
       }
-    } catch (sheetErr) {
-      console.warn("Failed to check notification settings:", sheetErr);
+
+      if (asyncTasks.length > 0) {
+        await Promise.allSettled(asyncTasks);
+      }
+    } catch (notificationErr) {
+      console.warn("Failed to complete notifications dispatch:", notificationErr);
     }
 
     return NextResponse.json({

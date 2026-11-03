@@ -7,10 +7,12 @@ import { Check, ArrowRight, Sparkles, Phone } from "lucide-react";
 interface WelcomeSectionProps {
   headline?: string;
   phone?: string;
+  warrantyYears?: number;
 }
 
 export default function WelcomeSection({
   phone = "0452 612 336",
+  warrantyYears = 4,
 }: WelcomeSectionProps) {
   const [activeTab, setActiveTab] = useState<"designing" | "approved" | "guaranteed">("designing");
 
@@ -36,11 +38,11 @@ export default function WelcomeSection({
       ],
     },
     guaranteed: {
-      title: "4-Year Workmanship Guarantee",
+      title: `${warrantyYears}-Year Workmanship Guarantee`,
       image: "/media/fc906945-b180-444b-b818-7f0a709dc091.jpg",
       desc: "We stand firmly by our work with an uncompromising commitment to quality, durability, and customer satisfaction—ensuring every project endures.",
       points: [
-        "4-Year Comprehensive Written Workmanship Warranty Certificate",
+        `${warrantyYears}-Year Comprehensive Written Workmanship Warranty Certificate`,
         "Zero-lippage laser alignment guarantee on all floor tiling",
         "100% leak-proof shower and bathroom renovation guarantee",
       ],

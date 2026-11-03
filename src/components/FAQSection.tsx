@@ -3,7 +3,15 @@
 import React, { useState } from "react";
 import { ChevronDown, HelpCircle, Phone } from "lucide-react";
 
-export default function FAQSection() {
+interface FAQSectionProps {
+  phone?: string;
+  warrantyYears?: number;
+}
+
+export default function FAQSection({
+  phone = "0452 612 336",
+  warrantyYears = 4,
+}: FAQSectionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const faqs = [
@@ -12,8 +20,8 @@ export default function FAQSection() {
       a: "Standard floor tiling in Perth generally ranges from $70 to $95 per m² for standard ceramic/porcelain formats. Large-format tiles (1200x600mm or larger), herringbone patterns, and wet-area shower screeding range from $90 to $120 per m² due to laser clip leveling, substrate preparation, and precision diamond mitring. We provide free on-site laser measures and itemized written quotes with zero hidden markups.",
     },
     {
-      q: "What does the LV Tiling 4-Year Comprehensive Workmanship Warranty cover?",
-      a: "Our 4-year warranty guarantees our trade craftsmanship against tile lifting, hollow drummy tiles, joint lippage, and grout cracking. Furthermore, all wet-area waterproofing membranes come backed by our certified compliance with Australian Standard AS 3740, providing peace of mind against concealed leaks.",
+      q: `What does the LV Tiling ${warrantyYears}-Year Comprehensive Workmanship Warranty cover?`,
+      a: `Our ${warrantyYears}-year warranty guarantees our trade craftsmanship against tile lifting, hollow drummy tiles, joint lippage, and grout cracking. Furthermore, all wet-area waterproofing membranes come backed by our certified compliance with Australian Standard AS 3740, providing peace of mind against concealed leaks.`,
     },
     {
       q: "Do you issue Waterproofing Compliance Certificates for WA council approval?",
@@ -94,12 +102,12 @@ export default function FAQSection() {
             <p className="text-xs text-slate-600 mt-0.5">Call our direct trade hotline for immediate advice on substrates &amp; materials.</p>
           </div>
           <a
-            href="tel:0452612336"
+            href={`tel:${phone.replace(/\s+/g, "")}`}
             className="px-5 py-2.5 min-h-[44px] rounded-[6px] bg-slate-900 hover:bg-slate-800 text-white border border-slate-700 text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors whitespace-nowrap"
-            aria-label="Call 0452 612 336"
+            aria-label={`Call ${phone}`}
           >
             <Phone className="w-3.5 h-3.5 text-[#dc2626]" />
-            <span>Call 0452 612 336</span>
+            <span>Call {phone}</span>
           </a>
         </div>
 

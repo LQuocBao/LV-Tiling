@@ -233,6 +233,7 @@ interface ServicesGridProps {
 }
 
 export default function ServicesGrid({
+  services = [],
   gallery = [],
 }: ServicesGridProps) {
   const [activeTab, setActiveTab] = useState<string>("completed");
@@ -242,16 +243,36 @@ export default function ServicesGrid({
     title: string;
   } | null>(null);
 
-  // 7 Trade Categories
-  const filterTabs = [
-    { id: "completed", label: "Completed Jobs photo" },
-    { id: "flashbacks", label: "Flashbacks" },
-    { id: "screeding", label: "Screeding and prep" },
-    { id: "polyurethane", label: "Polyurethane and Primer" },
-    { id: "bandages", label: "Shower Bandages" },
-    { id: "waterproof", label: "Waterproof" },
-    { id: "tennax", label: "Tennax Seal" },
-  ];
+  const getCategoryId = (serviceId: string) => {
+    if (serviceId.includes("completed")) return "completed";
+    if (serviceId.includes("flashback")) return "flashbacks";
+    if (serviceId.includes("screed")) return "screeding";
+    if (serviceId.includes("polyurethane")) return "polyurethane";
+    if (serviceId.includes("bandage")) return "bandages";
+    if (serviceId.includes("waterproof")) return "waterproof";
+    if (serviceId.includes("tennax") || serviceId.includes("seal")) return "tennax";
+    return serviceId;
+  };
+
+  // Trade Categories synced with Admin services
+  const filterTabs =
+    services && services.length > 0
+      ? services.map((s) => ({
+          id: getCategoryId(s.id),
+          label: s.title,
+          badge: s.badge,
+          desc: s.shortDesc,
+          features: s.features,
+        }))
+      : [
+          { id: "completed", label: "Completed Jobs photo", badge: "Master Finish", desc: categoryMeta.completed.desc, features: categoryMeta.completed.features },
+          { id: "flashbacks", label: "Flashbacks", badge: "In-Progress Milestone", desc: categoryMeta.flashbacks.desc, features: categoryMeta.flashbacks.features },
+          { id: "screeding", label: "Screeding and prep", badge: "Substrate Prep", desc: categoryMeta.screeding.desc, features: categoryMeta.screeding.features },
+          { id: "polyurethane", label: "Polyurethane and Primer", badge: "Bonding & Jointing", desc: categoryMeta.polyurethane.desc, features: categoryMeta.polyurethane.features },
+          { id: "bandages", label: "Shower Bandages", badge: "Reinforced Sealing", desc: categoryMeta.bandages.desc, features: categoryMeta.bandages.features },
+          { id: "waterproof", label: "Waterproof", badge: "AS 3740 Certified", desc: categoryMeta.waterproof.desc, features: categoryMeta.waterproof.features },
+          { id: "tennax", label: "Tennax Seal", badge: "Stone Protection", desc: categoryMeta.tennax.desc, features: categoryMeta.tennax.features },
+        ];
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
@@ -261,7 +282,9 @@ export default function ServicesGrid({
   const activeItems = gallery.filter((item) => item.category === activeTab);
   const displayedItems = activeItems.slice(0, visibleCount);
   const meta = categoryMeta[activeTab] || categoryMeta.completed;
+  const currentServiceTab = filterTabs.find((t) => t.id === activeTab);
   const CategoryIcon = meta.icon;
+  const activeBadge = currentServiceTab?.badge || meta.badge;
 
   return (
     <section
@@ -305,6 +328,33 @@ export default function ServicesGrid({
           </div>
         </div>
 
+        {/* Active Service Overview Card from Admin */}
+        {currentServiceTab && currentServiceTab.desc && (
+          <div className="mb-8 p-4 sm:p-5 rounded-[6px] bg-white border border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold text-slate-900">{currentServiceTab.label}</h3>
+                {activeBadge && (
+                  <span className="px-2 py-0.5 rounded-[4px] bg-red-50 text-[#dc2626] border border-red-200 text-[11px] font-bold">
+                    {activeBadge}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs sm:text-sm text-slate-600 max-w-3xl leading-relaxed">{currentServiceTab.desc}</p>
+            </div>
+            {currentServiceTab.features && currentServiceTab.features.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 md:max-w-md">
+                {currentServiceTab.features.slice(0, 3).map((f, i) => (
+                  <span key={i} className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-700 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                    <span>{f}</span>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Services Grid Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayedItems.map((item) => (
@@ -317,7 +367,7 @@ export default function ServicesGrid({
                 <ServiceCardImage
                   src={item.image}
                   alt={item.title}
-                  badge={meta.badge}
+                  badge={activeBadge}
                   location={item.location}
                   CategoryIcon={CategoryIcon}
                   onClick={() =>

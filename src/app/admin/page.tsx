@@ -151,6 +151,10 @@ export default function AdminDashboardPage() {
   const [showAddGalleryModal, setShowAddGalleryModal] = useState(false);
   const [galleryUploading, setGalleryUploading] = useState(false);
   const [hasCustomImage, setHasCustomImage] = useState(false);
+  const [editingGalleryItem, setEditingGalleryItem] = useState<GalleryItem | null>(null);
+  const [showEditGalleryModal, setShowEditGalleryModal] = useState(false);
+  const [galleryEditUploading, setGalleryEditUploading] = useState(false);
+  const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
 
   // Check authentication & language preference
   useEffect(() => {
@@ -161,6 +165,13 @@ export default function AdminDashboardPage() {
       setAuthenticated(true);
       const savedLang = localStorage.getItem("lv_admin_lang") as "en" | "vi" | null;
       if (savedLang) setLang(savedLang);
+      const savedUserStr = localStorage.getItem("lv_admin_user");
+      if (savedUserStr) {
+        try {
+          const u = JSON.parse(savedUserStr);
+          setCurrentUser(u);
+        } catch {}
+      }
       fetchData();
     }
   }, [router]);
@@ -196,8 +207,12 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {}
     localStorage.removeItem("lv_admin_auth");
+    localStorage.removeItem("lv_admin_user");
     router.push("/admin/login");
   };
 
@@ -489,7 +504,8 @@ export default function AdminDashboardPage() {
       });
       const data = await res.json();
       if (data.success) {
-        setGallery((prev) => [data.item, ...prev]);
+        const itemToAdd = data.data || data.item || { ...newGalleryItem, id: "gal-" + Date.now() };
+        setGallery((prev) => [itemToAdd, ...prev]);
         setShowAddGalleryModal(false);
         setNewGalleryItem({
           title: "",
@@ -503,6 +519,68 @@ export default function AdminDashboardPage() {
       }
     } catch (err) {
       setStatusMsg({ type: "error", msg: lang === "en" ? "Error adding photo to gallery." : "Lỗi thêm ảnh vào thư viện." });
+    } finally {
+      setTimeout(() => setStatusMsg(null), 3000);
+    }
+  };
+
+  const handleOpenEditGallery = (item: GalleryItem) => {
+    setEditingGalleryItem({ ...item });
+    setShowEditGalleryModal(true);
+  };
+
+  const handleUploadEditGalleryImage = async (file: File) => {
+    if (!editingGalleryItem) return;
+    setGalleryEditUploading(true);
+    const slug = slugify(editingGalleryItem.title) || "project-photo";
+    const url = await uploadFile(file, editingGalleryItem.category, slug);
+    if (url) {
+      setEditingGalleryItem((prev) => (prev ? { ...prev, image: url } : null));
+      setStatusMsg({
+        type: "success",
+        msg: lang === "en" ? "Photo updated and uploaded!" : "Đã tải ảnh mới lên thành công!",
+      });
+    } else {
+      setStatusMsg({
+        type: "error",
+        msg: lang === "en" ? "Failed to upload photo." : "Lỗi khi tải ảnh lên máy chủ.",
+      });
+    }
+    setGalleryEditUploading(false);
+    setTimeout(() => setStatusMsg(null), 3000);
+  };
+
+  const handleSaveEditGallery = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingGalleryItem || !editingGalleryItem.title.trim()) return;
+
+    try {
+      const res = await fetch("/api/gallery", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editingGalleryItem),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setGallery((prev) =>
+          prev.map((g) => (g.id === editingGalleryItem.id ? { ...g, ...editingGalleryItem } : g))
+        );
+        setShowEditGalleryModal(false);
+        setStatusMsg({
+          type: "success",
+          msg: lang === "en" ? "Gallery photo updated successfully!" : "Đã cập nhật thông tin ảnh thành công!",
+        });
+      } else {
+        setStatusMsg({
+          type: "error",
+          msg: data.error || (lang === "en" ? "Failed to update photo." : "Lỗi cập nhật ảnh."),
+        });
+      }
+    } catch {
+      setStatusMsg({
+        type: "error",
+        msg: lang === "en" ? "Error updating photo." : "Lỗi kết nối khi cập nhật ảnh.",
+      });
     } finally {
       setTimeout(() => setStatusMsg(null), 3000);
     }
@@ -816,6 +894,21 @@ export default function AdminDashboardPage() {
 
   const newLeadsCount = leads.filter((l) => l.status === "new").length;
   const bookedLeadsCount = leads.filter((l) => l.status === "booked" || l.status === "completed").length;
+  const isStaff = currentUser?.role === "staff";
+
+  useEffect(() => {
+    if (
+      isStaff &&
+      (activeTab === "notifications-email" ||
+        activeTab === "notifications-sheets" ||
+        activeTab === "settings-general" ||
+        activeTab === "settings-users" ||
+        activeTab === "cms-content" ||
+        activeTab === "cms-visibility")
+    ) {
+      setActiveTab("dashboard");
+    }
+  }, [isStaff, activeTab]);
 
   const googleAppsScriptCode = `function doPost(e) {
   try {
@@ -907,6 +1000,11 @@ export default function AdminDashboardPage() {
               </span>
             </div>
           </div>
+          {isStaff && (
+            <span className="px-2 py-0.5 rounded bg-blue-500/20 border border-blue-500/30 text-blue-300 text-[10px] font-bold">
+              STAFF
+            </span>
+          )}
         </div>
 
         {/* Language Switcher Bar */}
@@ -997,40 +1095,42 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Group 3: INSTANT NOTIFICATIONS */}
-          <div>
-            <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              {lang === "en" ? "Instant Alerts" : "Thông Báo Tức Thì"}
-            </div>
-            <div className="space-y-1">
-              <button
-                onClick={() => setActiveTab("notifications-email")}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
-                  activeTab === "notifications-email"
-                    ? "bg-[#dc2626] text-white font-bold"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`}
-              >
-                <div className="flex items-center space-x-2.5">
-                  <Mail className="w-4 h-4" />
-                  <span>{lang === "en" ? "2-Way Email (SMTP)" : "Email 2 Chiều (Khuyên dùng)"}</span>
-                </div>
-              </button>
+          {!isStaff && (
+            <div>
+              <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                {lang === "en" ? "Instant Alerts" : "Thông Báo Tức Thì"}
+              </div>
+              <div className="space-y-1">
+                <button
+                  onClick={() => setActiveTab("notifications-email")}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
+                    activeTab === "notifications-email"
+                      ? "bg-[#dc2626] text-white font-bold"
+                      : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  }`}
+                >
+                  <div className="flex items-center space-x-2.5">
+                    <Mail className="w-4 h-4" />
+                    <span>{lang === "en" ? "2-Way Email (SMTP)" : "Email 2 Chiều (Khuyên dùng)"}</span>
+                  </div>
+                </button>
 
-              <button
-                onClick={() => setActiveTab("notifications-sheets")}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
-                  activeTab === "notifications-sheets"
-                    ? "bg-[#dc2626] text-white font-bold"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`}
-              >
-                <div className="flex items-center space-x-2.5">
-                  <FileSpreadsheet className="w-4 h-4" />
-                  <span>Google Sheets Webhook</span>
-                </div>
-              </button>
+                <button
+                  onClick={() => setActiveTab("notifications-sheets")}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
+                    activeTab === "notifications-sheets"
+                      ? "bg-[#dc2626] text-white font-bold"
+                      : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  }`}
+                >
+                  <div className="flex items-center space-x-2.5">
+                    <FileSpreadsheet className="w-4 h-4" />
+                    <span>Google Sheets Webhook</span>
+                  </div>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Group 4: BUSINESS INFO & MEDIA */}
           <div>
@@ -1038,34 +1138,38 @@ export default function AdminDashboardPage() {
               {lang === "en" ? "Settings & Media" : "Cài đặt & Thư viện"}
             </div>
             <div className="space-y-1">
-              <button
-                onClick={() => setActiveTab("settings-general")}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
-                  activeTab === "settings-general"
-                    ? "bg-[#dc2626] text-white font-bold"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`}
-              >
-                <div className="flex items-center space-x-2.5">
-                  <Settings className="w-4 h-4" />
-                  <span>{lang === "en" ? "Hotline & Business Info" : "Hotline & Thông tin"}</span>
-                </div>
-              </button>
+              {!isStaff && (
+                <>
+                  <button
+                    onClick={() => setActiveTab("settings-general")}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
+                      activeTab === "settings-general"
+                        ? "bg-[#dc2626] text-white font-bold"
+                        : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2.5">
+                      <Settings className="w-4 h-4" />
+                      <span>{lang === "en" ? "Hotline & Business Info" : "Hotline & Thông tin"}</span>
+                    </div>
+                  </button>
 
-              <button
-                onClick={() => setActiveTab("settings-users")}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
-                  activeTab === "settings-users"
-                    ? "bg-[#dc2626] text-white font-bold"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`}
-              >
-                <div className="flex items-center space-x-2.5">
-                  <Users className="w-4 h-4" />
-                  <span>{lang === "en" ? "User Accounts" : "Quản lý Tài khoản"}</span>
-                </div>
-                <span className="text-[10px] font-mono text-slate-400">({users.length})</span>
-              </button>
+                  <button
+                    onClick={() => setActiveTab("settings-users")}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
+                      activeTab === "settings-users"
+                        ? "bg-[#dc2626] text-white font-bold"
+                        : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2.5">
+                      <Users className="w-4 h-4" />
+                      <span>{lang === "en" ? "User Accounts" : "Quản lý Tài khoản"}</span>
+                    </div>
+                    <span className="text-[10px] font-mono text-slate-400">({users.length})</span>
+                  </button>
+                </>
+              )}
 
               <button
                 onClick={() => setActiveTab("cms-gallery")}
@@ -1105,33 +1209,37 @@ export default function AdminDashboardPage() {
                 <span className="text-[10px] font-mono text-slate-400">({services.length})</span>
               </button>
 
-              <button
-                onClick={() => setActiveTab("cms-content")}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
-                  activeTab === "cms-content"
-                    ? "bg-[#dc2626] text-white font-bold"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`}
-              >
-                <div className="flex items-center space-x-2.5">
-                  <Globe className="w-4 h-4" />
-                  <span>{lang === "en" ? "Page Content & Hero" : "Nội dung Trang & Hero"}</span>
-                </div>
-              </button>
+              {!isStaff && (
+                <>
+                  <button
+                    onClick={() => setActiveTab("cms-content")}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
+                      activeTab === "cms-content"
+                        ? "bg-[#dc2626] text-white font-bold"
+                        : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2.5">
+                      <Globe className="w-4 h-4" />
+                      <span>{lang === "en" ? "Page Content & Hero" : "Nội dung Trang & Hero"}</span>
+                    </div>
+                  </button>
 
-              <button
-                onClick={() => setActiveTab("cms-visibility")}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
-                  activeTab === "cms-visibility"
-                    ? "bg-[#dc2626] text-white font-bold"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`}
-              >
-                <div className="flex items-center space-x-2.5">
-                  <Layout className="w-4 h-4" />
-                  <span>{lang === "en" ? "Section Visibility" : "Ẩn/Hiện Section"}</span>
-                </div>
-              </button>
+                  <button
+                    onClick={() => setActiveTab("cms-visibility")}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-xs font-semibold transition-colors ${
+                      activeTab === "cms-visibility"
+                        ? "bg-[#dc2626] text-white font-bold"
+                        : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2.5">
+                      <Layout className="w-4 h-4" />
+                      <span>{lang === "en" ? "Section Visibility" : "Ẩn/Hiện Section"}</span>
+                    </div>
+                  </button>
+                </>
+              )}
 
               <button
                 onClick={() => setActiveTab("cms-testimonials")}
@@ -1373,13 +1481,21 @@ export default function AdminDashboardPage() {
                             </span>
                           </td>
                           <td className="p-3 text-right">
-                            <a
-                              href={`tel:${lead.phone}`}
-                              className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-[4px] bg-[#dc2626] hover:bg-[#b91c1c] text-white font-bold text-[11px] shadow-xs"
-                            >
-                              <Phone className="w-3 h-3" />
-                              <span>{lang === "en" ? "Call" : "Gọi ngay"}</span>
-                            </a>
+                            <div className="flex items-center justify-end space-x-1.5">
+                              <button
+                                onClick={() => setSelectedLead(lead)}
+                                className="px-2.5 py-1 rounded-[4px] bg-slate-900 hover:bg-slate-800 text-white font-semibold text-[11px] shadow-xs transition-colors cursor-pointer"
+                              >
+                                {lang === "en" ? "Details" : "Chi tiết"}
+                              </button>
+                              <a
+                                href={`tel:${lead.phone}`}
+                                className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-[4px] bg-[#dc2626] hover:bg-[#b91c1c] text-white font-bold text-[11px] shadow-xs"
+                              >
+                                <Phone className="w-3 h-3" />
+                                <span>{lang === "en" ? "Call" : "Gọi ngay"}</span>
+                              </a>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -1761,17 +1877,42 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
 
-                {/* Save Action */}
-                <div className="pt-4 border-t border-slate-200 flex justify-end">
-                  <button
-                    type="button"
-                    onClick={() => handleSaveSettings()}
-                    disabled={saving}
-                    className="flex items-center space-x-1.5 px-4 py-2 rounded-[6px] bg-[#dc2626] hover:bg-[#b91c1c] text-white text-xs font-semibold shadow-xs transition-colors w-full sm:w-auto justify-center"
-                  >
-                    <Save className="w-3.5 h-3.5 text-white" />
-                    <span>{saving ? (lang === "en" ? "Saving..." : "Đang lưu...") : (lang === "en" ? "Save Email Settings" : "Lưu Cấu Hình Email")}</span>
-                  </button>
+                {/* Save & Test Actions */}
+                <div className="pt-4 border-t border-slate-200 space-y-3">
+                  <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-[6px] flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div className="w-full sm:flex-1">
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        {lang === "en" ? "Send Test Email To:" : "Gửi Email Kiểm Tra (Test) Đến:"}
+                      </label>
+                      <input
+                        type="email"
+                        value={testEmailAddress}
+                        onChange={(e) => setTestEmailAddress(e.target.value)}
+                        placeholder="your-email@gmail.com"
+                        className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-[6px] bg-white focus:outline-none focus:ring-1 focus:ring-[#dc2626]"
+                      />
+                    </div>
+                    <div className="flex gap-2 w-full sm:w-auto pt-1 sm:pt-4">
+                      <button
+                        type="button"
+                        onClick={handleTestEmail}
+                        disabled={testingEmail || !settings.smtpUser}
+                        className="flex items-center justify-center space-x-1.5 px-3.5 py-1.5 rounded-[6px] bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold disabled:opacity-50 transition-colors w-full sm:w-auto cursor-pointer"
+                      >
+                        {testingEmail ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                        <span>{testingEmail ? (lang === "en" ? "Sending..." : "Đang gửi...") : (lang === "en" ? "Send Test Email" : "Gửi Thử Email")}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSaveSettings()}
+                        disabled={saving}
+                        className="flex items-center justify-center space-x-1.5 px-4 py-1.5 rounded-[6px] bg-[#dc2626] hover:bg-[#b91c1c] text-white text-xs font-semibold shadow-xs transition-colors w-full sm:w-auto disabled:opacity-50 cursor-pointer"
+                      >
+                        <Save className="w-3.5 h-3.5 text-white" />
+                        <span>{saving ? (lang === "en" ? "Saving..." : "Đang lưu...") : (lang === "en" ? "Save Email Settings" : "Lưu Cấu Hình Email")}</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -1931,9 +2072,18 @@ export default function AdminDashboardPage() {
                     </button>
 
                     <button
+                      onClick={() => handleSaveSettings()}
+                      disabled={saving}
+                      className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-[6px] bg-[#dc2626] hover:bg-[#b91c1c] text-white text-xs font-semibold shadow-xs disabled:opacity-50 transition-colors cursor-pointer"
+                    >
+                      {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5 text-white" />}
+                      <span>{saving ? (lang === "en" ? "Saving..." : "Đang lưu...") : (lang === "en" ? "Save Webhook URL" : "Lưu Cấu Hình Webhook")}</span>
+                    </button>
+
+                    <button
                       onClick={handleSyncAllLeadsToSheet}
                       disabled={syncingSheet || !settings.googleSheetWebhookUrl || leads.length === 0}
-                      className="flex items-center space-x-1.5 px-3 py-1.5 rounded-[6px] bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold disabled:opacity-50 transition-colors"
+                      className="flex items-center space-x-1.5 px-3 py-1.5 rounded-[6px] bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold disabled:opacity-50 transition-colors cursor-pointer"
                     >
                       {syncingSheet ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5 text-amber-400" />}
                       <span>
@@ -2329,13 +2479,24 @@ export default function AdminDashboardPage() {
                         </div>
                         <div className="flex items-center justify-between pt-2 mt-2 border-t border-slate-100">
                           <span className="text-[10px] text-slate-400 truncate max-w-[120px]">{item.tileType}</span>
-                          <button
-                            onClick={() => handleDeleteGallery(item.id)}
-                            className="p-1 text-slate-400 hover:text-red-600 rounded-[4px] hover:bg-red-50"
-                            title={lang === "en" ? "Delete photo" : "Xóa hình ảnh"}
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEditGallery(item)}
+                              className="p-1 text-slate-400 hover:text-blue-600 rounded-[4px] hover:bg-blue-50 cursor-pointer"
+                              title={lang === "en" ? "Edit photo" : "Sửa hình ảnh"}
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteGallery(item.id)}
+                              className="p-1 text-slate-400 hover:text-red-600 rounded-[4px] hover:bg-red-50 cursor-pointer"
+                              title={lang === "en" ? "Delete photo" : "Xóa hình ảnh"}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -3273,6 +3434,155 @@ export default function AdminDashboardPage() {
                 className="px-5 py-2 rounded-[6px] bg-[#dc2626] hover:bg-[#b91c1c] text-white text-xs font-bold shadow-xs transition-colors disabled:opacity-50"
               >
                 {lang === "en" ? "Add Photo to Gallery" : "Thêm vào thư viện"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* ================= EDIT GALLERY MODAL ================= */}
+      {showEditGalleryModal && editingGalleryItem && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <form
+            onSubmit={handleSaveEditGallery}
+            className="bg-white rounded-[6px] max-w-lg w-full p-6 shadow-xl border border-slate-200 space-y-4"
+          >
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+              <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <Edit3 className="w-4 h-4 text-[#dc2626]" />
+                <span>{lang === "en" ? "Edit Gallery Photo" : "Chỉnh Sửa Hình Ảnh Thư Viện"}</span>
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowEditGalleryModal(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  {lang === "en" ? "Project / Photo Title" : "Tiêu đề công trình / ảnh"}
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editingGalleryItem.title}
+                  onChange={(e) => setEditingGalleryItem({ ...editingGalleryItem, title: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-[6px]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  {lang === "en" ? "Category / Work Type" : "Hạng mục hiển thị"}
+                </label>
+                <select
+                  value={editingGalleryItem.category}
+                  onChange={(e) => setEditingGalleryItem({ ...editingGalleryItem, category: e.target.value as any })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-[6px] bg-white"
+                >
+                  <option value="completed">{lang === "en" ? "Completed Project" : "Công trình hoàn thiện"}</option>
+                  <option value="ongoing">{lang === "en" ? "Under Construction" : "Đang thi công"}</option>
+                  <option value="pool">{lang === "en" ? "Swimming Pool" : "Hồ bơi & Ngoài trời"}</option>
+                  <option value="bathroom">{lang === "en" ? "Bathroom & Ensuite" : "Phòng tắm & Nhà vệ sinh"}</option>
+                  <option value="living">{lang === "en" ? "Living & Main Floor" : "Phòng khách & Sàn chính"}</option>
+                </select>
+              </div>
+
+              {/* Upload & Path */}
+              <div className="bg-slate-50 p-3 rounded-[6px] border border-slate-200 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-slate-700">
+                    {lang === "en" ? "Replace Image File:" : "Thay thế file ảnh mới:"}
+                  </span>
+                  <label className="flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-300 hover:border-slate-400 text-slate-700 rounded-[4px] font-medium cursor-pointer shadow-2xs">
+                    {galleryEditUploading ? <Loader2 className="w-3 h-3 animate-spin text-[#dc2626]" /> : <Upload className="w-3 h-3 text-[#dc2626]" />}
+                    <span>{galleryEditUploading ? (lang === "en" ? "Uploading..." : "Đang tải...") : (lang === "en" ? "Select New File" : "Chọn file ảnh mới")}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={galleryEditUploading}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleUploadEditGalleryImage(file);
+                      }}
+                    />
+                  </label>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-20 h-16 rounded-[4px] border border-slate-200 bg-slate-100 overflow-hidden flex-shrink-0 relative">
+                    <img
+                      src={editingGalleryItem.image}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "/media/completed/completed_1.jpg";
+                      }}
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+                      {lang === "en" ? "Image Path / URL:" : "Đường dẫn hình ảnh:"}
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={editingGalleryItem.image}
+                      onChange={(e) => setEditingGalleryItem({ ...editingGalleryItem, image: e.target.value })}
+                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-[4px] font-mono text-[11px] bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Location & Tile Type */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">
+                    {lang === "en" ? "Location (Suburb, WA)" : "Địa điểm (Khu vực)"}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Morley, WA"
+                    value={editingGalleryItem.location || ""}
+                    onChange={(e) => setEditingGalleryItem({ ...editingGalleryItem, location: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-[6px]"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">
+                    {lang === "en" ? "Tile Type" : "Loại gạch thi công"}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Porcelain 600x1200"
+                    value={editingGalleryItem.tileType || ""}
+                    onChange={(e) => setEditingGalleryItem({ ...editingGalleryItem, tileType: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-[6px]"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-slate-200 flex justify-end space-x-2">
+              <button
+                type="button"
+                onClick={() => setShowEditGalleryModal(false)}
+                className="px-3 py-1.5 rounded-[6px] bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer"
+              >
+                {lang === "en" ? "Cancel" : "Hủy"}
+              </button>
+              <button
+                type="submit"
+                disabled={galleryEditUploading}
+                className="px-5 py-2 rounded-[6px] bg-[#dc2626] hover:bg-[#b91c1c] text-white text-xs font-bold shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                {lang === "en" ? "Save Changes" : "Lưu Thay Đổi"}
               </button>
             </div>
           </form>

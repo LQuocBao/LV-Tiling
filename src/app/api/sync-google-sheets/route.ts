@@ -1,10 +1,16 @@
 import { NextResponse } from "next/server";
-import { getLeads, getSettings } from "@/lib/storage";
+import { getLeadsAsync, getSettingsAsync } from "@/lib/storage";
+import { getSessionUser } from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
+    const user = await getSessionUser(request);
+    if (!user || user.role !== "admin") {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json().catch(() => ({}));
-    const settings = getSettings();
+    const settings = await getSettingsAsync();
     const webhookUrl = body.webhookUrl || settings.googleSheetWebhookUrl;
 
     if (!webhookUrl || !webhookUrl.trim().startsWith("http")) {
@@ -14,10 +20,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const leads = getLeads();
+    const leads = await getLeadsAsync();
 
     // If it's just a connection test
-    if (body.test) {
+    if (body.action === "test" || body.test) {
       const testPayload = {
         id: "TEST-001",
         name: "Test Customer (LV Tiling Admin Test)",
@@ -76,6 +82,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
+      syncedCount,
       message: `Successfully synced ${syncedCount} leads to Google Sheets!`,
     });
   } catch (err: any) {

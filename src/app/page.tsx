@@ -1,8 +1,8 @@
-﻿import {
-  getSettings,
-  getServices,
-  getGallery,
-  getTestimonials,
+import {
+  getSettingsAsync,
+  getServicesAsync,
+  getGalleryAsync,
+  getTestimonialsAsync,
 } from "@/lib/storage";
 import { defaultSectionVisibility } from "@/data/initialData";
 
@@ -22,11 +22,13 @@ import FloatingContactWidget from "@/components/FloatingContactWidget";
 // Revalidate every 60 seconds if data changes via storage
 export const revalidate = 60;
 
-export default function HomePage() {
-  const settings = getSettings();
-  const services = getServices();
-  const gallery = getGallery();
-  const testimonials = getTestimonials();
+export default async function HomePage() {
+  const [settings, services, gallery, testimonials] = await Promise.all([
+    getSettingsAsync(),
+    getServicesAsync(),
+    getGalleryAsync(),
+    getTestimonialsAsync(),
+  ]);
 
   // Merge with defaults to handle older stored settings without sectionVisibility
   const vis = { ...defaultSectionVisibility, ...(settings.sectionVisibility ?? {}) };
@@ -55,6 +57,7 @@ export default function HomePage() {
         {vis.hero && (
           <HeroSection
             headline={settings.heroHeadline}
+            subheadline={settings.heroSubheadline}
             phone={settings.phone}
             address={settings.address}
             warrantyYears={settings.warrantyYears}
@@ -68,6 +71,7 @@ export default function HomePage() {
         <WelcomeSection
           headline={settings.heroHeadline}
           phone={settings.phone}
+          warrantyYears={settings.warrantyYears}
         />
       )}
 
@@ -84,7 +88,7 @@ export default function HomePage() {
       {vis.testimonials && <Testimonials testimonials={testimonials} />}
 
       {/* 8. Frequently Asked Questions */}
-      {vis.faq && <FAQSection />}
+      {vis.faq && <FAQSection phone={settings.phone} warrantyYears={settings.warrantyYears} />}
 
       {/* 9. Free On-Site Measure & Quote Section */}
       {vis.quote && (
@@ -104,6 +108,7 @@ export default function HomePage() {
         address={settings.address}
         facebookUrl={settings.facebookUrl}
         abn={settings.abn}
+        warrantyYears={settings.warrantyYears}
       />
 
       {/* 11. Floating Pulsing Contact Us Widget & Smooth Scroll to Top */}

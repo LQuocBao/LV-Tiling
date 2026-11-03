@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
 import { sendTestEmail } from "@/lib/email";
 import { getSettings } from "@/lib/storage";
+import { getSessionUser } from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
+    const user = await getSessionUser(request);
+    if (!user || user.role !== "admin") {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
     const { targetEmail, customSettings } = body;
 

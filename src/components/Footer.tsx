@@ -20,6 +20,7 @@ interface FooterProps {
   address?: string;
   facebookUrl?: string;
   abn?: string;
+  warrantyYears?: number;
 }
 
 export default function Footer({
@@ -29,6 +30,7 @@ export default function Footer({
   address = "130A Crimea street Morley 6062 WA",
   facebookUrl = "https://www.facebook.com/share/lvtiling",
   abn = "ABN 84 629 140 821",
+  warrantyYears = 4,
 }: FooterProps) {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -99,7 +101,7 @@ export default function Footer({
             <div className="flex items-center gap-2 pt-1">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-slate-800 border border-slate-700 text-[11px] text-slate-300 font-semibold">
                 <Award className="w-3 h-3 text-[#dc2626]" />
-                <span>4-Year Warranty</span>
+                <span>{warrantyYears}-Year Warranty</span>
               </span>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-slate-800 border border-slate-700 text-[11px] text-slate-300 font-semibold">
                 <ShieldCheck className="w-3 h-3 text-emerald-400" />

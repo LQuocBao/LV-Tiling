@@ -1,16 +1,24 @@
-﻿import { NextResponse } from "next/server";
-import { getTestimonials, saveTestimonials } from "@/lib/storage";
+import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
+import { getTestimonialsAsync, saveTestimonialsAsync } from "@/lib/storage";
+import { getSessionUser } from "@/lib/auth";
 
 export async function GET() {
-  const testimonials = getTestimonials();
+  const testimonials = await getTestimonialsAsync();
   return NextResponse.json({ success: true, data: testimonials });
 }
 
 export async function POST(request: Request) {
   try {
+    const user = await getSessionUser(request);
+    if (!user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const updated = await request.json();
-    saveTestimonials(updated);
-    return NextResponse.json({ success: true, message: "Testimonials updated" });
+    const saved = await saveTestimonialsAsync(updated);
+    revalidatePath("/");
+    return NextResponse.json({ success: true, message: "Testimonials updated", data: saved });
   } catch {
     return NextResponse.json({ success: false, error: "Failed to update testimonials" }, { status: 400 });
   }

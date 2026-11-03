@@ -14,8 +14,8 @@
   "emailNotificationsEnabled": true,
   "smtpHost": "smtp.gmail.com",
   "smtpPort": 465,
-  "smtpUser": "lamquocbao26042005@gmail.com",
-  "smtpPass": "jvsi ykpp icun ruin",
-  "adminNotificationEmail": "lamquocbao26042005@gmail.com",
+  "smtpUser": "",
+  "smtpPass": "",
+  "adminNotificationEmail": "lvotiling@gmail.com",
   "emailFromName": "LV Tiling Pty Ltd"
 }

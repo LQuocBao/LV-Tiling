@@ -55,7 +55,7 @@ export default function Navbar({
                   isScrolled ? "text-slate-900" : "text-white"
                 }`}
               >
-                LV Tiling
+                {companyName}
               </span>
               <span
                 className={`text-[11px] font-semibold tracking-wider uppercase leading-tight mt-1 ${

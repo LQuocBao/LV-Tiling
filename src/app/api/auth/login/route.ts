@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { authenticateUserAsync } from "@/lib/storage";
+import { createSessionToken, getSessionCookieOptions } from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
@@ -32,11 +33,25 @@ export async function POST(request: Request) {
       lastLogin: user.lastLogin,
     };
 
-    return NextResponse.json({
+    // Create secure HMAC session token
+    const token = await createSessionToken({
+      id: user.id,
+      username: user.username,
+      role: user.role,
+    });
+
+    const response = NextResponse.json({
       success: true,
       message: "Sign in successful!",
       user: safeUser,
+      token,
     });
+
+    // Set HTTP-only secure cookie
+    const cookieOpts = getSessionCookieOptions();
+    response.cookies.set(cookieOpts.name, token, cookieOpts);
+
+    return response;
   } catch (error) {
     console.error("Login API error:", error);
     return NextResponse.json(

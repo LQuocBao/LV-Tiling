@@ -6,6 +6,7 @@ import {
   deleteUserAsync,
   hashPassword,
 } from "@/lib/storage";
+import { getSessionUser } from "@/lib/auth";
 
 // Helper to strip password hashes
 const sanitizeUser = (u: any) => ({
@@ -19,7 +20,12 @@ const sanitizeUser = (u: any) => ({
   lastLogin: u.lastLogin,
 });
 
-export async function GET() {
+export async function GET(request: Request) {
+  const user = await getSessionUser(request);
+  if (!user || user.role !== "admin") {
+    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+  }
+
   const users = await getUsersAsync();
   const safeUsers = users.map(sanitizeUser);
   return NextResponse.json({ success: true, data: safeUsers, users: safeUsers });
@@ -27,6 +33,11 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const user = await getSessionUser(request);
+    if (!user || user.role !== "admin") {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
     const { username, password, name, email, role, status } = body;
 
@@ -86,6 +97,11 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
+    const user = await getSessionUser(request);
+    if (!user || user.role !== "admin") {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
     const { id, name, email, role, status, newPassword } = body;
 
@@ -123,6 +139,11 @@ export async function PATCH(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    const user = await getSessionUser(request);
+    if (!user || user.role !== "admin") {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 

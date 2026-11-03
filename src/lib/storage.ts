@@ -128,13 +128,16 @@ export function authenticateUser(username: string, password: string): AdminUser 
   const users = getUsers();
   const inputHash = hashPassword(password);
   const normalizedUser = username.trim().toLowerCase();
+  const defaultAdminHash = "9be44a887289c0764ed7a8295d2ac0972825047ea7843b76802d85fb732e8333";
 
-  const user = users.find(
-    (u) =>
-      u.username.toLowerCase() === normalizedUser &&
-      (u.passwordHash === inputHash ||
-        (u.username === "admin" && (password === "lvtiling2026" || password === "admin123")))
-  );
+  const user = users.find((u) => {
+    if (u.username.toLowerCase() !== normalizedUser) return false;
+    if (u.passwordHash === inputHash) return true;
+    if (u.username === "admin" && u.passwordHash === defaultAdminHash && (password === "lvtiling2026" || password === "admin123")) {
+      return true;
+    }
+    return false;
+  });
 
   if (!user || user.status !== "active") return null;
 
@@ -381,6 +384,140 @@ export async function deleteGalleryItemAsync(id: string): Promise<boolean> {
   return true;
 }
 
+export async function updateGalleryItemAsync(
+  id: string,
+  updates: Partial<GalleryItem>
+): Promise<GalleryItem | null> {
+  const current = getGallery();
+  const index = current.findIndex((g) => g.id === id);
+  if (index === -1) return null;
+  current[index] = { ...current[index], ...updates };
+  saveGallery(current);
+
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      const payload: any = {};
+      if (updates.title !== undefined) payload.title = updates.title;
+      if (updates.category !== undefined) payload.category = updates.category;
+      if (updates.image !== undefined) payload.image = updates.image;
+      if (updates.location !== undefined) payload.location = updates.location;
+      if (updates.tileType !== undefined) payload.tile_type = updates.tileType;
+      if (updates.description !== undefined) payload.description = updates.description;
+
+      await supabase.from("gallery").update(payload).eq("id", id);
+    } catch (e) {
+      console.warn("Supabase updateGallery error:", e);
+    }
+  }
+  return current[index];
+}
+
+// --- SERVICES ---
+export async function getServicesAsync(): Promise<ServiceItem[]> {
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("services")
+        .select("*")
+        .order("position", { ascending: true });
+      if (!error && data && data.length > 0) {
+        return data.map((row: any) => ({
+          id: row.id,
+          title: row.title,
+          shortDesc: row.short_desc || "",
+          fullDesc: row.full_desc || "",
+          features: Array.isArray(row.features)
+            ? row.features
+            : typeof row.features === "string"
+            ? JSON.parse(row.features)
+            : [],
+          icon: row.icon || "Award",
+          image: row.image || "",
+          badge: row.badge || "",
+        }));
+      }
+    } catch (e) {
+      console.warn("Supabase getServices error, fallback to local:", e);
+    }
+  }
+  return getServices();
+}
+
+export async function saveServicesAsync(services: ServiceItem[]): Promise<ServiceItem[]> {
+  saveServices(services);
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      const rows = services.map((s, index) => ({
+        id: s.id,
+        title: s.title,
+        short_desc: s.shortDesc,
+        full_desc: s.fullDesc,
+        features: s.features,
+        icon: s.icon,
+        image: s.image,
+        badge: s.badge || "",
+        position: index,
+      }));
+      await supabase.from("services").upsert(rows);
+    } catch (e) {
+      console.warn("Supabase saveServices error:", e);
+    }
+  }
+  return services;
+}
+
+// --- TESTIMONIALS ---
+export async function getTestimonialsAsync(): Promise<TestimonialItem[]> {
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("testimonials")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (!error && data && data.length > 0) {
+        return data.map((row: any) => ({
+          id: row.id,
+          name: row.name,
+          suburb: row.suburb || "",
+          rating: row.rating || 5,
+          date: row.date || "",
+          comment: row.comment || "",
+          service: row.service || "",
+        }));
+      }
+    } catch (e) {
+      console.warn("Supabase getTestimonials error, fallback to local:", e);
+    }
+  }
+  return getTestimonials();
+}
+
+export async function saveTestimonialsAsync(testimonials: TestimonialItem[]): Promise<TestimonialItem[]> {
+  saveTestimonials(testimonials);
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      const rows = testimonials.map((t) => ({
+        id: t.id,
+        name: t.name,
+        suburb: t.suburb,
+        rating: t.rating,
+        date: t.date,
+        comment: t.comment,
+        service: t.service,
+      }));
+      await supabase.from("testimonials").upsert(rows);
+    } catch (e) {
+      console.warn("Supabase saveTestimonials error:", e);
+    }
+  }
+  return testimonials;
+}
+
 // --- USERS ---
 export async function getUsersAsync(): Promise<AdminUser[]> {
   const supabase = getServiceSupabase();
@@ -414,13 +551,16 @@ export async function authenticateUserAsync(
   const users = await getUsersAsync();
   const inputHash = hashPassword(password);
   const normalizedUser = username.trim().toLowerCase();
+  const defaultAdminHash = "9be44a887289c0764ed7a8295d2ac0972825047ea7843b76802d85fb732e8333";
 
-  const user = users.find(
-    (u) =>
-      u.username.toLowerCase() === normalizedUser &&
-      (u.passwordHash === inputHash ||
-        (u.username === "admin" && (password === "lvtiling2026" || password === "admin123")))
-  );
+  const user = users.find((u) => {
+    if (u.username.toLowerCase() !== normalizedUser) return false;
+    if (u.passwordHash === inputHash) return true;
+    if (u.username === "admin" && u.passwordHash === defaultAdminHash && (password === "lvtiling2026" || password === "admin123")) {
+      return true;
+    }
+    return false;
+  });
 
   if (!user || user.status !== "active") return null;
 

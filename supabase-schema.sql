@@ -48,7 +48,21 @@ CREATE TABLE IF NOT EXISTS public.testimonials (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 5. TABLE: admin_users (Staff & Management Accounts)
+-- 5. TABLE: services (Core Trade Services)
+CREATE TABLE IF NOT EXISTS public.services (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  short_desc TEXT DEFAULT '',
+  full_desc TEXT DEFAULT '',
+  features JSONB DEFAULT '[]'::jsonb,
+  icon TEXT DEFAULT 'Award',
+  image TEXT NOT NULL,
+  badge TEXT DEFAULT '',
+  position INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 6. TABLE: admin_users (Staff & Management Accounts)
 CREATE TABLE IF NOT EXISTS public.admin_users (
   id TEXT PRIMARY KEY,
   username TEXT UNIQUE NOT NULL,
@@ -69,6 +83,7 @@ ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.gallery ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.testimonials ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.services ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.admin_users ENABLE ROW LEVEL SECURITY;
 
 -- Allow service role (Next.js server API routes) full access
@@ -90,11 +105,15 @@ BEGIN
     CREATE POLICY "Service Role Testimonials Full Access" ON public.testimonials FOR ALL TO service_role USING (true) WITH CHECK (true);
   END IF;
 
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Service Role Services Full Access') THEN
+    CREATE POLICY "Service Role Services Full Access" ON public.services FOR ALL TO service_role USING (true) WITH CHECK (true);
+  END IF;
+
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Service Role Users Full Access') THEN
     CREATE POLICY "Service Role Users Full Access" ON public.admin_users FOR ALL TO service_role USING (true) WITH CHECK (true);
   END IF;
 
-  -- Allow public read access to settings, gallery, testimonials
+  -- Allow public read access to settings, gallery, testimonials, services
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Read Settings') THEN
     CREATE POLICY "Public Read Settings" ON public.settings FOR SELECT TO public USING (true);
   END IF;
@@ -105,6 +124,10 @@ BEGIN
 
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Read Testimonials') THEN
     CREATE POLICY "Public Read Testimonials" ON public.testimonials FOR SELECT TO public USING (true);
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Read Services') THEN
+    CREATE POLICY "Public Read Services" ON public.services FOR SELECT TO public USING (true);
   END IF;
 END $$;
 
@@ -141,7 +164,7 @@ VALUES (
   'admin',
   'LV Tiling Master Admin',
   'lvotiling@gmail.com',
-  '3a2958bb85a2105779eafe586a1005fb414c1fa0bcf9eb7f603c4f9bc26fc0e7',
+  '9be44a887289c0764ed7a8295d2ac0972825047ea7843b76802d85fb732e8333',
   'admin',
   'active',
   '2026-01-01 00:00'

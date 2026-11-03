@@ -6,6 +6,7 @@ import { Phone, ArrowRight } from "lucide-react";
 
 interface HeroProps {
   headline?: string;
+  subheadline?: string;
   phone?: string;
   address?: string;
   warrantyYears?: number;
@@ -13,7 +14,10 @@ interface HeroProps {
 }
 
 export default function HeroSection({
+  headline,
+  subheadline,
   phone = "0452 612 336",
+  warrantyYears = 4,
   heroImage,
 }: HeroProps) {
   return (
@@ -37,26 +41,40 @@ export default function HeroSection({
         {/* Top Eyebrow Badge */}
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[6px] bg-slate-900 border border-slate-800 text-slate-200 text-xs font-semibold tracking-wider uppercase mb-6">
           <span className="w-2 h-2 rounded-[2px] bg-[#dc2626]" />
-          <span>Perth Master Tilers · Excellence In Craft</span>
+          <span>Perth Master Tilers · {warrantyYears}-Year Warranty</span>
         </div>
 
         {/* Display Headline */}
-        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-tight sm:whitespace-nowrap">
-          Every Project As A{" "}
-          <span className="text-[#dc2626]">
-            Work Of Art.
-          </span>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-tight">
+          {headline && headline.trim() && headline.length < 80 ? (
+            headline
+          ) : (
+            <>
+              Every Project As A{" "}
+              <span className="text-[#dc2626]">
+                Work Of Art.
+              </span>
+            </>
+          )}
         </h1>
 
         {/* Narrative Paragraph */}
         <p className="text-base sm:text-lg text-slate-200 font-normal leading-relaxed max-w-3xl mx-auto mt-6">
-          At <strong className="text-white font-semibold">LV Tiling Pty Ltd</strong>{" "}
-          we treat every project as a work of art, delivering quality, precision
-          even with a small renovation or large scale jobs. Our experts will
-          ensure every detail is done right.{" "}
-          <span className="text-white font-medium">
-            Let’s transform your space together.
-          </span>
+          {subheadline && subheadline.trim() ? (
+            subheadline
+          ) : headline && headline.trim() && headline.length >= 80 ? (
+            headline
+          ) : (
+            <>
+              At <strong className="text-white font-semibold">LV Tiling Pty Ltd</strong>{" "}
+              we treat every project as a work of art, delivering quality, precision
+              even with a small renovation or large scale jobs. Our experts will
+              ensure every detail is done right.{" "}
+              <span className="text-white font-medium">
+                Let’s transform your space together.
+              </span>
+            </>
+          )}
         </p>
 
         {/* 3 Action Buttons */}

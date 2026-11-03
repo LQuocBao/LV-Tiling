@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 import ExcelJS from "exceljs";
+import { getSessionUser } from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
+    const user = await getSessionUser(request);
+    if (!user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
     const leads = body.leads || [];
     const filterLabel = body.filterLabel || "Toàn bộ";
