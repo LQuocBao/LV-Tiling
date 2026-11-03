@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const saved = await saveTestimonialsAsync(updated);
     revalidatePath("/");
     return NextResponse.json({ success: true, message: "Testimonials updated", data: saved });
-  } catch {
-    return NextResponse.json({ success: false, error: "Failed to update testimonials" }, { status: 400 });
+  } catch (err: any) {
+    return NextResponse.json({ success: false, error: err?.message || "Failed to update testimonials" }, { status: 400 });
   }
 }

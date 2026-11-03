@@ -128,10 +128,10 @@ export async function PATCH(request: Request) {
       message: "Cập nhật tài khoản thành công!",
       data: sanitizeUser(updated),
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Update user error:", error);
     return NextResponse.json(
-      { success: false, error: "Không thể cập nhật tài khoản." },
+      { success: false, error: error?.message || "Không thể cập nhật tài khoản." },
       { status: 500 }
     );
   }

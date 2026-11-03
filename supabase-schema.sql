@@ -134,6 +134,10 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Full Access Leads') THEN
     CREATE POLICY "Public Full Access Leads" ON public.leads FOR ALL TO public USING (true) WITH CHECK (true);
   END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Full Access Users') THEN
+    CREATE POLICY "Public Full Access Users" ON public.admin_users FOR ALL TO public USING (true) WITH CHECK (true);
+  END IF;
 END $$;
 
 -- ====================================================================

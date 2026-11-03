@@ -28,8 +28,8 @@ export async function POST(request: Request) {
     const saved = await addGalleryItemAsync(newItem);
     revalidatePath("/");
     return NextResponse.json({ success: true, data: saved, item: saved });
-  } catch {
-    return NextResponse.json({ success: false, error: "Failed to add gallery item" }, { status: 400 });
+  } catch (err: any) {
+    return NextResponse.json({ success: false, error: err?.message || "Failed to add gallery item" }, { status: 400 });
   }
 }
 
@@ -51,8 +51,8 @@ export async function PATCH(request: Request) {
     }
     revalidatePath("/");
     return NextResponse.json({ success: true, data: updated, item: updated });
-  } catch {
-    return NextResponse.json({ success: false, error: "Failed to update item" }, { status: 400 });
+  } catch (err: any) {
+    return NextResponse.json({ success: false, error: err?.message || "Failed to update item" }, { status: 400 });
   }
 }
 
@@ -71,7 +71,7 @@ export async function DELETE(request: Request) {
     await deleteGalleryItemAsync(id);
     revalidatePath("/");
     return NextResponse.json({ success: true, message: "Gallery item deleted" });
-  } catch {
-    return NextResponse.json({ success: false, error: "Failed to delete item" }, { status: 400 });
+  } catch (err: any) {
+    return NextResponse.json({ success: false, error: err?.message || "Failed to delete item" }, { status: 400 });
   }
 }

@@ -249,36 +249,59 @@ export async function updateLeadStatusAsync(
   id: string,
   status: QuoteLead["status"]
 ): Promise<boolean> {
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      const { error } = await supabase.from("leads").update({ status }).eq("id", id);
+      if (error) {
+        console.error("Supabase updateLeadStatus error:", error);
+        throw new Error(`Supabase updateLeadStatus failed: ${error.message}`);
+      }
+      try {
+        const leads = getLeads();
+        const idx = leads.findIndex((l) => l.id === id);
+        if (idx !== -1) {
+          leads[idx].status = status;
+          saveLeads(leads);
+        }
+      } catch {}
+      return true;
+    } catch (e) {
+      console.error("Supabase updateLeadStatus exception:", e);
+      throw e;
+    }
+  }
   const leads = getLeads();
   const idx = leads.findIndex((l) => l.id === id);
   if (idx !== -1) {
     leads[idx].status = status;
     saveLeads(leads);
+    return true;
   }
-  const supabase = getServiceSupabase();
-  if (supabase) {
-    try {
-      const { error } = await supabase.from("leads").update({ status }).eq("id", id);
-      return !error;
-    } catch (e) {
-      console.warn("Supabase updateLeadStatus error:", e);
-    }
-  }
-  return idx !== -1;
+  return false;
 }
 
 export async function deleteLeadAsync(id: string): Promise<boolean> {
-  const leads = getLeads().filter((l) => l.id !== id);
-  saveLeads(leads);
   const supabase = getServiceSupabase();
   if (supabase) {
     try {
       const { error } = await supabase.from("leads").delete().eq("id", id);
-      return !error;
+      if (error) {
+        console.error("Supabase deleteLead error:", error);
+        throw new Error(`Supabase deleteLead failed: ${error.message}`);
+      }
+      try {
+        const leads = getLeads().filter((l) => l.id !== id);
+        saveLeads(leads);
+      } catch {}
+      return true;
     } catch (e) {
-      console.warn("Supabase deleteLead error:", e);
+      console.error("Supabase deleteLead exception:", e);
+      throw e;
     }
   }
+  const leads = getLeads().filter((l) => l.id !== id);
+  saveLeads(leads);
   return true;
 }
 
@@ -352,13 +375,10 @@ export async function getGalleryAsync(): Promise<GalleryItem[]> {
 }
 
 export async function addGalleryItemAsync(item: GalleryItem): Promise<GalleryItem> {
-  const current = getGallery();
-  current.unshift(item);
-  saveGallery(current);
   const supabase = getServiceSupabase();
   if (supabase) {
     try {
-      await supabase.from("gallery").upsert({
+      const { error } = await supabase.from("gallery").upsert({
         id: item.id,
         title: item.title,
         category: item.category,
@@ -367,25 +387,44 @@ export async function addGalleryItemAsync(item: GalleryItem): Promise<GalleryIte
         tile_type: item.tileType || "",
         description: item.description || "",
       });
+      if (error) {
+        console.error("Supabase addGallery error:", error);
+        throw new Error(`Supabase addGallery failed: ${error.message}`);
+      }
     } catch (e) {
-      console.warn("Supabase addGallery error:", e);
+      console.error("Supabase addGallery exception:", e);
+      throw e;
     }
   }
+  try {
+    const current = getGallery();
+    current.unshift(item);
+    saveGallery(current);
+  } catch {}
   return item;
 }
 
 export async function deleteGalleryItemAsync(id: string): Promise<boolean> {
-  const current = getGallery().filter((g) => g.id !== id);
-  saveGallery(current);
   const supabase = getServiceSupabase();
   if (supabase) {
     try {
       const { error } = await supabase.from("gallery").delete().eq("id", id);
-      return !error;
+      if (error) {
+        console.error("Supabase deleteGallery error:", error);
+        throw new Error(`Supabase deleteGallery failed: ${error.message}`);
+      }
+      try {
+        const current = getGallery().filter((g) => g.id !== id);
+        saveGallery(current);
+      } catch {}
+      return true;
     } catch (e) {
-      console.warn("Supabase deleteGallery error:", e);
+      console.error("Supabase deleteGallery exception:", e);
+      throw e;
     }
   }
+  const current = getGallery().filter((g) => g.id !== id);
+  saveGallery(current);
   return true;
 }
 
@@ -393,12 +432,6 @@ export async function updateGalleryItemAsync(
   id: string,
   updates: Partial<GalleryItem>
 ): Promise<GalleryItem | null> {
-  const current = getGallery();
-  const index = current.findIndex((g) => g.id === id);
-  if (index === -1) return null;
-  current[index] = { ...current[index], ...updates };
-  saveGallery(current);
-
   const supabase = getServiceSupabase();
   if (supabase) {
     try {
@@ -410,11 +443,49 @@ export async function updateGalleryItemAsync(
       if (updates.tileType !== undefined) payload.tile_type = updates.tileType;
       if (updates.description !== undefined) payload.description = updates.description;
 
-      await supabase.from("gallery").update(payload).eq("id", id);
+      const { data, error } = await supabase
+        .from("gallery")
+        .update(payload)
+        .eq("id", id)
+        .select()
+        .maybeSingle();
+
+      if (error) {
+        console.error("Supabase updateGallery error:", error);
+        throw new Error(`Supabase updateGallery failed: ${error.message}`);
+      }
+
+      if (data) {
+        try {
+          const current = getGallery();
+          const index = current.findIndex((g) => g.id === id);
+          if (index !== -1) {
+            current[index] = { ...current[index], ...updates };
+            saveGallery(current);
+          }
+        } catch {}
+
+        return {
+          id: data.id,
+          title: data.title,
+          category: data.category,
+          image: data.image,
+          location: data.location || "",
+          tileType: data.tile_type || "",
+          description: data.description || "",
+        };
+      }
     } catch (e) {
-      console.warn("Supabase updateGallery error:", e);
+      console.error("Supabase updateGallery exception:", e);
+      throw e;
     }
   }
+
+  const current = getGallery();
+  const index = current.findIndex((g) => g.id === id);
+  if (index === -1) return null;
+  current[index] = { ...current[index], ...updates };
+  saveGallery(current);
   return current[index];
 }
 
@@ -451,7 +522,6 @@ export async function getServicesAsync(): Promise<ServiceItem[]> {
 }
 
 export async function saveServicesAsync(services: ServiceItem[]): Promise<ServiceItem[]> {
-  saveServices(services);
   const supabase = getServiceSupabase();
   if (supabase) {
     try {
@@ -466,11 +536,19 @@ export async function saveServicesAsync(services: ServiceItem[]): Promise<Servic
         badge: s.badge || "",
         position: index,
       }));
-      await supabase.from("services").upsert(rows);
+      const { error } = await supabase.from("services").upsert(rows);
+      if (error) {
+        console.error("Supabase saveServices error:", error);
+        throw new Error(`Supabase saveServices failed: ${error.message}`);
+      }
     } catch (e) {
-      console.warn("Supabase saveServices error:", e);
+      console.error("Supabase saveServices exception:", e);
+      throw e;
     }
   }
+  try {
+    saveServices(services);
+  } catch {}
   return services;
 }
 
@@ -502,7 +580,6 @@ export async function getTestimonialsAsync(): Promise<TestimonialItem[]> {
 }
 
 export async function saveTestimonialsAsync(testimonials: TestimonialItem[]): Promise<TestimonialItem[]> {
-  saveTestimonials(testimonials);
   const supabase = getServiceSupabase();
   if (supabase) {
     try {
@@ -515,11 +592,19 @@ export async function saveTestimonialsAsync(testimonials: TestimonialItem[]): Pr
         comment: t.comment,
         service: t.service,
       }));
-      await supabase.from("testimonials").upsert(rows);
+      const { error } = await supabase.from("testimonials").upsert(rows);
+      if (error) {
+        console.error("Supabase saveTestimonials error:", error);
+        throw new Error(`Supabase saveTestimonials failed: ${error.message}`);
+      }
     } catch (e) {
-      console.warn("Supabase saveTestimonials error:", e);
+      console.error("Supabase saveTestimonials exception:", e);
+      throw e;
     }
   }
+  try {
+    saveTestimonials(testimonials);
+  } catch {}
   return testimonials;
 }
 
@@ -587,11 +672,16 @@ export async function authenticateUserAsync(
 export async function addUserAsync(
   user: Omit<AdminUser, "id" | "createdAt" | "lastLogin">
 ): Promise<AdminUser> {
-  const newUser = addUser(user);
+  const newUser: AdminUser = {
+    ...user,
+    id: "user-" + Date.now(),
+    createdAt: new Date().toISOString().replace("T", " ").substring(0, 16),
+    lastLogin: null,
+  };
   const supabase = getServiceSupabase();
   if (supabase) {
     try {
-      await supabase.from("admin_users").insert({
+      const { error } = await supabase.from("admin_users").insert({
         id: newUser.id,
         username: newUser.username,
         name: newUser.name,
@@ -601,10 +691,20 @@ export async function addUserAsync(
         status: newUser.status,
         created_at: newUser.createdAt,
       });
+      if (error) {
+        console.error("Supabase addUser error:", error);
+        throw new Error(`Supabase addUser failed: ${error.message}`);
+      }
     } catch (e) {
-      console.warn("Supabase addUser error:", e);
+      console.error("Supabase addUser exception:", e);
+      throw e;
     }
   }
+  try {
+    const users = getUsers();
+    users.unshift(newUser);
+    saveUsers(users);
+  } catch {}
   return newUser;
 }
 
@@ -612,36 +712,85 @@ export async function updateUserAsync(
   id: string,
   updates: Partial<AdminUser>
 ): Promise<AdminUser | null> {
-  const updated = updateUser(id, updates);
-  const supabase = getServiceSupabase();
-  if (supabase && updated) {
-    try {
-      const payload: any = {};
-      if (updates.name) payload.name = updates.name;
-      if (updates.email !== undefined) payload.email = updates.email;
-      if (updates.role) payload.role = updates.role;
-      if (updates.status) payload.status = updates.status;
-      if (updates.passwordHash) payload.password_hash = updates.passwordHash;
-      await supabase.from("admin_users").update(payload).eq("id", id);
-    } catch (e) {
-      console.warn("Supabase updateUser error:", e);
-    }
-  }
-  return updated;
-}
-
-export async function deleteUserAsync(id: string): Promise<boolean> {
-  const ok = deleteUser(id);
-  if (!ok) return false;
   const supabase = getServiceSupabase();
   if (supabase) {
     try {
-      await supabase.from("admin_users").delete().eq("id", id);
+      const payload: any = {};
+      if (updates.name !== undefined) payload.name = updates.name;
+      if (updates.email !== undefined) payload.email = updates.email;
+      if (updates.role !== undefined) payload.role = updates.role;
+      if (updates.status !== undefined) payload.status = updates.status;
+      if (updates.passwordHash !== undefined) payload.password_hash = updates.passwordHash;
+
+      const { data, error } = await supabase
+        .from("admin_users")
+        .update(payload)
+        .eq("id", id)
+        .select()
+        .maybeSingle();
+
+      if (error) {
+        console.error("Supabase updateUser error:", error);
+        throw new Error(`Supabase updateUser failed: ${error.message}`);
+      }
+
+      if (data) {
+        try {
+          updateUser(id, updates);
+        } catch {}
+        return {
+          id: data.id,
+          username: data.username,
+          name: data.name,
+          email: data.email || "",
+          passwordHash: data.password_hash,
+          role: data.role || "staff",
+          status: data.status || "active",
+          createdAt: data.created_at || "",
+          lastLogin: data.last_login || null,
+        };
+      }
     } catch (e) {
-      console.warn("Supabase deleteUser error:", e);
+      console.error("Supabase updateUser exception:", e);
+      throw e;
     }
   }
-  return true;
+  return updateUser(id, updates);
+}
+
+export async function deleteUserAsync(id: string): Promise<boolean> {
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    try {
+      const { data: allUsers, error: fetchErr } = await supabase.from("admin_users").select("id, role");
+      if (fetchErr) {
+        console.error("Supabase fetch users before delete error:", fetchErr);
+      }
+      const targetUser = allUsers?.find((u: any) => u.id === id);
+      if (!targetUser) {
+        return deleteUser(id);
+      }
+
+      const admins = (allUsers || []).filter((u: any) => u.role === "admin");
+      if (targetUser.role === "admin" && admins.length <= 1) {
+        return false; // Protect last admin from deletion
+      }
+
+      const { error } = await supabase.from("admin_users").delete().eq("id", id);
+      if (error) {
+        console.error("Supabase deleteUser error:", error);
+        throw new Error(`Supabase deleteUser failed: ${error.message}`);
+      }
+      try {
+        deleteUser(id);
+      } catch {}
+      return true;
+    } catch (e) {
+      console.error("Supabase deleteUser exception:", e);
+      throw e;
+    }
+  }
+  return deleteUser(id);
 }
 
 
